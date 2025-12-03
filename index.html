@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Opening Trainer (Beta)</title>
+    <title>Chess Opening Trainer V2.1</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
+        /* =========================================
+           CORE STYLES (Mobile First)
+           ========================================= */
         * {
             margin: 0;
             padding: 0;
@@ -48,10 +51,7 @@
             margin-left: 8px;
         }
 
-        .header p {
-            color: #94a3b8;
-            font-size: 0.875rem;
-        }
+        .header p { color: #94a3b8; font-size: 0.875rem; }
 
         .section-title {
             font-size: 0.75rem;
@@ -62,7 +62,9 @@
             margin-bottom: 12px;
         }
 
-        /* Cards */
+        /* =========================================
+           CARDS & LISTS
+           ========================================= */
         .card {
             background: rgba(51, 65, 85, 0.5);
             border: 1px solid #334155;
@@ -79,15 +81,8 @@
             border-color: #475569;
         }
 
-        .card h3 {
-            font-size: 1.125rem;
-            margin-bottom: 6px;
-        }
-
-        .card p {
-            color: #94a3b8;
-            font-size: 0.875rem;
-        }
+        .card h3 { font-size: 1.125rem; margin-bottom: 6px; }
+        .card p { color: #94a3b8; font-size: 0.875rem; }
 
         .card .moves {
             font-family: monospace;
@@ -106,15 +101,8 @@
             vertical-align: middle;
         }
 
-        .color-badge.white {
-            background: #fbbf24;
-            color: #1e293b;
-        }
-
-        .color-badge.black {
-            background: #475569;
-            color: #e2e8f0;
-        }
+        .color-badge.white { background: #fbbf24; color: #1e293b; }
+        .color-badge.black { background: #475569; color: #e2e8f0; }
 
         .card-actions {
             position: absolute;
@@ -135,21 +123,15 @@
             font-size: 1.1rem;
         }
 
-        .edit-btn:hover {
-            background: rgba(59, 130, 246, 0.3);
-            color: #60a5fa;
-        }
+        .edit-btn:hover { background: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+        .delete-btn:hover { background: rgba(239, 68, 68, 0.3); color: #f87171; }
 
-        .delete-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-            color: #f87171;
-        }
-
-        /* Screens */
+        /* =========================================
+           SCREENS & NAV
+           ========================================= */
         .screen { display: none; }
         .screen.active { display: block; }
 
-        /* Navigation */
         .nav-btn {
             display: inline-flex;
             align-items: center;
@@ -168,7 +150,9 @@
 
         .nav-btn:hover { background: rgba(71, 85, 105, 0.7); }
 
-        /* Move History */
+        /* =========================================
+           TRAINER UI
+           ========================================= */
         .move-history {
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid #334155;
@@ -178,11 +162,7 @@
             overflow-x: auto;
         }
 
-        .move-history-inner {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .move-history-inner { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .move-tag {
             padding: 6px 10px;
@@ -192,21 +172,10 @@
             white-space: nowrap;
         }
 
-        .move-tag.white-move {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-        }
+        .move-tag.white-move { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .move-tag.black-move { background: rgba(71, 85, 105, 0.5); color: #cbd5e1; }
+        .move-tag.choice { border: 1px solid #fbbf24; }
 
-        .move-tag.black-move {
-            background: rgba(71, 85, 105, 0.5);
-            color: #cbd5e1;
-        }
-
-        .move-tag.choice {
-            border: 1px solid #fbbf24;
-        }
-
-        /* Current Move Display */
         .current-move-card {
             background: #334155;
             border-radius: 20px;
@@ -221,26 +190,11 @@
             margin-bottom: 14px;
         }
 
-        .move-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-        }
+        .move-dot { width: 14px; height: 14px; border-radius: 50%; }
+        .move-dot.your-move { background: #fbbf24; box-shadow: 0 0 12px rgba(251, 191, 36, 0.4); }
+        .move-dot.opponent-move { background: #64748b; }
 
-        .move-dot.your-move {
-            background: #fbbf24;
-            box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
-        }
-
-        .move-dot.opponent-move {
-            background: #64748b;
-        }
-
-        .move-label span {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
+        .move-label span { font-weight: 600; font-size: 0.9rem; }
         .move-label span.your-move { color: #fbbf24; }
         .move-label span.opponent-move { color: #94a3b8; }
 
@@ -252,57 +206,57 @@
             position: relative;
         }
 
-        .current-move.opponent {
-            background: linear-gradient(135deg, #475569 0%, #334155 100%);
-        }
-
-        .current-move h2 {
-            font-family: monospace;
-            font-size: 1.6rem;
-            color: #1e293b;
-        }
-
+        .current-move.opponent { background: linear-gradient(135deg, #475569 0%, #334155 100%); }
+        .current-move h2 { font-family: monospace; font-size: 1.6rem; color: #1e293b; }
         .current-move.opponent h2 { color: #e2e8f0; }
 
-        .explanation {
-            color: #cbd5e1;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
+        .explanation { color: #cbd5e1; font-size: 1rem; line-height: 1.6; }
 
-        /* === NEW: Transposition Styles === */
+        /* === Transposition Styles (New) === */
         .transposition-badge {
-            background: rgba(139, 92, 246, 0.2);
+            background: rgba(139, 92, 246, 0.15);
             border: 1px solid #8b5cf6;
             border-radius: 10px;
-            padding: 10px 14px;
-            margin-top: 12px;
-            font-size: 0.85rem;
+            padding: 12px 14px;
+            margin-top: 16px;
+            font-size: 0.9rem;
             color: #c4b5fd;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             cursor: pointer;
         }
         
-        .transposition-badge:hover {
-            background: rgba(139, 92, 246, 0.3);
-        }
+        .transposition-badge:hover { background: rgba(139, 92, 246, 0.25); }
 
         .transposition-list {
             margin-top: 8px;
-            padding-left: 28px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
             display: none;
-            color: #94a3b8;
         }
 
-        .transposition-list.visible {
-            display: block;
+        .transposition-list.visible { display: block; }
+
+        .transposition-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
         }
 
-        /* Options */
+        .transposition-item:last-child { border-bottom: none; }
+        .transposition-item:hover { background: rgba(139, 92, 246, 0.1); }
+        .transposition-item .meta { font-size: 0.75rem; color: #94a3b8; }
+        .transposition-item .jump-icon { color: #a78bfa; font-size: 1.1rem; }
+
+        /* Options & Controls */
         .options-section { margin-top: 24px; }
-
         .options-label {
             display: flex;
             align-items: center;
@@ -330,17 +284,8 @@
             justify-content: space-between;
         }
 
-        .option-btn:hover, .option-btn:active {
-            background: rgba(71, 85, 105, 0.6);
-            border-color: #64748b;
-        }
-
-        .option-btn .move-text {
-            font-family: monospace;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
+        .option-btn:hover { background: rgba(71, 85, 105, 0.6); border-color: #64748b; }
+        .option-btn .move-text { font-family: monospace; font-size: 1.2rem; font-weight: 600; }
         .option-btn .label {
             display: inline-block;
             padding: 4px 10px;
@@ -349,29 +294,12 @@
             margin-left: 10px;
             background: #475569;
         }
+        .option-btn .label.main { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .option-btn .label.blunder { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .option-btn .arrow { color: #64748b; font-size: 1.4rem; }
 
-        .option-btn .label.main {
-            background: rgba(16, 185, 129, 0.2);
-            color: #34d399;
-        }
-
-        .option-btn .label.blunder {
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-        }
-
-        .option-btn .arrow {
-            color: #64748b;
-            font-size: 1.4rem;
-        }
-
-        /* Choice Cards */
-        .choices-grid {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
+        /* Choices Grid */
+        .choices-grid { display: grid; gap: 12px; margin-bottom: 16px; }
         .choice-card {
             background: rgba(51, 65, 85, 0.3);
             border: 2px solid;
@@ -380,765 +308,206 @@
             cursor: pointer;
             transition: all 0.2s;
             text-align: left;
+            position: relative;
         }
 
-        .choice-card:hover, .choice-card:active {
-            transform: scale(1.02);
-        }
-
-        .choice-card.red {
-            border-color: rgba(239, 68, 68, 0.5);
-        }
-        .choice-card.red:hover {
-            border-color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .choice-card.blue {
-            border-color: rgba(59, 130, 246, 0.5);
-        }
-        .choice-card.blue:hover {
-            border-color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-        }
-
-        .choice-card.purple {
-            border-color: rgba(168, 85, 247, 0.5);
-        }
-        .choice-card.purple:hover {
-            border-color: #a855f7;
-            background: rgba(168, 85, 247, 0.1);
-        }
-
-        .choice-card.green {
-            border-color: rgba(34, 197, 94, 0.5);
-        }
-        .choice-card.green:hover {
-            border-color: #22c55e;
-            background: rgba(34, 197, 94, 0.1);
-        }
-
-        .choice-card h4 {
-            font-family: monospace;
-            font-size: 1.125rem;
-            margin-bottom: 4px;
-        }
-
+        .choice-card:hover { transform: scale(1.02); }
+        .choice-card.red { border-color: rgba(239, 68, 68, 0.5); }
+        .choice-card.blue { border-color: rgba(59, 130, 246, 0.5); }
+        .choice-card.purple { border-color: rgba(168, 85, 247, 0.5); }
+        .choice-card.green { border-color: rgba(34, 197, 94, 0.5); }
+        
+        .choice-card h4 { font-family: monospace; font-size: 1.125rem; margin-bottom: 4px; }
         .choice-card.red h4 { color: #f87171; }
         .choice-card.blue h4 { color: #60a5fa; }
         .choice-card.purple h4 { color: #c084fc; }
         .choice-card.green h4 { color: #4ade80; }
+        
+        .choice-card .name { font-weight: 600; font-size: 0.875rem; margin-bottom: 4px; }
+        .choice-card .style { font-size: 0.75rem; color: #94a3b8; }
 
-        .choice-card .name {
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 4px;
-        }
-
-        .choice-card.red .name { color: #fca5a5; }
-        .choice-card.blue .name { color: #93c5fd; }
-        .choice-card.purple .name { color: #d8b4fe; }
-        .choice-card.green .name { color: #86efac; }
-
-        .choice-card .style {
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-
-        /* End State */
-        .end-card {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
+        /* End State & Tips */
+        .end-card { text-align: center; padding: 40px 20px; }
         .end-card .icon { font-size: 3.5rem; margin-bottom: 16px; }
         .end-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
         .end-card p { color: #94a3b8; }
 
-        /* Controls */
-        .controls {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
+        .controls { display: flex; gap: 12px; margin-top: 24px; }
         .control-btn {
-            flex: 1;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            min-height: 54px;
+            flex: 1; padding: 16px; border: none; border-radius: 12px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; min-height: 54px;
         }
-
-        .control-btn.secondary {
-            background: #475569;
-            color: #e2e8f0;
-        }
-
-        .control-btn.secondary:hover { background: #64748b; }
-
-        /* Progress */
-        .progress-dots {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 24px;
-        }
-
-        .progress-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #334155;
-        }
-
+        .control-btn.secondary { background: #475569; color: #e2e8f0; }
+        
+        .progress-dots { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
+        .progress-dot { width: 10px; height: 10px; border-radius: 50%; background: #334155; }
         .progress-dot.active { background: #fbbf24; }
-
-        /* Tip */
+        
         .tip-box {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 14px;
-            margin-top: 24px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            text-align: center;
+            background: rgba(30, 41, 59, 0.5); border: 1px solid #334155;
+            border-radius: 12px; padding: 14px; margin-top: 24px;
+            font-size: 0.85rem; color: #94a3b8; text-align: center;
         }
 
-        /* Buttons */
+        /* Standard Buttons */
         .btn {
-            width: 100%;
-            padding: 18px 24px;
-            border-radius: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            border: none;
-            min-height: 58px;
-            margin-bottom: 12px;
+            width: 100%; padding: 18px 24px; border-radius: 14px;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            text-align: center; border: none; min-height: 58px; margin-bottom: 12px;
         }
+        .btn-primary { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; }
+        .btn-secondary { background: rgba(71, 85, 105, 0.5); border: 1px solid #475569; color: #e2e8f0; }
+        .btn-purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; }
+        .btn-row { display: flex; gap: 12px; }
+        .btn-row .btn { flex: 1; }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            color: white;
-        }
-
-        .btn-primary:hover { opacity: 0.9; }
-
-        .btn-secondary {
-            background: rgba(71, 85, 105, 0.5);
-            border: 1px solid #475569;
-            color: #e2e8f0;
-        }
-
-        .btn-purple {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: white;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-row .btn {
-            flex: 1;
-        }
-
-        /* ===== BUILDER STYLES ===== */
-
+        /* =========================================
+           BUILDER UI
+           ========================================= */
         .builder-section {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
+            background: rgba(30, 41, 59, 0.5); border: 1px solid #334155;
+            border-radius: 16px; padding: 20px; margin-bottom: 16px;
         }
-
-        .builder-section h3 {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin-bottom: 16px;
-        }
+        .builder-section h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 16px; }
 
         .form-group { margin-bottom: 20px; }
-
-        .form-group:last-child { margin-bottom: 0; }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-bottom: 8px;
-        }
-
+        .form-group label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; }
         .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 16px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            color: #e2e8f0;
-            font-size: 1.1rem;
+            width: 100%; padding: 16px; background: #1e293b;
+            border: 1px solid #334155; border-radius: 12px; color: #e2e8f0; font-size: 1.1rem;
         }
+        .form-group input:focus { outline: none; border-color: #fbbf24; }
 
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            outline: none;
-            border-color: #fbbf24;
-        }
-
-        .form-group input::placeholder {
-            color: #64748b;
-        }
-
-        .form-group select {
-            cursor: pointer;
-        }
-
-        .color-toggle {
-            display: flex;
-            gap: 12px;
-        }
-
+        /* Color Toggle */
+        .color-toggle { display: flex; gap: 12px; }
         .color-option {
-            flex: 1;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            min-height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            flex: 1; padding: 16px; border-radius: 12px; text-align: center;
+            cursor: pointer; font-weight: 600; min-height: 56px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .color-option.white { background: rgba(251, 191, 36, 0.1); border: 2px solid rgba(251, 191, 36, 0.3); color: #fbbf24; }
+        .color-option.white.selected { background: rgba(251, 191, 36, 0.2); border-color: #fbbf24; }
+        .color-option.black { background: rgba(100, 116, 139, 0.1); border: 2px solid rgba(100, 116, 139, 0.3); color: #94a3b8; }
+        .color-option.black.selected { background: rgba(100, 116, 139, 0.2); border-color: #94a3b8; }
 
-        .color-option.white {
-            background: rgba(251, 191, 36, 0.1);
-            border: 2px solid rgba(251, 191, 36, 0.3);
-            color: #fbbf24;
-        }
-
-        .color-option.white.selected {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: #fbbf24;
-        }
-
-        .color-option.black {
-            background: rgba(100, 116, 139, 0.1);
-            border: 2px solid rgba(100, 116, 139, 0.3);
-            color: #94a3b8;
-        }
-
-        .color-option.black.selected {
-            background: rgba(100, 116, 139, 0.2);
-            border-color: #94a3b8;
-        }
-
-        /* Style Color Options */
-        .style-colors {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
+        /* Style Colors */
+        .style-colors { display: flex; gap: 10px; flex-wrap: wrap; }
         .style-color {
-            flex: 1;
-            min-width: 70px;
-            padding: 12px 8px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.75rem;
+            flex: 1; min-width: 70px; padding: 12px 8px; border-radius: 10px;
+            text-align: center; cursor: pointer; font-weight: 600; font-size: 0.75rem;
             border: 2px solid transparent;
-            transition: all 0.2s;
         }
+        .style-color.red { background: rgba(239, 68, 68, 0.1); color: #f87171; }
+        .style-color.red.selected { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
+        .style-color.blue { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+        .style-color.blue.selected { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; }
+        .style-color.purple { background: rgba(168, 85, 247, 0.1); color: #c084fc; }
+        .style-color.purple.selected { background: rgba(168, 85, 247, 0.2); border-color: #a855f7; }
+        .style-color.green { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
+        .style-color.green.selected { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; }
 
-        .style-color.red {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: #f87171;
-        }
-        .style-color.red.selected {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: #ef4444;
-        }
-
-        .style-color.blue {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.3);
-            color: #60a5fa;
-        }
-        .style-color.blue.selected {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: #3b82f6;
-        }
-
-        .style-color.purple {
-            background: rgba(168, 85, 247, 0.1);
-            border-color: rgba(168, 85, 247, 0.3);
-            color: #c084fc;
-        }
-        .style-color.purple.selected {
-            background: rgba(168, 85, 247, 0.2);
-            border-color: #a855f7;
-        }
-
-        .style-color.green {
-            background: rgba(34, 197, 94, 0.1);
-            border-color: rgba(34, 197, 94, 0.3);
-            color: #4ade80;
-        }
-        .style-color.green.selected {
-            background: rgba(34, 197, 94, 0.2);
-            border-color: #22c55e;
-        }
-
-        /* Builder Position Display */
+        /* Builder Position & Responses */
         .position-card {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 16px;
+            background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 14px; padding: 18px; margin-bottom: 16px;
         }
+        .position-card.opponent { background: rgba(100, 116, 139, 0.1); border-color: rgba(100, 116, 139, 0.3); }
+        .position-label { font-size: 0.75rem; text-transform: uppercase; color: #fbbf24; margin-bottom: 8px; }
+        .position-card.opponent .position-label { color: #94a3b8; }
+        .position-move { font-family: monospace; font-size: 1.4rem; font-weight: 700; color: #e2e8f0; }
 
-        .position-card.opponent {
-            background: rgba(100, 116, 139, 0.1);
-            border-color: rgba(100, 116, 139, 0.3);
-        }
-
-        .position-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #fbbf24;
-            margin-bottom: 8px;
-        }
-
-        .position-card.opponent .position-label {
-            color: #94a3b8;
-        }
-
-        .position-move {
-            font-family: monospace;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #e2e8f0;
-        }
-
-        .position-expl {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin-top: 6px;
-        }
-
-        /* Path Display */
         .path-display {
-            background: #1e293b;
-            border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 16px;
-            font-size: 0.85rem;
-            color: #64748b;
-            overflow-x: auto;
-            white-space: nowrap;
+            background: #1e293b; border-radius: 10px; padding: 12px 14px;
+            margin-bottom: 16px; font-size: 0.85rem; color: #64748b;
+            overflow-x: auto; white-space: nowrap;
         }
+        .path-display .current { color: #fbbf24; font-weight: 600; }
 
-        .path-display span {
-            color: #94a3b8;
-        }
-
-        .path-display .current {
-            color: #fbbf24;
-            font-weight: 600;
-        }
-
-        /* Response List */
-        .response-list {
-            margin-bottom: 16px;
-        }
-
+        .response-list { margin-bottom: 16px; }
         .response-item {
-            background: rgba(51, 65, 85, 0.5);
-            border: 1px solid #475569;
-            border-radius: 14px;
-            padding: 18px 20px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            min-height: 64px;
+            background: rgba(51, 65, 85, 0.5); border: 1px solid #475569;
+            border-radius: 14px; padding: 18px 20px; margin-bottom: 10px;
+            cursor: pointer; display: flex; align-items: center; min-height: 64px;
         }
+        .response-item .move { font-family: monospace; font-size: 1.15rem; font-weight: 600; color: #cbd5e1; flex: 1; }
+        .response-item .tag { background: #475569; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; margin-right: 12px; }
 
-        .response-item:hover, .response-item:active {
-            background: rgba(71, 85, 105, 0.6);
-        }
-
-        .response-item .move {
-            font-family: monospace;
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #cbd5e1;
-            flex: 1;
-        }
-
-        .response-item .tag {
-            background: #475569;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            color: #cbd5e1;
-            margin-right: 12px;
-        }
-
-        .response-item .arrow {
-            color: #64748b;
-            font-size: 1.3rem;
-        }
-
-        /* Your Response Card (for continuing) */
         .your-response-card {
-            background: rgba(251, 191, 36, 0.1);
-            border: 2px solid rgba(251, 191, 36, 0.4);
-            border-radius: 14px;
-            padding: 18px 20px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            min-height: 64px;
-            transition: all 0.2s;
+            background: rgba(251, 191, 36, 0.1); border: 2px solid rgba(251, 191, 36, 0.4);
+            border-radius: 14px; padding: 18px 20px; margin-bottom: 16px;
+            cursor: pointer; display: flex; align-items: center; min-height: 64px;
         }
+        .your-response-card .move { font-family: monospace; font-size: 1.15rem; font-weight: 600; color: #fbbf24; flex: 1; }
 
-        .your-response-card:hover {
-            background: rgba(251, 191, 36, 0.15);
-            border-color: #fbbf24;
-        }
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
 
-        .your-response-card .label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #fbbf24;
-            margin-bottom: 4px;
-        }
-
-        .your-response-card .move {
-            font-family: monospace;
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #fbbf24;
-            flex: 1;
-        }
-
-        .your-response-card .arrow {
-            color: #fbbf24;
-            font-size: 1.3rem;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #64748b;
-        }
-
-        .empty-state .icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
-        }
-
-        .empty-state p {
-            font-size: 1rem;
-        }
-
-        /* Add Form */
+        /* Forms & Toggles */
         .add-form {
-            background: rgba(34, 197, 94, 0.05);
-            border: 2px dashed rgba(34, 197, 94, 0.3);
-            border-radius: 14px;
-            padding: 20px;
+            background: rgba(34, 197, 94, 0.05); border: 2px dashed rgba(34, 197, 94, 0.3);
+            border-radius: 14px; padding: 20px;
         }
+        .add-form.choice-form { background: rgba(168, 85, 247, 0.05); border-color: rgba(168, 85, 247, 0.3); }
+        .add-form-title { font-size: 0.85rem; color: #4ade80; font-weight: 600; margin-bottom: 16px; }
+        .add-form.choice-form .add-form-title { color: #c084fc; }
 
-        .add-form.choice-form {
-            background: rgba(168, 85, 247, 0.05);
-            border-color: rgba(168, 85, 247, 0.3);
-        }
-
-        .add-form-title {
-            font-size: 0.85rem;
-            color: #4ade80;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .add-form.choice-form .add-form-title {
-            color: #c084fc;
-        }
-
-        .add-form .form-group {
-            margin-bottom: 14px;
-        }
-
-        .add-form input, .add-form select {
-            width: 100%;
-            padding: 16px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            color: #e2e8f0;
-            font-size: 1.1rem;
-        }
-
-        .add-form input:focus, .add-form select:focus {
-            outline: none;
-            border-color: #4ade80;
-        }
-
-        .add-form.choice-form input:focus, .add-form.choice-form select:focus {
-            border-color: #a855f7;
-        }
-
-        .add-form .btn {
-            margin-top: 8px;
-            margin-bottom: 0;
-        }
-
-        /* Toggle Switch */
-        .toggle-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 0;
-            border-bottom: 1px solid #334155;
-            margin-bottom: 14px;
-        }
-
-        .toggle-row:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-        .toggle-label {
-            font-size: 0.9rem;
-            color: #cbd5e1;
-        }
-
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #334155; margin-bottom: 14px; }
         .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 28px;
-            background: #475569;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: background 0.2s;
+            position: relative; width: 50px; height: 28px; background: #475569;
+            border-radius: 14px; cursor: pointer; transition: background 0.2s;
         }
-
-        .toggle-switch.active {
-            background: #8b5cf6;
-        }
-
+        .toggle-switch.active { background: #8b5cf6; }
         .toggle-switch::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-            transition: left 0.2s;
+            content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px;
+            background: white; border-radius: 50%; transition: left 0.2s;
         }
+        .toggle-switch.active::after { left: 25px; }
 
-        .toggle-switch.active::after {
-            left: 25px;
-        }
+        .choice-fields { display: none; padding-top: 14px; border-top: 1px solid #334155; margin-top: 14px; }
+        .choice-fields.visible { display: block; }
 
-        /* Choice Fields (hidden by default) */
-        .choice-fields {
-            display: none;
-            padding-top: 14px;
-            border-top: 1px solid #334155;
-            margin-top: 14px;
-        }
+        .edit-explanation { margin-top: 16px; padding-top: 16px; border-top: 1px solid #334155; }
+        .edit-explanation textarea { min-height: 80px; resize: vertical; }
 
-        .choice-fields.visible {
-            display: block;
-        }
-
-        /* Edit Explanation */
-        .edit-explanation {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #334155;
-        }
-
-        .edit-explanation textarea {
-            width: 100%;
-            padding: 14px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            color: #e2e8f0;
-            font-size: 0.95rem;
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        .edit-explanation textarea:focus {
-            outline: none;
-            border-color: #fbbf24;
-        }
-
-        .edit-explanation .btn {
-            margin-top: 10px;
-            padding: 12px;
-            min-height: 44px;
-        }
-
-        /* Detail View for Editing */
-        .detail-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #334155;
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #f87171;
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.3);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        /* Misc */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab {
-            flex: 1;
-            padding: 14px;
-            background: rgba(51, 65, 85, 0.3);
-            border: 1px solid #334155;
-            border-radius: 12px;
-            color: #94a3b8;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            font-size: 0.95rem;
-            min-height: 50px;
+            flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3);
+            border: 1px solid #334155; border-radius: 12px; color: #94a3b8;
+            font-weight: 600; cursor: pointer; text-align: center;
         }
-
-        .tab.active {
-            background: rgba(251, 191, 36, 0.1);
-            border-color: #fbbf24;
-            color: #fbbf24;
-        }
-
+        .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
+        
         .json-area {
-            width: 100%;
-            min-height: 180px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 14px;
-            color: #e2e8f0;
-            font-family: monospace;
-            font-size: 0.8rem;
-            resize: vertical;
+            width: 100%; min-height: 180px; background: #0f172a; border: 1px solid #334155;
+            border-radius: 12px; padding: 14px; color: #e2e8f0; font-family: monospace;
+            font-size: 0.8rem; resize: vertical;
         }
 
-        /* Delete button for list items */
         .delete-item-btn {
-            background: rgba(239, 68, 68, 0.2);
-            border: none;
-            color: #f87171;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-right: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            background: rgba(239, 68, 68, 0.2); border: none; color: #f87171;
+            width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+            font-size: 1.2rem; margin-right: 8px; flex-shrink: 0;
         }
+        .choice-card .delete-item-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; font-size: 1rem; }
 
-        .delete-item-btn:hover {
-            background: rgba(239, 68, 68, 0.4);
-        }
-
-        .choice-card {
-            position: relative;
-        }
-
-        .choice-card .delete-item-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 28px;
-            height: 28px;
-            font-size: 1rem;
-        }
-
-        /* Template info box */
+        /* Template Info */
         .template-info {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 12px;
-            font-size: 0.8rem;
-            color: #93c5fd;
+            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd;
         }
+        .template-info summary { cursor: pointer; font-weight: 600; margin-bottom: 8px; }
+        .template-info ul { margin: 8px 0 0 16px; color: #94a3b8; }
+        .template-info code { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; color: #fbbf24; }
 
-        .template-info summary {
-            cursor: pointer;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .template-info ul {
-            margin: 8px 0 0 16px;
-            color: #94a3b8;
-        }
-
-        .template-info li {
-            margin-bottom: 4px;
-        }
-
-        .template-info code {
-            background: rgba(0,0,0,0.3);
-            padding: 1px 4px;
-            border-radius: 3px;
-            color: #fbbf24;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="screen active" id="menuScreen">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="beta-tag">BETA</span></h1>
+                <h1>♟️ Opening Trainer <span class="beta-tag">V2.1</span></h1>
                 <p>Master your chess openings move by move</p>
             </div>
             <div id="openingsContainer"></div>
@@ -1221,6 +590,15 @@
             <div id="jsonTab" style="display:none">
                 <div class="builder-section">
                     <h3>Import from JSON</h3>
+                    <details class="template-info">
+                        <summary>📋 JSON Schema Reference</summary>
+                        <ul>
+                            <li><code>name</code> - Opening name</li>
+                            <li><code>color</code> - "white" or "black"</li>
+                            <li><code>tree</code> - Recursive move structure</li>
+                        </ul>
+                        <p style="margin-top:8px;font-size:0.8rem;color:#fbbf24;">(Full reference same as V1.0)</p>
+                    </details>
                     <textarea class="json-area" id="jsonIn" placeholder="Paste opening JSON here..."></textarea>
                     <button class="btn btn-primary" onclick="importJson()">Import</button>
                 </div>
@@ -1235,74 +613,36 @@
 
 <script>
 // =====================================================
-// DEFAULT OPENINGS
+// DEFAULT DATA & TEMPLATES
 // =====================================================
 const DEFAULT_OPENINGS = {
     italian_game: {
-        name: "Italian Game",
-        color: "white",
-        description: "Classic 1.e4 opening targeting f7",
-        startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
-        tree: {
-            id: 'root', move: '1. e4', player: 'white', explanation: 'King\'s Pawn - control the center.',
-            children: [
-                {
-                    id: 'e5', move: '1... e5', player: 'black', label: 'Classical',
-                    response: {
-                        id: 'Nf3', move: '2. Nf3', player: 'white', explanation: 'Attack e5, develop knight!',
-                        children: [
-                            {
-                                id: 'Nc6', move: '2... Nc6', player: 'black', label: 'Main Line',
-                                response: {
-                                    id: 'Bc4', move: '3. Bc4', player: 'white', explanation: 'Italian Game! Bishop targets f7.',
-                                    children: [
-                                        {
-                                            id: 'Bc5', move: '3... Bc5', player: 'black', label: 'Giuoco Piano',
-                                            response: {
-                                                id: 'c3', move: '4. c3', player: 'white', explanation: 'Prepare d4 pawn push!',
-                                                children: []
-                                            }
-                                        },
-                                        {
-                                            id: 'Nf6_tk', move: '3... Nf6', player: 'black', label: 'Two Knights',
-                                            response: {
-                                                id: 'choice_tk', move: 'Choose Style', player: 'white', explanation: 'Pick your weapon!',
-                                                isChoice: true,
-                                                choices: [
-                                                    {
-                                                        id: 'Ng5', move: '4. Ng5', name: 'Fried Liver', style: 'Aggressive attack', color: 'red',
-                                                        explanation: 'Attack f7 now!', children: []
-                                                    },
-                                                    {
-                                                        id: 'd3', move: '4. d3', name: 'Pianissimo', style: 'Slow & solid', color: 'blue',
-                                                        explanation: 'Quiet buildup.', children: []
-                                                    },
-                                                    {
-                                                        id: 'OO', move: '4. O-O', name: 'Modern Italian', style: 'Flexible', color: 'purple',
-                                                        explanation: 'Castle first, decide later.', children: []
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                },
-                {
-                    id: 'c5', move: '1... c5', player: 'black', label: 'Sicilian',
-                    response: { id: 'Nf3_sic', move: '2. Nf3', player: 'white', explanation: 'Open Sicilian begins.', children: [] }
-                }
-            ]
-        }
+        name: "Italian Game", color: "white", description: "Classic 1.e4 opening targeting f7", startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
+        tree: { id: 'root', move: '1. e4', player: 'white', explanation: 'Control the center.', children: [
+            { id: 'e5', move: '1... e5', player: 'black', label: 'Classical', response: {
+                id: 'Nf3', move: '2. Nf3', player: 'white', explanation: 'Attack e5, develop knight.', children: [
+                    { id: 'Nc6', move: '2... Nc6', player: 'black', label: 'Main', response: {
+                        id: 'Bc4', move: '3. Bc4', player: 'white', explanation: 'Italian Game! Targets f7.', children: []
+                    }}
+                ]
+            }}
+        ]}
     }
 };
 
-const LABEL_OPTIONS = [
-    '', 'Main Line', 'Sideline', 'Natural', 'Aggressive', 'Solid', 
-    'Blunder!', 'Correct', 'Tricky', 'Theoretical', 'Custom'
-];
+const JSON_TEMPLATE_WHITE = {
+    "_comment": "TEMPLATE FOR WHITE OPENINGS",
+    "name": "New White Opening", "color": "white", "description": "", "startingMoves": "1. e4",
+    "tree": { "id": "root", "move": "1. e4", "player": "white", "explanation": "Start here", "children": [] }
+};
+
+const JSON_TEMPLATE_BLACK = {
+    "_comment": "TEMPLATE FOR BLACK OPENINGS",
+    "name": "New Black Opening", "color": "black", "description": "", "startingMoves": "1. d4 d5",
+    "tree": { "id": "root", "move": "1. d4", "player": "white", "explanation": "Opponent move", "children": [] }
+};
+
+const LABEL_OPTIONS = ['', 'Main Line', 'Sideline', 'Aggressive', 'Solid', 'Blunder!', 'Theoretical'];
 
 // =====================================================
 // STATE
@@ -1313,14 +653,15 @@ let currentPath = [];
 let userColor = 'white';
 let isPreviewMode = false;
 
-// Builder state
+// Builder
 let builderColor = 'white';
 let builderTree = null;
-let builderPath = [];  
+let builderPath = [];
 let editingKey = null;
 
-// Virtual Graph / FEN Map
-let transpositionMap = {}; // Stores { FEN: [ {name, move} ] }
+// The Brain (Transposition Map)
+// Stores: { FEN: [ { key: 'opening_key', name: 'Opening Name', move: '1. e4', color: 'white' } ] }
+let transpositionMap = {};
 
 // =====================================================
 // INIT
@@ -1334,9 +675,7 @@ function init() {
         Object.assign(OPENINGS, custom);
     } catch(e) {}
     
-    // Automatically build the intelligence map
     rebuildTranspositionMap();
-    
     renderMenu();
 }
 
@@ -1346,76 +685,57 @@ function saveStorage() {
         if (!DEFAULT_OPENINGS[k]) custom[k] = v;
     }
     localStorage.setItem('customOp5', JSON.stringify(custom));
-    // Rebuild map whenever we save
     rebuildTranspositionMap();
 }
 
 // =====================================================
-// CHESS LOGIC & TRANSPOSITIONS (BETA FEATURES)
+// CHESS INTELLIGENCE (THE BRAIN)
 // =====================================================
 
 function rebuildTranspositionMap() {
-    // Only run if library loaded
+    // Safety check for offline mode
     if (typeof Chess === 'undefined') return;
 
     transpositionMap = {};
     
     Object.entries(OPENINGS).forEach(([key, op]) => {
-        // Skip preview object
         if (key === '_preview') return;
-        
         const game = new Chess();
-        analyzeNodeRecursive(op.tree, game, op.name);
+        // Traverse and catalog every position
+        analyzeNodeRecursive(op.tree, game, key, op.name, op.color);
     });
-    
-    console.log("Brain updated. Found unique positions:", Object.keys(transpositionMap).length);
 }
 
-function analyzeNodeRecursive(node, game, openingName) {
+function analyzeNodeRecursive(node, game, key, name, color) {
     if (!node) return;
-
-    // Sanitize move string for engine (remove "1." or "1...")
     const cleanMove = node.move.replace(/^\d+\.+/, '').trim();
-    
-    // Attempt move
     const moveResult = game.move(cleanMove);
     
-    // If valid move (or root "1. e4" which is valid)
     if (moveResult || node.id === 'root') {
-        // Special case for root: we need to actually make the move if it's not made
-        // But our root structure usually has the move string "1. e4".
-        // The recursion starts at root. 
-        // Logic: The node passed in represents the state AFTER the move is made.
-        
         const fen = game.fen();
         
-        // Add to map
         if (!transpositionMap[fen]) transpositionMap[fen] = [];
         
-        // Avoid duplicates from same opening (loops/transpositions within self)
-        const exists = transpositionMap[fen].find(i => i.name === openingName);
+        // Check if this specific opening is already logged for this position
+        // (Avoid duplicates if the tree loops or has internal transpositions)
+        const exists = transpositionMap[fen].find(i => i.key === key);
+        
         if (!exists) {
             transpositionMap[fen].push({
-                name: openingName,
-                move: node.move
+                key: key,
+                name: name,
+                move: node.move,
+                color: color
             });
         }
 
-        // Process children
-        // We need to handle: standard children, response objects, choices
-        
-        // Helper to process a child node
         const processChild = (childNode) => {
             if (!childNode) return;
-            analyzeNodeRecursive(childNode, game, openingName);
+            analyzeNodeRecursive(childNode, game, key, name, color);
             game.undo(); // Backtrack
         };
 
-        if (node.children) {
-            node.children.forEach(processChild);
-        }
-        
-        // Check for 'response' property (our custom structure)
+        if (node.children) node.children.forEach(processChild);
         if (node.response) {
             if (node.response.isChoice && node.response.choices) {
                 node.response.choices.forEach(processChild);
@@ -1423,30 +743,23 @@ function analyzeNodeRecursive(node, game, openingName) {
                 processChild(node.response);
             }
         }
-        
-        // Check for 'choices' direct property (rare but possible in root)
-        if (node.isChoice && node.choices) {
-            node.choices.forEach(processChild);
-        }
+        if (node.isChoice && node.choices) node.choices.forEach(processChild);
     }
 }
 
+// Helper: Calculate FEN for the current view
 function getCurrentFenFromPath(opening, pathIds) {
     if (typeof Chess === 'undefined') return null;
-    
     const game = new Chess();
-    
-    // Replay moves to get current state
     let currentNode = opening.tree;
     
-    // Make root move
+    // Process root
     let clean = currentNode.move.replace(/^\d+\.+/, '').trim();
     game.move(clean);
 
     for (const id of pathIds) {
         let foundNext = false;
-        
-        // Check children
+        // Search children
         if (currentNode.children) {
             const child = currentNode.children.find(c => c.id === id);
             if (child) {
@@ -1456,8 +769,7 @@ function getCurrentFenFromPath(opening, pathIds) {
                 foundNext = true;
             }
         }
-        
-        // Check response
+        // Search response
         if (!foundNext && currentNode.response) {
             if (currentNode.response.id === id) {
                 clean = currentNode.response.move.replace(/^\d+\.+/, '').trim();
@@ -1474,8 +786,7 @@ function getCurrentFenFromPath(opening, pathIds) {
                 }
             }
         }
-        
-        // Check direct choices
+        // Search direct choices
         if (!foundNext && currentNode.isChoice && currentNode.choices) {
             const choice = currentNode.choices.find(c => c.id === id);
             if (choice) {
@@ -1486,46 +797,55 @@ function getCurrentFenFromPath(opening, pathIds) {
             }
         }
     }
-    
     return game.fen();
 }
 
-function getTranspositionHTML(currentOpeningName) {
+// Generate the clickable HTML badge
+function getTranspositionHTML(currentOpeningKey) {
     if (typeof Chess === 'undefined') return '';
     
-    // Determine FEN of current state
-    // In builder we use builderTree + builderPath
-    // In trainer we use currentOpening + currentPath
-    
     let fen = null;
-    
+    let currentUserColor = userColor;
+
+    // Handle Builder context vs Trainer context
     if (document.getElementById('builderScreen').classList.contains('active')) {
         if (!builderTree) return '';
-        // Create temp obj to reuse function
         const tempOp = { tree: builderTree, name: "BuilderTemp" };
-        // Convert builderPath objects to just IDs
         const ids = builderPath.map(step => step.id).filter(id => id); 
         fen = getCurrentFenFromPath(tempOp, ids);
+        currentUserColor = builderColor;
+        currentOpeningKey = editingKey || 'builder_temp';
     } else {
         if (!currentOpening) return '';
         fen = getCurrentFenFromPath(currentOpening, currentPath);
     }
     
     if (!fen) return '';
-    
     const matches = transpositionMap[fen];
-    if (!matches || matches.length < 2) return ''; // < 2 because it always finds itself
     
-    const others = matches.filter(m => m.name !== currentOpeningName && m.name !== "BuilderTemp");
+    // Filter: Exclude current opening AND check color match
+    // We only want to show openings where you play the SAME color (White vs White)
+    if (!matches || matches.length < 1) return '';
+    
+    const others = matches.filter(m => m.key !== currentOpeningKey && m.key !== 'builder_temp' && m.color === currentUserColor);
     
     if (others.length === 0) return '';
     
     return `
         <div class="transposition-badge" onclick="toggleTranspositionList(this)">
-            <span>🔀 Transposition: Also found in <strong>${others.length} other(s)</strong></span>
+            <span>🔀 Found in <strong>${others.length} other(s)</strong></span>
+            <span style="margin-left:auto;font-size:1.2rem;">▾</span>
         </div>
         <div class="transposition-list">
-            ${others.map(o => `<div>• ${o.name} <small>(${o.move})</small></div>`).join('')}
+            ${others.map(o => `
+                <div class="transposition-item" onclick="loadTransposition('${o.key}', '${fen.replace(/'/g, "\\'")}')">
+                    <div>
+                        <strong>${o.name}</strong>
+                        <div class="meta">via ${o.move}</div>
+                    </div>
+                    <span class="jump-icon">➜</span>
+                </div>
+            `).join('')}
         </div>
     `;
 }
@@ -1533,6 +853,93 @@ function getTranspositionHTML(currentOpeningName) {
 function toggleTranspositionList(el) {
     const list = el.nextElementSibling;
     list.classList.toggle('visible');
+}
+
+// The Magic Jump Function
+function loadTransposition(targetKey, targetFen) {
+    // 1. Get the target opening
+    const opening = OPENINGS[targetKey];
+    if (!opening) return;
+    
+    // 2. We need to find the PATH (array of IDs) that leads to this FEN in the new opening
+    // This requires a helper search because the map only stores the end state
+    const path = findPathToFenInOpening(opening, targetFen);
+    
+    if (!path && path.length === 0 && targetFen !== getStartFen()) {
+         alert("Could not locate precise path to this position.");
+         return;
+    }
+
+    // 3. Switch context
+    // If we are in builder, we warn user they will lose unsaved work
+    if (document.getElementById('builderScreen').classList.contains('active')) {
+        if(!confirm("Switching to " + opening.name + ". Unsaved changes will be lost.")) return;
+    }
+
+    startTraining(targetKey); // This sets currentOpening and userColor
+    currentPath = path; // Override the path to jump to the specific move
+    renderTrainer(); // Re-render the trainer view
+}
+
+// DFS to find the path of IDs that results in a specific FEN
+function findPathToFenInOpening(opening, targetFen) {
+    if (typeof Chess === 'undefined') return [];
+    
+    const game = new Chess();
+    // Helper to store the found path
+    let foundPath = null;
+    
+    function search(node, currentPath) {
+        if (foundPath) return; // Stop if found
+
+        // Execute move
+        const clean = node.move.replace(/^\d+\.+/, '').trim();
+        game.move(clean);
+        
+        // Check FEN
+        if (game.fen() === targetFen) {
+            foundPath = [...currentPath]; // Copy path
+            game.undo();
+            return;
+        }
+        
+        // Recurse children
+        // Need to add current node's ID to path?
+        // Note: The root node ID is not usually in 'currentPath' used by trainer, 
+        // trainer starts *after* root. But wait, getTrainerNode logic iterates path IDs.
+        // If path is empty, we are at root.
+        
+        const children = node.children || [];
+        children.forEach(c => {
+            search(c, [...currentPath, c.id]);
+        });
+        
+        if (node.response) {
+            if (node.response.isChoice && node.response.choices) {
+                node.response.choices.forEach(c => search(c, [...currentPath, c.id]));
+            } else {
+                search(node.response, [...currentPath, node.response.id]); // Note: response ID usually treated as next step
+            }
+        }
+        
+        if (node.isChoice && node.choices) {
+            node.choices.forEach(c => search(c, [...currentPath, c.id]));
+        }
+
+        game.undo();
+    }
+    
+    // Start search. Note: Root move is always played first in logic, 
+    // so we execute root move then check, then recurse.
+    const root = opening.tree;
+    const cleanRoot = root.move.replace(/^\d+\.+/, '').trim();
+    game.move(cleanRoot);
+    if (game.fen() === targetFen) return []; // It's the root position
+    
+    // Recurse from root
+    if (root.children) root.children.forEach(c => search(c, [c.id]));
+    
+    return foundPath || [];
 }
 
 // =====================================================
@@ -1677,8 +1084,6 @@ function renderTrainer() {
     ).join('');
     
     const isU = n.player === userColor || n.isChoice;
-    
-    // Inject Transposition Alert
     const transHTML = getTranspositionHTML(currentOpening.name);
 
     let html = `
@@ -1795,13 +1200,19 @@ function switchTab(t) {
     document.getElementById('tabJson').classList.toggle('active', t === 'json');
     document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none';
     document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none';
+    
+    if (t === 'json') {
+        if (builderTree) {
+            document.getElementById('jsonOut').value = JSON.stringify(buildOpeningObj(), null, 2);
+        } else {
+            const template = builderColor === 'white' ? JSON_TEMPLATE_WHITE : JSON_TEMPLATE_BLACK;
+            document.getElementById('jsonOut').value = JSON.stringify(template, null, 2);
+        }
+    }
 }
 
 function setColor(c) {
-    if (editingKey) {
-        alert('Cannot change color when editing.');
-        return;
-    }
+    if (editingKey) { alert('Cannot change color when editing.'); return; }
     builderColor = c;
     updateColorToggle();
     builderTree = null;
@@ -1816,25 +1227,18 @@ function updateColorToggle() {
 
 function getBuilderPosition() {
     if (!builderTree) return { node: null, context: 'empty' };
-    
     let node = builderTree;
-    let parent = null;
-    let childRef = null;
+    let parent = null, childRef = null;
     
-    for (let i = 0; i < builderPath.length; i++) {
-        const step = builderPath[i];
-        
+    for (const step of builderPath) {
         if (step.type === 'child') {
             if (!node.children) return { node: null, context: 'error' };
             const child = node.children.find(c => c.id === step.id);
             if (!child) return { node: null, context: 'error' };
-            parent = node;
-            childRef = child;
-            node = child;
+            parent = node; childRef = child; node = child;
         } else if (step.type === 'response') {
             if (!childRef || !childRef.response) return { node: null, context: 'error' };
-            node = childRef.response;
-            childRef = null;
+            node = childRef.response; childRef = null;
         } else if (step.type === 'choice') {
             if (!node.isChoice || !node.choices) return { node: null, context: 'error' };
             const choice = node.choices.find(c => c.id === step.id);
@@ -1854,25 +1258,21 @@ function getBuilderPosition() {
             context = 'your-move';
         }
     }
-    
     return { node, context, parent, childRef };
 }
 
 function getCurrentChildRef() {
     if (!builderTree || builderPath.length === 0) return null;
-    let node = builderTree;
-    let childRef = null;
+    let node = builderTree, childRef = null;
     for (const step of builderPath) {
         if (step.type === 'child') {
             if (!node.children) return null;
             childRef = node.children.find(c => c.id === step.id);
             node = childRef;
         } else if (step.type === 'response') {
-            node = childRef.response;
-            childRef = null;
+            node = childRef.response; childRef = null;
         } else if (step.type === 'choice') {
-            node = node.choices.find(c => c.id === step.id);
-            childRef = null;
+            node = node.choices.find(c => c.id === step.id); childRef = null;
         }
     }
     return childRef;
@@ -1880,19 +1280,13 @@ function getCurrentChildRef() {
 
 function getMoveNumber() {
     if (!builderTree) return 1;
-    let num = 1;
-    let node = builderTree;
-    let childRef = null;
+    let num = 1, node = builderTree, childRef = null;
     for (const step of builderPath) {
         if (step.type === 'child') {
             childRef = node.children?.find(c => c.id === step.id);
             if (childRef) node = childRef;
         } else if (step.type === 'response') {
-            if (childRef?.response) {
-                num++;
-                node = childRef.response;
-                childRef = null;
-            }
+            if (childRef?.response) { num++; node = childRef.response; childRef = null; }
         } else if (step.type === 'choice') {
             const choice = node.choices?.find(c => c.id === step.id);
             if (choice) node = choice;
@@ -1907,70 +1301,36 @@ function renderBuilder() {
     
     if (!builderTree) {
         const isWhite = builderColor === 'white';
-        content.innerHTML = `
-            <div class="empty-state">
-                <div class="icon">♟️</div>
-                <p>Start by adding ${isWhite ? 'your first move' : 'White\'s opening move'}</p>
-            </div>
-            <div class="add-form">
-                <div class="add-form-title">${isWhite ? 'Your First Move (White)' : 'White\'s First Move'}</div>
-                <div class="form-group">
-                    <input type="text" id="newMove" placeholder="e.g., e4 or d4">
-                </div>
-                ${isWhite ? `<div class="form-group">
-                    <input type="text" id="newExpl" placeholder="Explanation (optional)">
-                </div>` : ''}
-                <button class="btn btn-primary" onclick="addFirstMove()">Add Move</button>
-            </div>`;
-        setupEnter();
-        return;
+        content.innerHTML = `<div class="empty-state"><div class="icon">♟️</div><p>Start by adding ${isWhite ? 'your first move' : 'White\'s opening move'}</p></div>
+            <div class="add-form"><div class="add-form-title">${isWhite ? 'Your First Move (White)' : 'White\'s First Move'}</div>
+                <div class="form-group"><input type="text" id="newMove" placeholder="e.g., e4 or d4"></div>
+                ${isWhite ? `<div class="form-group"><input type="text" id="newExpl" placeholder="Explanation"></div>` : ''}
+                <button class="btn btn-primary" onclick="addFirstMove()">Add Move</button></div>`;
+        setupEnter(); return;
     }
     
     if (!pos.node) return;
+    const node = pos.node, opponent = builderColor === 'white' ? 'Black' : 'White', you = builderColor === 'white' ? 'White' : 'Black';
     
-    const node = pos.node;
-    const opponent = builderColor === 'white' ? 'Black' : 'White';
-    const you = builderColor === 'white' ? 'White' : 'Black';
-    
-    let pathParts = [builderTree.move];
-    let tempNode = builderTree;
-    let tempChild = null;
+    let pathParts = [builderTree.move], tempNode = builderTree, tempChild = null;
     for (const step of builderPath) {
         if (step.type === 'child') {
             tempChild = tempNode.children?.find(c => c.id === step.id);
-            if (tempChild) {
-                pathParts.push(tempChild.move);
-                tempNode = tempChild;
-            }
+            if (tempChild) { pathParts.push(tempChild.move); tempNode = tempChild; }
         } else if (step.type === 'response') {
-            if (tempChild?.response) {
-                pathParts.push(tempChild.response.move);
-                tempNode = tempChild.response;
-                tempChild = null;
-            }
+            if (tempChild?.response) { pathParts.push(tempChild.response.move); tempNode = tempChild.response; tempChild = null; }
         } else if (step.type === 'choice') {
             const choice = tempNode.choices?.find(c => c.id === step.id);
-            if (choice) {
-                pathParts.push(choice.move);
-                tempNode = choice;
-            }
+            if (choice) { pathParts.push(choice.move); tempNode = choice; }
         }
     }
     
-    // Check transposition in builder
     const transHTML = getTranspositionHTML(document.getElementById('openingName').value || 'Current');
-
-    let html = '';
-    if (builderPath.length > 0) {
-        html += `<button class="btn btn-secondary" onclick="builderBack()" style="margin-bottom:16px">← Back</button>`;
-    }
+    let html = builderPath.length > 0 ? `<button class="btn btn-secondary" onclick="builderBack()" style="margin-bottom:16px">← Back</button>` : '';
     html += `<div class="path-display"><span class="current">${pathParts.join(' → ')}</span></div>`;
     
-    if (pos.context === 'your-move' || pos.context === 'your-move-as-child') {
-        html += renderYourMoveView(node, opponent, transHTML);
-    } else if (pos.context === 'opponent-move' || pos.context === 'opponent-move-root') {
-        html += renderOpponentMoveView(node, you, pos.context === 'opponent-move-root', transHTML);
-    }
+    if (pos.context.includes('your-move')) html += renderYourMoveView(node, opponent, transHTML);
+    else html += renderOpponentMoveView(node, you, pos.context === 'opponent-move-root', transHTML);
     
     content.innerHTML = html;
     setupEnter();
@@ -1979,578 +1339,188 @@ function renderBuilder() {
 
 function renderYourMoveView(node, opponent, transHTML) {
     let html = '';
-    
     if (node.isChoice) {
-        html += `<div class="position-card">
-            <div class="position-label">Choice Point</div>
-            <div class="position-move">${node.move}</div>
-            ${node.explanation ? `<div class="position-expl">${node.explanation}</div>` : ''}
-        </div>
-        ${transHTML}`; // Add transposition badge
-        
+        html += `<div class="position-card"><div class="position-label">Choice Point</div><div class="position-move">${node.move}</div>${node.explanation?`<div class="position-expl">${node.explanation}</div>`:''}</div>${transHTML}`;
         if (node.choices?.length) {
             html += `<p class="section-title">Your Options</p><div class="choices-grid">`;
             node.choices.forEach(c => {
-                html += `<div class="choice-card ${c.color || 'blue'}" style="position:relative;">
-                    <div onclick="navigateToChoice('${c.id}')" style="cursor:pointer;">
-                        <h4>${c.move}</h4><p class="name">${c.name || ''}</p><p class="style">${c.style || ''}</p>
-                    </div>
-                    <button class="delete-item-btn" onclick="event.stopPropagation();deleteChoice('${c.id}')" title="Delete">×</button>
-                </div>`;
+                html += `<div class="choice-card ${c.color||'blue'}"><div onclick="navigateToChoice('${c.id}')"><h4>${c.move}</h4><p class="name">${c.name||''}</p><p class="style">${c.style||''}</p></div><button class="delete-item-btn" onclick="deleteChoice('${c.id}')">×</button></div>`;
             });
             html += '</div>';
         }
         html += renderAddChoiceForm();
     } else {
-        html += `<div class="position-card">
-            <div class="position-label">Your Move</div>
-            <div class="position-move">${node.move}</div>
-            ${node.explanation ? `<div class="position-expl">${node.explanation}</div>` : ''}
-        </div>
-        ${transHTML}`; // Add transposition badge
-        
+        html += `<div class="position-card"><div class="position-label">Your Move</div><div class="position-move">${node.move}</div>${node.explanation?`<div class="position-expl">${node.explanation}</div>`:''}</div>${transHTML}`;
         html += renderEditExplanation(node);
-        
         if (node.children?.length) {
             html += `<p class="section-title">${opponent}'s Responses</p><div class="response-list">`;
             node.children.forEach(c => {
-                html += `<div class="response-item">
-                    <div onclick="navigateToChild('${c.id}')" style="flex:1;display:flex;align-items:center;cursor:pointer;">
-                        <span class="move">${c.move}</span>
-                        ${c.label ? `<span class="tag">${c.label}</span>` : ''}
-                    </div>
-                    <button class="delete-item-btn" onclick="event.stopPropagation();deleteChildFromList('${c.id}')" title="Delete">×</button>
-                    <span class="arrow" onclick="navigateToChild('${c.id}')" style="cursor:pointer;">→</span>
-                </div>`;
+                html += `<div class="response-item"><div onclick="navigateToChild('${c.id}')" style="flex:1"><span class="move">${c.move}</span>${c.label?`<span class="tag">${c.label}</span>`:''}</div><button class="delete-item-btn" onclick="deleteChildFromList('${c.id}')">×</button><span class="arrow">→</span></div>`;
             });
             html += '</div>';
         }
-        
-        html += `<div class="add-form">
-            <div class="add-form-title">Add ${opponent}'s Response</div>
-            <div class="form-group">
-                <input type="text" id="newMove" placeholder="e.g., e5 or Nf6">
-            </div>
-            <div class="form-group">
-                <label>Label</label>
-                <select id="newLabel">
-                    ${LABEL_OPTIONS.map(l => `<option value="${l}">${l || '(No label)'}</option>`).join('')}
-                </select>
-            </div>
-            <div class="form-group" id="customLabelGroup" style="display:none">
-                <input type="text" id="customLabel" placeholder="Custom label">
-            </div>
-            <button class="btn btn-purple" onclick="addChildMove()">+ Add Response</button>
-        </div>`;
+        html += `<div class="add-form"><div class="add-form-title">Add ${opponent}'s Response</div><div class="form-group"><input type="text" id="newMove" placeholder="e.g. e5"></div><div class="form-group"><select id="newLabel">${LABEL_OPTIONS.map(l=>`<option value="${l}">${l||'(No label)'}</option>`).join('')}</select></div><div class="form-group" id="customLabelGroup" style="display:none"><input type="text" id="customLabel"></div><button class="btn btn-purple" onclick="addChildMove()">+ Add Response</button></div>`;
     }
     return html;
 }
 
 function renderOpponentMoveView(node, you, isRoot, transHTML) {
-    let html = '';
-    html += `<div class="position-card opponent">
-        <div class="position-label">Opponent's Move</div>
-        <div class="position-move">${node.move}</div>
-        ${node.label ? `<div class="position-expl">Label: ${node.label}</div>` : ''}
-    </div>
-    ${transHTML}`; // Add transposition badge
-
+    let html = `<div class="position-card opponent"><div class="position-label">Opponent's Move</div><div class="position-move">${node.move}</div>${node.label?`<div class="position-expl">Label: ${node.label}</div>`:''}</div>${transHTML}`;
+    
     if (isRoot) {
         if (node.children?.length) {
             html += `<p class="section-title">Your Responses</p><div class="response-list">`;
             node.children.forEach(c => {
-                html += `<div class="response-item">
-                    <div onclick="navigateToChild('${c.id}')" style="flex:1;display:flex;align-items:center;cursor:pointer;">
-                        <span class="move">${c.move}</span>
-                        ${c.label ? `<span class="tag">${c.label}</span>` : ''}
-                    </div>
-                    <button class="delete-item-btn" onclick="event.stopPropagation();deleteChildFromRoot('${c.id}')" title="Delete">×</button>
-                    <span class="arrow" onclick="navigateToChild('${c.id}')" style="cursor:pointer;">→</span>
-                </div>`;
+                html += `<div class="response-item"><div onclick="navigateToChild('${c.id}')" style="flex:1"><span class="move">${c.move}</span></div><button class="delete-item-btn" onclick="deleteChildFromRoot('${c.id}')">×</button><span class="arrow">→</span></div>`;
             });
             html += '</div>';
         }
-        
-        html += `<div class="add-form">
-            <div class="add-form-title">Add Your (${you}) Response</div>
-            <div class="form-group">
-                <input type="text" id="newMove" placeholder="Your move (e.g., c5 or e5)">
-            </div>
-            <div class="form-group">
-                <label>Label</label>
-                <select id="newLabel">
-                    ${LABEL_OPTIONS.map(l => `<option value="${l}">${l || '(No label)'}</option>`).join('')}
-                </select>
-            </div>
-            <div class="form-group" id="customLabelGroup" style="display:none">
-                <input type="text" id="customLabel" placeholder="Custom label">
-            </div>
-            <div class="form-group">
-                <input type="text" id="newExpl" placeholder="Explanation (optional)">
-            </div>
-            <button class="btn btn-primary" onclick="addYourResponseAtRoot()">Add Response</button>
-        </div>`;
+        html += `<div class="add-form"><div class="add-form-title">Add Your (${you}) Response</div><div class="form-group"><input type="text" id="newMove"></div><div class="form-group"><select id="newLabel">${LABEL_OPTIONS.map(l=>`<option value="${l}">${l||'(No label)'}</option>`).join('')}</select></div><div class="form-group" id="customLabelGroup" style="display:none"><input type="text" id="customLabel"></div><div class="form-group"><input type="text" id="newExpl" placeholder="Explanation"></div><button class="btn btn-primary" onclick="addYourResponseAtRoot()">Add Response</button></div>`;
         return html;
     }
     
     const childRef = getCurrentChildRef();
     if (childRef?.response) {
         const resp = childRef.response;
-        if (resp.isChoice) {
-            html += `<p class="section-title">Your Response (Choice Point)</p>`;
-            html += `<div class="your-response-card" onclick="navigateToResponse()">
-                <div style="flex:1">
-                    <div class="label">Tap to continue</div>
-                    <div class="move">${resp.move}</div>
-                </div>
-                <span class="arrow">→</span>
-            </div>`;
-        } else {
-            html += `<p class="section-title">Your Response</p>`;
-            html += `<div class="your-response-card" onclick="navigateToResponse()">
-                <div style="flex:1">
-                    <div class="label">Tap to continue</div>
-                    <div class="move">${resp.move}</div>
-                </div>
-                <span class="arrow">→</span>
-            </div>`;
-            html += `<div class="add-form choice-form">
-                <div class="add-form-title">Add Alternative Response</div>
-                <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:14px;">This will convert your response into a choice point.</p>
-                <div class="form-group"><input type="text" id="altMove" placeholder="Alternative move"></div>
-                <div class="form-group"><input type="text" id="altName" placeholder="Name"></div>
-                <div class="form-group"><input type="text" id="altStyle" placeholder="Style"></div>
-                <div class="form-group"><label>Color</label>
-                    <div class="style-colors">
-                        <div class="style-color red" onclick="selectStyleColor('red')">Aggressive</div>
-                        <div class="style-color blue selected" onclick="selectStyleColor('blue')">Solid</div>
-                        <div class="style-color purple" onclick="selectStyleColor('purple')">Flexible</div>
-                        <div class="style-color green" onclick="selectStyleColor('green')">Safe</div>
-                    </div>
-                </div>
-                <div class="form-group"><input type="text" id="altExpl" placeholder="Explanation"></div>
-                <button class="btn btn-purple" onclick="addAlternativeResponse()">+ Add Alternative</button>
-            </div>`;
-        }
-        html += `<div class="detail-actions"><button class="btn btn-danger" onclick="deleteCurrentBranch()">Delete This Branch</button></div>`;
+        html += `<p class="section-title">Your Response${resp.isChoice?' (Choice Point)':''}</p><div class="your-response-card" onclick="navigateToResponse()"><div style="flex:1"><div class="label">Tap to continue</div><div class="move">${resp.move}</div></div><span class="arrow">→</span></div>`;
+        if (!resp.isChoice) html += `<div class="add-form choice-form"><div class="add-form-title">Add Alternative</div><div class="form-group"><input type="text" id="altMove" placeholder="Move"></div><div class="form-group"><input type="text" id="altName" placeholder="Name"></div><div class="form-group"><input type="text" id="altStyle" placeholder="Style"></div><div class="form-group"><div class="style-colors"><div class="style-color red" onclick="selectStyleColor('red')">Aggressive</div><div class="style-color blue" onclick="selectStyleColor('blue')">Solid</div></div></div><button class="btn btn-purple" onclick="addAlternativeResponse()">+ Add Alternative</button></div>`;
+        html += `<div class="detail-actions"><button class="btn btn-danger" onclick="deleteCurrentBranch()">Delete Branch</button></div>`;
     } else {
-        html += `<div class="add-form">
-            <div class="add-form-title">Add Your (${you}) Response</div>
-            <div class="toggle-row">
-                <span class="toggle-label">Create choice point</span>
-                <div class="toggle-switch" id="choiceToggle" onclick="toggleChoiceMode()"></div>
-            </div>
-            <div id="singleResponseFields">
-                <div class="form-group"><input type="text" id="newMove" placeholder="Your move"></div>
-                <div class="form-group"><input type="text" id="newExpl" placeholder="Explanation"></div>
-                <button class="btn btn-primary" onclick="addResponse()">Add Response</button>
-            </div>
-            <div class="choice-fields" id="choicePointFields">
-                <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:14px;">First option:</p>
-                <div class="form-group"><input type="text" id="choiceMove" placeholder="Move"></div>
-                <div class="form-group"><input type="text" id="choiceName" placeholder="Name"></div>
-                <div class="form-group"><input type="text" id="choiceStyle" placeholder="Style"></div>
-                <div class="form-group"><label>Color</label>
-                    <div class="style-colors">
-                        <div class="style-color red selected" onclick="selectStyleColor('red')">Aggressive</div>
-                        <div class="style-color blue" onclick="selectStyleColor('blue')">Solid</div>
-                        <div class="style-color purple" onclick="selectStyleColor('purple')">Flexible</div>
-                        <div class="style-color green" onclick="selectStyleColor('green')">Safe</div>
-                    </div>
-                </div>
-                <div class="form-group"><input type="text" id="choiceExpl" placeholder="Explanation"></div>
-                <button class="btn btn-purple" onclick="addChoicePointResponse()">Create Choice Point</button>
-            </div>
-        </div>`;
-        html += `<div class="detail-actions"><button class="btn btn-danger" onclick="deleteCurrentBranch()">Delete This Branch</button></div>`;
+        html += `<div class="add-form"><div class="add-form-title">Add Your (${you}) Response</div><div class="toggle-row"><span class="toggle-label">Create choice point</span><div class="toggle-switch" id="choiceToggle" onclick="toggleChoiceMode()"></div></div><div id="singleResponseFields"><div class="form-group"><input type="text" id="newMove" placeholder="Move"></div><div class="form-group"><input type="text" id="newExpl" placeholder="Explanation"></div><button class="btn btn-primary" onclick="addResponse()">Add Response</button></div><div class="choice-fields" id="choicePointFields"><div class="form-group"><input type="text" id="choiceMove" placeholder="Move"></div><div class="form-group"><input type="text" id="choiceName" placeholder="Name"></div><div class="form-group"><div class="style-colors"><div class="style-color red selected" onclick="selectStyleColor('red')">Aggressive</div><div class="style-color blue" onclick="selectStyleColor('blue')">Solid</div></div></div><button class="btn btn-purple" onclick="addChoicePointResponse()">Create Choice Point</button></div></div><div class="detail-actions"><button class="btn btn-danger" onclick="deleteCurrentBranch()">Delete Branch</button></div>`;
     }
     return html;
 }
 
 function renderEditExplanation(node) {
-    return `<div class="edit-explanation">
-        <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:8px;">Explanation</label>
-        <textarea id="editExpl" placeholder="Add explanation...">${node.explanation || ''}</textarea>
-        <button class="btn btn-secondary" onclick="saveExplanation()">Save</button>
-    </div>`;
+    return `<div class="edit-explanation"><label>Explanation</label><textarea id="editExpl">${node.explanation || ''}</textarea><button class="btn btn-secondary" onclick="saveExplanation()">Save</button></div>`;
 }
 
 function renderAddChoiceForm() {
-    return `<div class="add-form choice-form">
-        <div class="add-form-title">Add Another Option</div>
-        <div class="form-group"><input type="text" id="choiceMove" placeholder="Move"></div>
-        <div class="form-group"><input type="text" id="choiceName" placeholder="Name"></div>
-        <div class="form-group"><input type="text" id="choiceStyle" placeholder="Style"></div>
-        <div class="form-group"><label>Color</label>
-            <div class="style-colors">
-                <div class="style-color red" onclick="selectStyleColor('red')">Aggressive</div>
-                <div class="style-color blue selected" onclick="selectStyleColor('blue')">Solid</div>
-                <div class="style-color purple" onclick="selectStyleColor('purple')">Flexible</div>
-                <div class="style-color green" onclick="selectStyleColor('green')">Safe</div>
-            </div>
-        </div>
-        <div class="form-group"><input type="text" id="choiceExpl" placeholder="Explanation"></div>
-        <button class="btn btn-purple" onclick="addChoiceToExisting()">+ Add Option</button>
-    </div>`;
+    return `<div class="add-form choice-form"><div class="add-form-title">Add Option</div><div class="form-group"><input type="text" id="choiceMove" placeholder="Move"></div><div class="form-group"><input type="text" id="choiceName" placeholder="Name"></div><div class="form-group"><div class="style-colors"><div class="style-color red" onclick="selectStyleColor('red')">Aggressive</div><div class="style-color blue selected" onclick="selectStyleColor('blue')">Solid</div></div></div><button class="btn btn-purple" onclick="addChoiceToExisting()">+ Add Option</button></div>`;
 }
 
 // =====================================================
-// HELPER ACTIONS
+// UTILS & EVENTS
 // =====================================================
-
 function setupEnter() {
     setTimeout(() => {
         const input = document.getElementById('newMove') || document.getElementById('choiceMove');
-        if (input) {
-            input.focus();
-            input.addEventListener('keypress', e => {
-                if (e.key === 'Enter') {
-                    const btns = document.querySelectorAll('.add-form .btn');
-                    if (btns.length) btns[btns.length - 1].click();
-                }
-            });
-        }
+        if (input) { input.focus(); input.addEventListener('keypress', e => { if (e.key === 'Enter') document.querySelectorAll('.add-form .btn')[0].click(); }); }
     }, 50);
 }
 
 function setupLabelDropdown() {
-    const select = document.getElementById('newLabel');
-    const customGroup = document.getElementById('customLabelGroup');
-    if (select && customGroup) {
-        select.addEventListener('change', () => {
-            customGroup.style.display = select.value === 'Custom' ? 'block' : 'none';
-        });
-    }
+    const select = document.getElementById('newLabel'), grp = document.getElementById('customLabelGroup');
+    if (select && grp) select.addEventListener('change', () => grp.style.display = select.value === 'Custom' ? 'block' : 'none');
 }
 
 function toggleChoiceMode() {
-    const toggle = document.getElementById('choiceToggle');
-    const single = document.getElementById('singleResponseFields');
-    const choice = document.getElementById('choicePointFields');
-    toggle.classList.toggle('active');
-    const isChoice = toggle.classList.contains('active');
-    single.style.display = isChoice ? 'none' : 'block';
-    choice.style.display = isChoice ? 'block' : 'none';
+    const t = document.getElementById('choiceToggle'); t.classList.toggle('active');
+    document.getElementById('singleResponseFields').style.display = t.classList.contains('active') ? 'none' : 'block';
+    document.getElementById('choicePointFields').style.display = t.classList.contains('active') ? 'block' : 'none';
 }
 
 let selectedStyleColor = 'red';
-function selectStyleColor(color) {
-    selectedStyleColor = color;
-    document.querySelectorAll('.style-color').forEach(el => {
-        el.classList.toggle('selected', el.classList.contains(color));
-    });
-}
+function selectStyleColor(c) { selectedStyleColor = c; document.querySelectorAll('.style-color').forEach(el => el.classList.toggle('selected', el.classList.contains(c))); }
 
+// Navigation Actions
 function navigateToChild(id) { builderPath.push({ type: 'child', id }); renderBuilder(); }
 function navigateToResponse() { builderPath.push({ type: 'response' }); renderBuilder(); }
 function navigateToChoice(id) { builderPath.push({ type: 'choice', id }); renderBuilder(); }
 function builderBack() { builderPath.pop(); renderBuilder(); }
 
+// Builder Actions
 function addFirstMove() {
-    const move = document.getElementById('newMove').value.trim();
-    if (!move) return;
-    const expl = document.getElementById('newExpl')?.value.trim() || '';
-    builderTree = {
-        id: 'root', move: '1. ' + move, player: 'white', explanation: builderColor === 'white' ? expl : '', children: []
-    };
-    renderBuilder();
+    const m = document.getElementById('newMove').value.trim(), e = document.getElementById('newExpl')?.value.trim()||'';
+    if(!m)return; builderTree={id:'root',move:'1. '+m,player:'white',explanation:builderColor==='white'?e:'',children:[]}; renderBuilder();
 }
-
 function addChildMove() {
-    const move = document.getElementById('newMove').value.trim();
-    if (!move) return;
-    let label = document.getElementById('newLabel')?.value || '';
-    if (label === 'Custom') label = document.getElementById('customLabel')?.value.trim() || '';
-    const pos = getBuilderPosition();
-    const moveNum = getMoveNumber();
-    const opponentColor = builderColor === 'white' ? 'black' : 'white';
-    const notation = opponentColor === 'black' ? `${moveNum}... ${move}` : `${moveNum}. ${move}`;
-    const newChild = { id: 'c' + Date.now(), move: notation, player: opponentColor, label: label, response: null };
-    if (!pos.node.children) pos.node.children = [];
-    pos.node.children.push(newChild);
-    builderPath.push({ type: 'child', id: newChild.id });
-    renderBuilder();
+    const m=document.getElementById('newMove').value.trim(); if(!m)return;
+    let l=document.getElementById('newLabel')?.value||''; if(l==='Custom')l=document.getElementById('customLabel')?.value||'';
+    const num=getMoveNumber(), opp=builderColor==='white'?'black':'white', not=opp==='black'?`${num}... ${m}`:`${num}. ${m}`;
+    const child={id:'c'+Date.now(),move:not,player:opp,label:l,response:null};
+    const pos=getBuilderPosition(); if(!pos.node.children)pos.node.children=[]; pos.node.children.push(child);
+    builderPath.push({type:'child',id:child.id}); renderBuilder();
 }
-
 function addResponse() {
-    const move = document.getElementById('newMove').value.trim();
-    if (!move) return;
-    const expl = document.getElementById('newExpl')?.value.trim() || '';
-    const childRef = getCurrentChildRef();
-    const moveNum = getMoveNumber() + 1;
-    const notation = builderColor === 'white' ? `${moveNum}. ${move}` : `${moveNum}... ${move}`;
-    childRef.response = { id: 'r' + Date.now(), move: notation, player: builderColor, explanation: expl, children: [] };
-    builderPath.push({ type: 'response' });
-    renderBuilder();
+    const m=document.getElementById('newMove').value.trim(); if(!m)return;
+    const ref=getCurrentChildRef(), num=getMoveNumber()+1, not=builderColor==='white'?`${num}. ${m}`:`${num}... ${m}`;
+    ref.response={id:'r'+Date.now(),move:not,player:builderColor,explanation:document.getElementById('newExpl').value,children:[]};
+    builderPath.push({type:'response'}); renderBuilder();
 }
-
 function addChoicePointResponse() {
-    const move = document.getElementById('choiceMove').value.trim();
-    if (!move) return;
-    const name = document.getElementById('choiceName')?.value.trim() || '';
-    const style = document.getElementById('choiceStyle')?.value.trim() || '';
-    const expl = document.getElementById('choiceExpl')?.value.trim() || '';
-    const childRef = getCurrentChildRef();
-    const moveNum = getMoveNumber() + 1;
-    const notation = builderColor === 'white' ? `${moveNum}. ${move}` : `${moveNum}... ${move}`;
-    childRef.response = {
-        id: 'cp' + Date.now(), move: 'Choose Style', player: builderColor, explanation: 'Pick your approach!', isChoice: true,
-        choices: [{ id: 'ch' + Date.now(), move: notation, name: name, style: style, color: selectedStyleColor, explanation: expl, children: [] }]
-    };
-    builderPath.push({ type: 'response' });
-    renderBuilder();
+    const m=document.getElementById('choiceMove').value.trim(); if(!m)return;
+    const ref=getCurrentChildRef(), num=getMoveNumber()+1, not=builderColor==='white'?`${num}. ${m}`:`${num}... ${m}`;
+    ref.response={id:'cp'+Date.now(),move:'Choose Style',player:builderColor,isChoice:true,choices:[{
+        id:'ch'+Date.now(),move:not,name:document.getElementById('choiceName').value,style:document.getElementById('choiceStyle')?.value,color:selectedStyleColor,children:[]
+    }]};
+    builderPath.push({type:'response'}); renderBuilder();
 }
-
 function addChoiceToExisting() {
-    const move = document.getElementById('choiceMove').value.trim();
-    if (!move) return;
-    const name = document.getElementById('choiceName')?.value.trim() || '';
-    const style = document.getElementById('choiceStyle')?.value.trim() || '';
-    const expl = document.getElementById('choiceExpl')?.value.trim() || '';
-    const pos = getBuilderPosition();
-    const moveNum = getMoveNumber();
-    const notation = builderColor === 'white' ? `${moveNum}. ${move}` : `${moveNum}... ${move}`;
-    const newChoice = { id: 'ch' + Date.now(), move: notation, name: name, style: style, color: selectedStyleColor, explanation: expl, children: [] };
-    if (!pos.node.choices) pos.node.choices = [];
-    pos.node.choices.push(newChoice);
-    renderBuilder();
+    const m=document.getElementById('choiceMove').value.trim(); if(!m)return;
+    const pos=getBuilderPosition(), num=getMoveNumber(), not=builderColor==='white'?`${num}. ${m}`:`${num}... ${m}`;
+    pos.node.choices.push({id:'ch'+Date.now(),move:not,name:document.getElementById('choiceName').value,color:selectedStyleColor,children:[]}); renderBuilder();
 }
-
-function saveExplanation() {
-    const expl = document.getElementById('editExpl')?.value.trim() || '';
-    const pos = getBuilderPosition();
-    if (pos.node) { pos.node.explanation = expl; renderBuilder(); }
+function saveExplanation() { getBuilderPosition().node.explanation = document.getElementById('editExpl').value; renderBuilder(); }
+function deleteCurrentBranch() { if(!confirm('Delete branch?'))return; 
+    if(builderPath.length===0)builderTree=null; else {
+        const last=builderPath.pop(), prev=getBuilderPosition().node;
+        if(last.type==='child') prev.children=prev.children.filter(c=>c.id!==last.id);
+        else if(last.type==='choice') prev.choices=prev.choices.filter(c=>c.id!==last.id);
+    } renderBuilder();
 }
-
-function deleteCurrentBranch() {
-    if (!confirm('Delete this branch?')) return;
-    if (builderPath.length === 0) builderTree = null;
-    else {
-        const lastStep = builderPath[builderPath.length - 1];
-        const parentPath = builderPath.slice(0, -1);
-        let node = builderTree;
-        let childRef = null;
-        for (const step of parentPath) {
-            if (step.type === 'child') {
-                childRef = node.children?.find(c => c.id === step.id);
-                if (childRef) node = childRef;
-            } else if (step.type === 'response') {
-                if (childRef?.response) node = childRef.response;
-                childRef = null;
-            } else if (step.type === 'choice') {
-                const choice = node.choices?.find(c => c.id === step.id);
-                if (choice) node = choice;
-            }
-        }
-        if (lastStep.type === 'child' && node.children) {
-            const idx = node.children.findIndex(c => c.id === lastStep.id);
-            if (idx > -1) node.children.splice(idx, 1);
-        } else if (lastStep.type === 'choice' && node.choices) {
-            const idx = node.choices.findIndex(c => c.id === lastStep.id);
-            if (idx > -1) node.choices.splice(idx, 1);
-        }
-        builderPath.pop();
-    }
-    renderBuilder();
-}
-
-function deleteChildFromList(id) {
-    if (!confirm('Delete this response?')) return;
-    const pos = getBuilderPosition();
-    if (!pos.node?.children) return;
-    const idx = pos.node.children.findIndex(c => c.id === id);
-    if (idx > -1) { pos.node.children.splice(idx, 1); renderBuilder(); }
-}
-
-function deleteChildFromRoot(id) {
-    if (!confirm('Delete this response?')) return;
-    if (!builderTree?.children) return;
-    const idx = builderTree.children.findIndex(c => c.id === id);
-    if (idx > -1) { builderTree.children.splice(idx, 1); renderBuilder(); }
-}
-
+function deleteChildFromList(id) { const n=getBuilderPosition().node; n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
+function deleteChildFromRoot(id) { builderTree.children=builderTree.children.filter(c=>c.id!==id); renderBuilder(); }
 function addYourResponseAtRoot() {
-    const move = document.getElementById('newMove').value.trim();
-    if (!move) return;
-    let label = document.getElementById('newLabel')?.value || '';
-    if (label === 'Custom') label = document.getElementById('customLabel')?.value.trim() || '';
-    const expl = document.getElementById('newExpl')?.value.trim() || '';
-    const notation = `1... ${move}`;
-    const newChild = { id: 'c' + Date.now(), move: notation, player: builderColor, label: label, explanation: expl, children: [] };
-    if (!builderTree.children) builderTree.children = [];
-    builderTree.children.push(newChild);
-    builderPath.push({ type: 'child', id: newChild.id });
-    renderBuilder();
+    const m=document.getElementById('newMove').value.trim(); if(!m)return;
+    let l=document.getElementById('newLabel')?.value||''; if(l==='Custom')l=document.getElementById('customLabel')?.value||'';
+    const child={id:'c'+Date.now(),move:'1... '+m,player:builderColor,label:l,explanation:document.getElementById('newExpl').value,children:[]};
+    if(!builderTree.children)builderTree.children=[]; builderTree.children.push(child);
+    builderPath.push({type:'child',id:child.id}); renderBuilder();
 }
-
-function deleteChoice(id) {
-    if (!confirm('Delete this option?')) return;
-    const pos = getBuilderPosition();
-    if (!pos.node?.choices) return;
-    const idx = pos.node.choices.findIndex(c => c.id === id);
-    if (idx > -1) { pos.node.choices.splice(idx, 1); renderBuilder(); }
-}
-
+function deleteChoice(id) { const n=getBuilderPosition().node; n.choices=n.choices.filter(c=>c.id!==id); renderBuilder(); }
 function addAlternativeResponse() {
-    const move = document.getElementById('altMove').value.trim();
-    if (!move) return;
-    const name = document.getElementById('altName')?.value.trim() || '';
-    const style = document.getElementById('altStyle')?.value.trim() || '';
-    const expl = document.getElementById('altExpl')?.value.trim() || '';
-    const childRef = getCurrentChildRef();
-    const existingResponse = childRef.response;
-    const moveNum = getMoveNumber() + 1;
-    const notation = builderColor === 'white' ? `${moveNum}. ${move}` : `${moveNum}... ${move}`;
-    const existingAsChoice = {
-        id: 'ch' + Date.now() + '_orig', move: existingResponse.move, name: existingResponse.name || 'Original Line',
-        style: existingResponse.style || 'First option', color: existingResponse.color || 'blue',
-        explanation: existingResponse.explanation || '', children: existingResponse.children || []
-    };
-    const newChoice = {
-        id: 'ch' + Date.now(), move: notation, name: name, style: style, color: selectedStyleColor, explanation: expl, children: []
-    };
-    childRef.response = {
-        id: 'cp' + Date.now(), move: 'Choose Style', player: builderColor, explanation: 'Pick your approach!', isChoice: true,
-        choices: [existingAsChoice, newChoice]
-    };
+    const m=document.getElementById('altMove').value.trim(); if(!m)return;
+    const ref=getCurrentChildRef(), old=ref.response, num=getMoveNumber()+1;
+    const newChoice={id:'ch'+Date.now(),move:builderColor==='white'?`${num}. ${m}`:`${num}... ${m}`,name:document.getElementById('altName').value,color:selectedStyleColor,children:[]};
+    const oldChoice={id:'ch_old'+Date.now(),move:old.move,name:'Original',color:'blue',children:old.children||[]};
+    ref.response={id:'cp'+Date.now(),move:'Choose Style',player:builderColor,isChoice:true,choices:[oldChoice,newChoice]};
     renderBuilder();
 }
 
+// IO
 function buildOpeningObj() {
-    return {
-        name: document.getElementById('openingName').value.trim() || 'My Opening',
-        color: builderColor,
-        description: document.getElementById('openingDesc').value.trim() || '',
-        startingMoves: getStartingMoves(),
-        tree: builderTree || { id: 'root', move: '1. e4', player: 'white', explanation: '', children: [] }
-    };
+    return { name:document.getElementById('openingName').value||'Opening', color:builderColor, description:document.getElementById('openingDesc').value, startingMoves:getStartingMoves(), tree:builderTree };
 }
-
 function getStartingMoves() {
-    if (!builderTree) return '1. e4';
-    let moves = [builderTree.move];
-    let node = builderTree;
-    while (node.children?.length && moves.length < 6) {
-        const c = node.children[0];
-        moves.push(c.move);
-        if (c.response) {
-            if (c.response.isChoice && c.response.choices?.length) {
-                moves.push(c.response.choices[0].move);
-                node = c.response.choices[0];
-            } else {
-                moves.push(c.response.move);
-                node = c.response;
-            }
-        } else break;
-    }
-    return moves.join(' ');
+    if(!builderTree)return''; let m=[builderTree.move],n=builderTree;
+    while(n.children?.length && m.length<6) { const c=n.children[0]; m.push(c.move); 
+        if(c.response){n=c.response.isChoice?c.response.choices[0]:c.response; m.push(n.move);} else break; }
+    return m.join(' ');
 }
-
-function previewOpening() {
-    if (!builderTree) { alert('Add at least one move'); return; }
-    OPENINGS['_preview'] = buildOpeningObj();
-    isPreviewMode = true;
-    startTraining('_preview');
-}
-
+function previewOpening() { if(!builderTree)return; OPENINGS['_preview']=buildOpeningObj(); isPreviewMode=true; startTraining('_preview'); }
 function saveOpening() {
-    const name = document.getElementById('openingName').value.trim();
-    if (!name) { alert('Enter an opening name'); return; }
-    if (!builderTree) { alert('Add at least one move'); return; }
-    const openingData = buildOpeningObj();
-    if (editingKey) {
-        OPENINGS[editingKey] = openingData;
-        saveStorage();
-        alert('"' + name + '" updated!');
-    } else {
-        const key = name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
-        OPENINGS[key] = openingData;
-        saveStorage();
-        alert('"' + name + '" saved!');
-    }
-    editingKey = null;
-    goToMenu();
+    if(!builderTree)return alert('Add moves first'); const o=buildOpeningObj();
+    const k=editingKey || (o.name.toLowerCase().replace(/[^a-z0-9]/g,'_')+'_'+Date.now());
+    OPENINGS[k]=o; saveStorage(); alert('Saved!'); editingKey=null; goToMenu();
 }
-
 function copyJson() { navigator.clipboard.writeText(document.getElementById('jsonOut').value); alert('Copied!'); }
-function importJson() {
-    try {
-        const o = JSON.parse(document.getElementById('jsonIn').value);
-        if (!o.name || !o.tree) { alert('Invalid JSON format'); return; }
-        const key = o.name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
-        OPENINGS[key] = o;
-        saveStorage();
-        alert('"' + o.name + '" imported!');
-        goToMenu();
-    } catch(e) { alert('Invalid JSON: ' + e.message); }
+function importJson() { try { const o=JSON.parse(document.getElementById('jsonIn').value); OPENINGS['imp_'+Date.now()]=o; saveStorage(); alert('Imported!'); goToMenu(); } catch(e){alert('Invalid JSON');} }
+function downloadOpening(k) { downloadObj(OPENINGS[k], OPENINGS[k].name); }
+function downloadCurrentOpening() { downloadObj(buildOpeningObj(), document.getElementById('openingName').value); }
+function downloadObj(o, n) {
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}));
+    a.download=n.replace(/[^a-z0-9]/g,'-')+'.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
-
-function downloadOpening(key) {
-    const opening = OPENINGS[key];
-    if (!opening) return;
-    const json = JSON.stringify(opening, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = opening.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-function downloadCurrentOpening() {
-    if (!builderTree) { alert('No opening to download'); return; }
-    const opening = buildOpeningObj();
-    const json = JSON.stringify(opening, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = opening.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
 function triggerFileUpload() { document.getElementById('fileUploadInput').click(); }
-function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const o = JSON.parse(e.target.result);
-            if (!o.name || !o.tree) { alert('Invalid JSON'); return; }
-            const key = o.name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
-            OPENINGS[key] = o;
-            saveStorage();
-            alert('"' + o.name + '" imported!');
-            renderMenu();
-        } catch(err) { alert('Error: ' + err.message); }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
+function handleFileUpload(e) { 
+    const r=new FileReader(); r.onload=ev=>{try{const o=JSON.parse(ev.target.result);OPENINGS['imp_'+Date.now()]=o;saveStorage();alert('Imported!');renderMenu();}catch{alert('Error');}};
+    if(e.target.files[0])r.readAsText(e.target.files[0]); e.target.value='';
 }
-
-function showUrlImport() { document.getElementById('urlImportSection').style.display = 'block'; }
-function hideUrlImport() { document.getElementById('urlImportSection').style.display = 'none'; }
+function showUrlImport() { document.getElementById('urlImportSection').style.display='block'; }
+function hideUrlImport() { document.getElementById('urlImportSection').style.display='none'; }
 async function importFromUrl() {
-    const url = document.getElementById('importUrl').value.trim();
-    if (!url) return;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch');
-        const o = await response.json();
-        const key = o.name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
-        OPENINGS[key] = o;
-        saveStorage();
-        alert('Imported!');
-        hideUrlImport();
-        renderMenu();
-    } catch(err) { alert('Error: ' + err.message); }
+    try { const r=await fetch(document.getElementById('importUrl').value); const o=await r.json(); OPENINGS['imp_'+Date.now()]=o; saveStorage(); alert('Imported!'); hideUrlImport(); renderMenu(); } catch(e){alert('Error fetching');}
 }
 
 document.addEventListener('DOMContentLoaded', init);
