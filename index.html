@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Opening Trainer V2.1</title>
+    <title>Chess Opening Trainer V2.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -507,7 +507,7 @@
     <div class="container">
         <div class="screen active" id="menuScreen">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="beta-tag">V2.1</span></h1>
+                <h1>♟️ Opening Trainer <span class="beta-tag">V2.2</span></h1>
                 <p>Master your chess openings move by move</p>
             </div>
             <div id="openingsContainer"></div>
@@ -649,6 +649,7 @@ const LABEL_OPTIONS = ['', 'Main Line', 'Sideline', 'Aggressive', 'Solid', 'Blun
 // =====================================================
 let OPENINGS = {};
 let currentOpening = null;
+let currentOpeningKey = null; // NEW: Track the key to fix self-reference bug
 let currentPath = [];
 let userColor = 'white';
 let isPreviewMode = false;
@@ -660,7 +661,6 @@ let builderPath = [];
 let editingKey = null;
 
 // The Brain (Transposition Map)
-// Stores: { FEN: [ { key: 'opening_key', name: 'Opening Name', move: '1. e4', color: 'white' } ] }
 let transpositionMap = {};
 
 // =====================================================
@@ -693,15 +693,11 @@ function saveStorage() {
 // =====================================================
 
 function rebuildTranspositionMap() {
-    // Safety check for offline mode
     if (typeof Chess === 'undefined') return;
-
     transpositionMap = {};
-    
     Object.entries(OPENINGS).forEach(([key, op]) => {
         if (key === '_preview') return;
         const game = new Chess();
-        // Traverse and catalog every position
         analyzeNodeRecursive(op.tree, game, key, op.name, op.color);
     });
 }
@@ -713,28 +709,16 @@ function analyzeNodeRecursive(node, game, key, name, color) {
     
     if (moveResult || node.id === 'root') {
         const fen = game.fen();
-        
         if (!transpositionMap[fen]) transpositionMap[fen] = [];
-        
-        // Check if this specific opening is already logged for this position
-        // (Avoid duplicates if the tree loops or has internal transpositions)
         const exists = transpositionMap[fen].find(i => i.key === key);
-        
         if (!exists) {
-            transpositionMap[fen].push({
-                key: key,
-                name: name,
-                move: node.move,
-                color: color
-            });
+            transpositionMap[fen].push({ key: key, name: name, move: node.move, color: color });
         }
-
         const processChild = (childNode) => {
             if (!childNode) return;
             analyzeNodeRecursive(childNode, game, key, name, color);
-            game.undo(); // Backtrack
+            game.undo(); 
         };
-
         if (node.children) node.children.forEach(processChild);
         if (node.response) {
             if (node.response.isChoice && node.response.choices) {
@@ -747,19 +731,14 @@ function analyzeNodeRecursive(node, game, key, name, color) {
     }
 }
 
-// Helper: Calculate FEN for the current view
 function getCurrentFenFromPath(opening, pathIds) {
     if (typeof Chess === 'undefined') return null;
     const game = new Chess();
     let currentNode = opening.tree;
-    
-    // Process root
     let clean = currentNode.move.replace(/^\d+\.+/, '').trim();
     game.move(clean);
-
     for (const id of pathIds) {
         let foundNext = false;
-        // Search children
         if (currentNode.children) {
             const child = currentNode.children.find(c => c.id === id);
             if (child) {
@@ -769,7 +748,6 @@ function getCurrentFenFromPath(opening, pathIds) {
                 foundNext = true;
             }
         }
-        // Search response
         if (!foundNext && currentNode.response) {
             if (currentNode.response.id === id) {
                 clean = currentNode.response.move.replace(/^\d+\.+/, '').trim();
@@ -786,7 +764,6 @@ function getCurrentFenFromPath(opening, pathIds) {
                 }
             }
         }
-        // Search direct choices
         if (!foundNext && currentNode.isChoice && currentNode.choices) {
             const choice = currentNode.choices.find(c => c.id === id);
             if (choice) {
@@ -800,21 +777,18 @@ function getCurrentFenFromPath(opening, pathIds) {
     return game.fen();
 }
 
-// Generate the clickable HTML badge
-function getTranspositionHTML(currentOpeningKey) {
+function getTranspositionHTML(currentKey) {
     if (typeof Chess === 'undefined') return '';
-    
     let fen = null;
     let currentUserColor = userColor;
 
-    // Handle Builder context vs Trainer context
     if (document.getElementById('builderScreen').classList.contains('active')) {
         if (!builderTree) return '';
         const tempOp = { tree: builderTree, name: "BuilderTemp" };
         const ids = builderPath.map(step => step.id).filter(id => id); 
         fen = getCurrentFenFromPath(tempOp, ids);
         currentUserColor = builderColor;
-        currentOpeningKey = editingKey || 'builder_temp';
+        currentKey = editingKey || 'builder_temp';
     } else {
         if (!currentOpening) return '';
         fen = getCurrentFenFromPath(currentOpening, currentPath);
@@ -822,12 +796,16 @@ function getTranspositionHTML(currentOpeningKey) {
     
     if (!fen) return '';
     const matches = transpositionMap[fen];
-    
-    // Filter: Exclude current opening AND check color match
-    // We only want to show openings where you play the SAME color (White vs White)
     if (!matches || matches.length < 1) return '';
     
-    const others = matches.filter(m => m.key !== currentOpeningKey && m.key !== 'builder_temp' && m.color === currentUserColor);
+    // BUG FIX: Filter out current opening key and duplicates
+    const uniqueKeys = new Set();
+    const others = matches.filter(m => {
+        if (m.key === currentKey || m.key === 'builder_temp' || m.color !== currentUserColor) return false;
+        if (uniqueKeys.has(m.key)) return false; // Prevent duplicates in list
+        uniqueKeys.add(m.key);
+        return true;
+    });
     
     if (others.length === 0) return '';
     
@@ -855,90 +833,57 @@ function toggleTranspositionList(el) {
     list.classList.toggle('visible');
 }
 
-// The Magic Jump Function
 function loadTransposition(targetKey, targetFen) {
-    // 1. Get the target opening
     const opening = OPENINGS[targetKey];
     if (!opening) return;
-    
-    // 2. We need to find the PATH (array of IDs) that leads to this FEN in the new opening
-    // This requires a helper search because the map only stores the end state
     const path = findPathToFenInOpening(opening, targetFen);
     
     if (!path && path.length === 0 && targetFen !== getStartFen()) {
          alert("Could not locate precise path to this position.");
          return;
     }
-
-    // 3. Switch context
-    // If we are in builder, we warn user they will lose unsaved work
     if (document.getElementById('builderScreen').classList.contains('active')) {
         if(!confirm("Switching to " + opening.name + ". Unsaved changes will be lost.")) return;
     }
-
-    startTraining(targetKey); // This sets currentOpening and userColor
-    currentPath = path; // Override the path to jump to the specific move
-    renderTrainer(); // Re-render the trainer view
+    startTraining(targetKey); 
+    currentPath = path; 
+    renderTrainer(); 
 }
 
-// DFS to find the path of IDs that results in a specific FEN
 function findPathToFenInOpening(opening, targetFen) {
     if (typeof Chess === 'undefined') return [];
-    
     const game = new Chess();
-    // Helper to store the found path
     let foundPath = null;
     
     function search(node, currentPath) {
-        if (foundPath) return; // Stop if found
-
-        // Execute move
+        if (foundPath) return; 
         const clean = node.move.replace(/^\d+\.+/, '').trim();
         game.move(clean);
-        
-        // Check FEN
         if (game.fen() === targetFen) {
-            foundPath = [...currentPath]; // Copy path
+            foundPath = [...currentPath];
             game.undo();
             return;
         }
-        
-        // Recurse children
-        // Need to add current node's ID to path?
-        // Note: The root node ID is not usually in 'currentPath' used by trainer, 
-        // trainer starts *after* root. But wait, getTrainerNode logic iterates path IDs.
-        // If path is empty, we are at root.
-        
         const children = node.children || [];
-        children.forEach(c => {
-            search(c, [...currentPath, c.id]);
-        });
-        
+        children.forEach(c => search(c, [...currentPath, c.id]));
         if (node.response) {
             if (node.response.isChoice && node.response.choices) {
                 node.response.choices.forEach(c => search(c, [...currentPath, c.id]));
             } else {
-                search(node.response, [...currentPath, node.response.id]); // Note: response ID usually treated as next step
+                search(node.response, [...currentPath, node.response.id]); 
             }
         }
-        
         if (node.isChoice && node.choices) {
             node.choices.forEach(c => search(c, [...currentPath, c.id]));
         }
-
         game.undo();
     }
     
-    // Start search. Note: Root move is always played first in logic, 
-    // so we execute root move then check, then recurse.
     const root = opening.tree;
     const cleanRoot = root.move.replace(/^\d+\.+/, '').trim();
     game.move(cleanRoot);
-    if (game.fen() === targetFen) return []; // It's the root position
-    
-    // Recurse from root
+    if (game.fen() === targetFen) return []; 
     if (root.children) root.children.forEach(c => search(c, [c.id]));
-    
     return foundPath || [];
 }
 
@@ -961,15 +906,8 @@ function renderMenu() {
     const w = Object.entries(OPENINGS).filter(([k, o]) => o.color === 'white' && k !== '_preview');
     const b = Object.entries(OPENINGS).filter(([k, o]) => o.color === 'black' && k !== '_preview');
     let h = '';
-    
-    if (w.length) {
-        h += '<p class="section-title">White Openings</p>';
-        w.forEach(([k, o]) => h += openingCard(k, o));
-    }
-    if (b.length) {
-        h += '<p class="section-title">Black Openings</p>';
-        b.forEach(([k, o]) => h += openingCard(k, o));
-    }
+    if (w.length) { h += '<p class="section-title">White Openings</p>'; w.forEach(([k, o]) => h += openingCard(k, o)); }
+    if (b.length) { h += '<p class="section-title">Black Openings</p>'; b.forEach(([k, o]) => h += openingCard(k, o)); }
     c.innerHTML = h;
 }
 
@@ -998,6 +936,7 @@ function deleteOpening(k) {
 // =====================================================
 function startTraining(k) {
     currentOpening = OPENINGS[k];
+    currentOpeningKey = k; // FIX: Store key for self-reference check
     userColor = currentOpening.color;
     currentPath = [];
     showScreen('trainerScreen');
@@ -1028,11 +967,8 @@ function getTrainerNode() {
         } else if (n.children) {
             const c = n.children.find(x => x.id === id);
             if (c) {
-                if (c.player === userColor) {
-                    n = c;
-                } else {
-                    n = c.response || c;
-                }
+                if (c.player === userColor) { n = c; } 
+                else { n = c.response || c; }
             }
         }
     }
@@ -1054,21 +990,14 @@ function getTrainerHistory() {
     for (const id of currentPath) {
         if (n.isChoice && n.choices) {
             const c = n.choices.find(x => x.id === id);
-            if (c) {
-                h.push({ m: c.move, p: userColor, isChoice: true });
-                n = c;
-            }
+            if (c) { h.push({ m: c.move, p: userColor, isChoice: true }); n = c; }
         } else if (n.children) {
             const c = n.children.find(x => x.id === id);
             if (c) {
                 h.push({ m: c.move, p: c.player });
-                if (c.player === userColor) {
-                    n = c;
-                } else {
-                    if (c.response) {
-                        h.push({ m: c.response.move, p: c.response.player, isChoice: c.response.isChoice });
-                        n = c.response;
-                    }
+                if (c.player === userColor) { n = c; }
+                else {
+                    if (c.response) { h.push({ m: c.response.move, p: c.response.player, isChoice: c.response.isChoice }); n = c.response; }
                 }
             }
         }
@@ -1084,7 +1013,8 @@ function renderTrainer() {
     ).join('');
     
     const isU = n.player === userColor || n.isChoice;
-    const transHTML = getTranspositionHTML(currentOpening.name);
+    // FIX: Pass currentOpeningKey instead of name
+    const transHTML = getTranspositionHTML(currentOpeningKey);
 
     let html = `
         <div class="move-label">
@@ -1110,7 +1040,6 @@ function renderTrainer() {
         html += '</div></div>';
     } else if (o.type === 'moves') {
         const childrenAreYourMoves = o.opts.length > 0 && o.opts[0].player === userColor;
-        
         if (childrenAreYourMoves) {
             html += `<div class="options-section">
                 <div class="options-label"><div class="move-dot your-move"></div><span>Your response...</span></div>`;
@@ -1200,14 +1129,9 @@ function switchTab(t) {
     document.getElementById('tabJson').classList.toggle('active', t === 'json');
     document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none';
     document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none';
-    
     if (t === 'json') {
-        if (builderTree) {
-            document.getElementById('jsonOut').value = JSON.stringify(buildOpeningObj(), null, 2);
-        } else {
-            const template = builderColor === 'white' ? JSON_TEMPLATE_WHITE : JSON_TEMPLATE_BLACK;
-            document.getElementById('jsonOut').value = JSON.stringify(template, null, 2);
-        }
+        if (builderTree) { document.getElementById('jsonOut').value = JSON.stringify(buildOpeningObj(), null, 2); } 
+        else { const template = builderColor === 'white' ? JSON_TEMPLATE_WHITE : JSON_TEMPLATE_BLACK; document.getElementById('jsonOut').value = JSON.stringify(template, null, 2); }
     }
 }
 
@@ -1229,7 +1153,6 @@ function getBuilderPosition() {
     if (!builderTree) return { node: null, context: 'empty' };
     let node = builderTree;
     let parent = null, childRef = null;
-    
     for (const step of builderPath) {
         if (step.type === 'child') {
             if (!node.children) return { node: null, context: 'error' };
@@ -1246,17 +1169,12 @@ function getBuilderPosition() {
             node = choice;
         }
     }
-    
     let context;
-    if (builderPath.length === 0) {
-        context = (node.player === builderColor) ? 'your-move' : 'opponent-move-root';
-    } else {
+    if (builderPath.length === 0) { context = (node.player === builderColor) ? 'your-move' : 'opponent-move-root'; } 
+    else {
         const lastStep = builderPath[builderPath.length - 1];
-        if (lastStep.type === 'child') {
-            context = (node.player === builderColor) ? 'your-move-as-child' : 'opponent-move';
-        } else if (lastStep.type === 'response' || lastStep.type === 'choice') {
-            context = 'your-move';
-        }
+        if (lastStep.type === 'child') { context = (node.player === builderColor) ? 'your-move-as-child' : 'opponent-move'; } 
+        else if (lastStep.type === 'response' || lastStep.type === 'choice') { context = 'your-move'; }
     }
     return { node, context, parent, childRef };
 }
@@ -1269,11 +1187,8 @@ function getCurrentChildRef() {
             if (!node.children) return null;
             childRef = node.children.find(c => c.id === step.id);
             node = childRef;
-        } else if (step.type === 'response') {
-            node = childRef.response; childRef = null;
-        } else if (step.type === 'choice') {
-            node = node.choices.find(c => c.id === step.id); childRef = null;
-        }
+        } else if (step.type === 'response') { node = childRef.response; childRef = null; } 
+        else if (step.type === 'choice') { node = node.choices.find(c => c.id === step.id); childRef = null; }
     }
     return childRef;
 }
@@ -1298,7 +1213,6 @@ function getMoveNumber() {
 function renderBuilder() {
     const content = document.getElementById('builderContent');
     const pos = getBuilderPosition();
-    
     if (!builderTree) {
         const isWhite = builderColor === 'white';
         content.innerHTML = `<div class="empty-state"><div class="icon">♟️</div><p>Start by adding ${isWhite ? 'your first move' : 'White\'s opening move'}</p></div>
@@ -1308,10 +1222,8 @@ function renderBuilder() {
                 <button class="btn btn-primary" onclick="addFirstMove()">Add Move</button></div>`;
         setupEnter(); return;
     }
-    
     if (!pos.node) return;
     const node = pos.node, opponent = builderColor === 'white' ? 'Black' : 'White', you = builderColor === 'white' ? 'White' : 'Black';
-    
     let pathParts = [builderTree.move], tempNode = builderTree, tempChild = null;
     for (const step of builderPath) {
         if (step.type === 'child') {
@@ -1324,14 +1236,11 @@ function renderBuilder() {
             if (choice) { pathParts.push(choice.move); tempNode = choice; }
         }
     }
-    
     const transHTML = getTranspositionHTML(document.getElementById('openingName').value || 'Current');
     let html = builderPath.length > 0 ? `<button class="btn btn-secondary" onclick="builderBack()" style="margin-bottom:16px">← Back</button>` : '';
     html += `<div class="path-display"><span class="current">${pathParts.join(' → ')}</span></div>`;
-    
     if (pos.context.includes('your-move')) html += renderYourMoveView(node, opponent, transHTML);
     else html += renderOpponentMoveView(node, you, pos.context === 'opponent-move-root', transHTML);
-    
     content.innerHTML = html;
     setupEnter();
     setupLabelDropdown();
@@ -1366,7 +1275,6 @@ function renderYourMoveView(node, opponent, transHTML) {
 
 function renderOpponentMoveView(node, you, isRoot, transHTML) {
     let html = `<div class="position-card opponent"><div class="position-label">Opponent's Move</div><div class="position-move">${node.move}</div>${node.label?`<div class="position-expl">Label: ${node.label}</div>`:''}</div>${transHTML}`;
-    
     if (isRoot) {
         if (node.children?.length) {
             html += `<p class="section-title">Your Responses</p><div class="response-list">`;
@@ -1378,7 +1286,6 @@ function renderOpponentMoveView(node, you, isRoot, transHTML) {
         html += `<div class="add-form"><div class="add-form-title">Add Your (${you}) Response</div><div class="form-group"><input type="text" id="newMove"></div><div class="form-group"><select id="newLabel">${LABEL_OPTIONS.map(l=>`<option value="${l}">${l||'(No label)'}</option>`).join('')}</select></div><div class="form-group" id="customLabelGroup" style="display:none"><input type="text" id="customLabel"></div><div class="form-group"><input type="text" id="newExpl" placeholder="Explanation"></div><button class="btn btn-primary" onclick="addYourResponseAtRoot()">Add Response</button></div>`;
         return html;
     }
-    
     const childRef = getCurrentChildRef();
     if (childRef?.response) {
         const resp = childRef.response;
