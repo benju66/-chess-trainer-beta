@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Opening Trainer V2.2</title>
+    <title>Chess Opening Trainer V3.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -41,10 +41,11 @@
             margin-bottom: 8px;
         }
         
-        .beta-tag {
-            background: #8b5cf6;
-            color: white;
+        .version-tag {
+            background: #f59e0b;
+            color: #1e293b;
             font-size: 0.7rem;
+            font-weight: 800;
             padding: 2px 6px;
             border-radius: 4px;
             vertical-align: middle;
@@ -212,7 +213,7 @@
 
         .explanation { color: #cbd5e1; font-size: 1rem; line-height: 1.6; }
 
-        /* === Transposition Styles (New) === */
+        /* === Transposition Styles === */
         .transposition-badge {
             background: rgba(139, 92, 246, 0.15);
             border: 1px solid #8b5cf6;
@@ -286,16 +287,18 @@
 
         .option-btn:hover { background: rgba(71, 85, 105, 0.6); border-color: #64748b; }
         .option-btn .move-text { font-family: monospace; font-size: 1.2rem; font-weight: 600; }
-        .option-btn .label {
-            display: inline-block;
-            padding: 4px 10px;
+        
+        /* New V3.0 Labels */
+        .option-btn .tags { display: flex; gap: 6px; }
+        .tag-pill {
+            padding: 3px 8px;
             border-radius: 6px;
-            font-size: 0.75rem;
-            margin-left: 10px;
-            background: #475569;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-        .option-btn .label.main { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-        .option-btn .label.blunder { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .tag-pill.status { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .tag-pill.type { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
         .option-btn .arrow { color: #64748b; font-size: 1.4rem; }
 
         /* Choices Grid */
@@ -312,17 +315,25 @@
         }
 
         .choice-card:hover { transform: scale(1.02); }
-        .choice-card.red { border-color: rgba(239, 68, 68, 0.5); }
-        .choice-card.blue { border-color: rgba(59, 130, 246, 0.5); }
-        .choice-card.purple { border-color: rgba(168, 85, 247, 0.5); }
-        .choice-card.green { border-color: rgba(34, 197, 94, 0.5); }
         
-        .choice-card h4 { font-family: monospace; font-size: 1.125rem; margin-bottom: 4px; }
+        /* Smart Colors V3.0 */
+        .choice-card.red { border-color: rgba(239, 68, 68, 0.5); }
+        .choice-card.red:hover { background: rgba(239, 68, 68, 0.1); }
         .choice-card.red h4 { color: #f87171; }
+        
+        .choice-card.blue { border-color: rgba(59, 130, 246, 0.5); }
+        .choice-card.blue:hover { background: rgba(59, 130, 246, 0.1); }
         .choice-card.blue h4 { color: #60a5fa; }
+        
+        .choice-card.purple { border-color: rgba(168, 85, 247, 0.5); }
+        .choice-card.purple:hover { background: rgba(168, 85, 247, 0.1); }
         .choice-card.purple h4 { color: #c084fc; }
+        
+        .choice-card.green { border-color: rgba(34, 197, 94, 0.5); }
+        .choice-card.green:hover { background: rgba(34, 197, 94, 0.1); }
         .choice-card.green h4 { color: #4ade80; }
         
+        .choice-card h4 { font-family: monospace; font-size: 1.125rem; margin-bottom: 4px; }
         .choice-card .name { font-weight: 600; font-size: 0.875rem; margin-bottom: 4px; }
         .choice-card .style { font-size: 0.75rem; color: #94a3b8; }
 
@@ -363,7 +374,7 @@
         .btn-row .btn { flex: 1; }
 
         /* =========================================
-           BUILDER UI
+           BUILDER UI V3.0
            ========================================= */
         .builder-section {
             background: rgba(30, 41, 59, 0.5); border: 1px solid #334155;
@@ -372,12 +383,14 @@
         .builder-section h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 16px; }
 
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; }
+        .form-group label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; }
         .form-group input, .form-group textarea, .form-group select {
             width: 100%; padding: 16px; background: #1e293b;
             border: 1px solid #334155; border-radius: 12px; color: #e2e8f0; font-size: 1.1rem;
         }
-        .form-group input:focus { outline: none; border-color: #fbbf24; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #fbbf24; }
+
+        .info-icon { cursor: pointer; color: #60a5fa; font-size: 1rem; }
 
         /* Color Toggle */
         .color-toggle { display: flex; gap: 12px; }
@@ -391,22 +404,6 @@
         .color-option.black { background: rgba(100, 116, 139, 0.1); border: 2px solid rgba(100, 116, 139, 0.3); color: #94a3b8; }
         .color-option.black.selected { background: rgba(100, 116, 139, 0.2); border-color: #94a3b8; }
 
-        /* Style Colors */
-        .style-colors { display: flex; gap: 10px; flex-wrap: wrap; }
-        .style-color {
-            flex: 1; min-width: 70px; padding: 12px 8px; border-radius: 10px;
-            text-align: center; cursor: pointer; font-weight: 600; font-size: 0.75rem;
-            border: 2px solid transparent;
-        }
-        .style-color.red { background: rgba(239, 68, 68, 0.1); color: #f87171; }
-        .style-color.red.selected { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
-        .style-color.blue { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
-        .style-color.blue.selected { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; }
-        .style-color.purple { background: rgba(168, 85, 247, 0.1); color: #c084fc; }
-        .style-color.purple.selected { background: rgba(168, 85, 247, 0.2); border-color: #a855f7; }
-        .style-color.green { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
-        .style-color.green.selected { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; }
-
         /* Builder Position & Responses */
         .position-card {
             background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3);
@@ -416,6 +413,7 @@
         .position-label { font-size: 0.75rem; text-transform: uppercase; color: #fbbf24; margin-bottom: 8px; }
         .position-card.opponent .position-label { color: #94a3b8; }
         .position-move { font-family: monospace; font-size: 1.4rem; font-weight: 700; color: #e2e8f0; }
+        .position-expl { font-size: 0.9rem; color: #cbd5e1; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; }
 
         .path-display {
             background: #1e293b; border-radius: 10px; padding: 12px 14px;
@@ -431,52 +429,51 @@
             cursor: pointer; display: flex; align-items: center; min-height: 64px;
         }
         .response-item .move { font-family: monospace; font-size: 1.15rem; font-weight: 600; color: #cbd5e1; flex: 1; }
-        .response-item .tag { background: #475569; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; margin-right: 12px; }
-
-        .your-response-card {
-            background: rgba(251, 191, 36, 0.1); border: 2px solid rgba(251, 191, 36, 0.4);
-            border-radius: 14px; padding: 18px 20px; margin-bottom: 16px;
-            cursor: pointer; display: flex; align-items: center; min-height: 64px;
-        }
-        .your-response-card .move { font-family: monospace; font-size: 1.15rem; font-weight: 600; color: #fbbf24; flex: 1; }
+        .response-item .arrow { color: #64748b; font-size: 1.3rem; }
 
         .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
         .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
 
-        /* Forms & Toggles */
+        /* V3.0 Standardized Add Form (Progressive Disclosure) */
         .add-form {
             background: rgba(34, 197, 94, 0.05); border: 2px dashed rgba(34, 197, 94, 0.3);
             border-radius: 14px; padding: 20px;
         }
-        .add-form.choice-form { background: rgba(168, 85, 247, 0.05); border-color: rgba(168, 85, 247, 0.3); }
         .add-form-title { font-size: 0.85rem; color: #4ade80; font-weight: 600; margin-bottom: 16px; }
-        .add-form.choice-form .add-form-title { color: #c084fc; }
-
-        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #334155; margin-bottom: 14px; }
-        .toggle-switch {
-            position: relative; width: 50px; height: 28px; background: #475569;
-            border-radius: 14px; cursor: pointer; transition: background 0.2s;
+        
+        .details-toggle-btn {
+            background: none; border: none; color: #94a3b8; 
+            font-size: 0.85rem; cursor: pointer; padding: 0;
+            margin-bottom: 16px; display: inline-flex; align-items: center; gap: 4px;
         }
-        .toggle-switch.active { background: #8b5cf6; }
-        .toggle-switch::after {
-            content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px;
-            background: white; border-radius: 50%; transition: left 0.2s;
-        }
-        .toggle-switch.active::after { left: 25px; }
+        .details-toggle-btn:hover { color: #fbbf24; }
+        
+        .details-drawer { display: none; margin-bottom: 16px; border-top: 1px solid #334155; padding-top: 16px; }
+        .details-drawer.visible { display: block; }
 
-        .choice-fields { display: none; padding-top: 14px; border-top: 1px solid #334155; margin-top: 14px; }
-        .choice-fields.visible { display: block; }
-
-        /* FIXED: Explanation Textarea Styling */
-        .edit-explanation { margin-top: 16px; padding-top: 16px; border-top: 1px solid #334155; }
-        .edit-explanation textarea {
-            width: 100%; padding: 14px; background: #1e293b;
-            border: 1px solid #334155; border-radius: 10px; color: #e2e8f0;
-            font-size: 0.95rem; min-height: 80px; resize: vertical;
-            font-family: inherit;
+        /* Reference Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95); z-index: 1000;
+            display: none; align-items: center; justify-content: center;
+            padding: 20px;
         }
-        .edit-explanation textarea:focus { outline: none; border-color: #fbbf24; }
-        .edit-explanation .btn { margin-top: 10px; padding: 12px; min-height: 44px; }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: #1e293b; border: 1px solid #334155; border-radius: 16px;
+            width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto;
+            padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 1.2rem; font-weight: 700; color: #e2e8f0; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; }
+        
+        .ref-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #334155; }
+        .ref-item:last-child { border-bottom: none; }
+        .ref-term { color: #fbbf24; font-weight: 700; margin-bottom: 4px; }
+        .ref-def { color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; }
 
         /* Misc */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -500,7 +497,6 @@
         }
         .choice-card .delete-item-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; font-size: 1rem; }
 
-        /* Template Info */
         .template-info {
             background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
             border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd;
@@ -515,8 +511,8 @@
     <div class="container">
         <div class="screen active" id="menuScreen">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="beta-tag">V2.2</span></h1>
-                <p>Master your chess openings move by move</p>
+                <h1>♟️ Opening Trainer <span class="version-tag">V3.0</span></h1>
+                <p>Coach Mode • Smart Analysis</p>
             </div>
             <div id="openingsContainer"></div>
             <button class="btn btn-primary" onclick="showBuilder()">+ Create New Opening</button>
@@ -599,13 +595,13 @@
                 <div class="builder-section">
                     <h3>Import from JSON</h3>
                     <details class="template-info">
-                        <summary>📋 JSON Schema Reference</summary>
+                        <summary>📋 V3.0 Schema Reference</summary>
                         <ul>
-                            <li><code>name</code> - Opening name</li>
-                            <li><code>color</code> - "white" or "black"</li>
-                            <li><code>tree</code> - Recursive move structure</li>
+                            <li><code>status</code> - Mainline, Sideline, etc.</li>
+                            <li><code>type</code> - Tactical, Positional, etc.</li>
+                            <li><code>explanation</code> - Coach's notes.</li>
                         </ul>
-                        <p style="margin-top:8px;font-size:0.8rem;color:#fbbf24;">(Full reference same as V1.0)</p>
+                        <p style="margin-top:8px;font-size:0.8rem;color:#fbbf24;">Note: Uploading V1/V2 files will automatically convert old fields to new ones.</p>
                     </details>
                     <textarea class="json-area" id="jsonIn" placeholder="Paste opening JSON here..."></textarea>
                     <button class="btn btn-primary" onclick="importJson()">Import</button>
@@ -619,18 +615,29 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="refModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Move Types Guide</div>
+                <button class="modal-close" onclick="toggleRefModal()">×</button>
+            </div>
+            <div id="refContent"></div>
+            <button class="btn btn-secondary" onclick="toggleRefModal()" style="margin-top:16px">Close</button>
+        </div>
+    </div>
+
 <script>
 // =====================================================
-// DEFAULT DATA & TEMPLATES
+// V3.0 DATA CONSTANTS
 // =====================================================
 const DEFAULT_OPENINGS = {
     italian_game: {
         name: "Italian Game", color: "white", description: "Classic 1.e4 opening targeting f7", startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
-        tree: { id: 'root', move: '1. e4', player: 'white', explanation: 'Control the center.', children: [
-            { id: 'e5', move: '1... e5', player: 'black', label: 'Classical', response: {
-                id: 'Nf3', move: '2. Nf3', player: 'white', explanation: 'Attack e5, develop knight.', children: [
-                    { id: 'Nc6', move: '2... Nc6', player: 'black', label: 'Main', response: {
-                        id: 'Bc4', move: '3. Bc4', player: 'white', explanation: 'Italian Game! Targets f7.', children: []
+        tree: { id: 'root', move: '1. e4', player: 'white', status: 'Mainline', type: 'Positional', explanation: 'Control the center.', children: [
+            { id: 'e5', move: '1... e5', player: 'black', status: 'Mainline', response: {
+                id: 'Nf3', move: '2. Nf3', player: 'white', status: 'Mainline', type: 'Dynamic', explanation: 'Attack e5, develop knight.', children: [
+                    { id: 'Nc6', move: '2... Nc6', player: 'black', status: 'Mainline', response: {
+                        id: 'Bc4', move: '3. Bc4', player: 'white', status: 'Mainline', type: 'Strategic', explanation: 'Italian Game! Targets f7.', children: []
                     }}
                 ]
             }}
@@ -639,25 +646,44 @@ const DEFAULT_OPENINGS = {
 };
 
 const JSON_TEMPLATE_WHITE = {
-    "_comment": "TEMPLATE FOR WHITE OPENINGS",
+    "_comment": "V3.0 TEMPLATE FOR WHITE",
     "name": "New White Opening", "color": "white", "description": "", "startingMoves": "1. e4",
-    "tree": { "id": "root", "move": "1. e4", "player": "white", "explanation": "Start here", "children": [] }
+    "tree": { "id": "root", "move": "1. e4", "player": "white", "status": "Mainline", "type": "Positional", "explanation": "Start here", "children": [] }
 };
 
 const JSON_TEMPLATE_BLACK = {
-    "_comment": "TEMPLATE FOR BLACK OPENINGS",
+    "_comment": "V3.0 TEMPLATE FOR BLACK",
     "name": "New Black Opening", "color": "black", "description": "", "startingMoves": "1. d4 d5",
-    "tree": { "id": "root", "move": "1. d4", "player": "white", "explanation": "Opponent move", "children": [] }
+    "tree": { "id": "root", "move": "1. d4", "player": "white", "status": "Mainline", "explanation": "Opponent move", "children": [] }
 };
 
-const LABEL_OPTIONS = ['', 'Main Line', 'Sideline', 'Aggressive', 'Solid', 'Blunder!', 'Theoretical'];
+const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
+const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
+
+const TYPE_DEFINITIONS = [
+    { t: 'Positional/Strategic', d: 'Long-term improvements, better piece placement, controlling key squares, or creating pawn weaknesses.' },
+    { t: 'Tactical', d: 'Short-term, forcing sequences that aim for immediate gains (material or checkmate).' },
+    { t: 'Defensive/Prophylactic', d: 'Moves made to neutralize threats or prevent future plans.' },
+    { t: 'Dynamic', d: 'Creates complex, fluid positions prioritizing initiative over static material.' },
+    { t: 'Forcing', d: 'Severely limits opponent options (checks, captures, threats).' },
+    { t: 'Quiet', d: 'Not a check or capture, but improves position or prepares a plan.' }
+];
+
+const TYPE_COLORS = {
+    'Positional/Strategic': 'blue',
+    'Tactical': 'red',
+    'Defensive/Prophylactic': 'green',
+    'Dynamic': 'purple',
+    'Forcing': 'red',
+    'Quiet': 'blue'
+};
 
 // =====================================================
 // STATE
 // =====================================================
 let OPENINGS = {};
 let currentOpening = null;
-let currentOpeningKey = null; // NEW: Track the key to fix self-reference bug
+let currentOpeningKey = null;
 let currentPath = [];
 let userColor = 'white';
 let isPreviewMode = false;
@@ -667,8 +693,9 @@ let builderColor = 'white';
 let builderTree = null;
 let builderPath = [];
 let editingKey = null;
+let isDetailsDrawerOpen = false; // Sticky Drawer State
 
-// The Brain (Transposition Map)
+// Brain
 let transpositionMap = {};
 
 // =====================================================
@@ -683,6 +710,10 @@ function init() {
         Object.assign(OPENINGS, custom);
     } catch(e) {}
     
+    // Populate Reference Modal
+    const refHTML = TYPE_DEFINITIONS.map(x => `<div class="ref-item"><div class="ref-term">${x.t}</div><div class="ref-def">${x.d}</div></div>`).join('');
+    document.getElementById('refContent').innerHTML = refHTML;
+
     rebuildTranspositionMap();
     renderMenu();
 }
@@ -697,9 +728,8 @@ function saveStorage() {
 }
 
 // =====================================================
-// CHESS INTELLIGENCE (THE BRAIN)
+// CHESS INTELLIGENCE
 // =====================================================
-
 function rebuildTranspositionMap() {
     if (typeof Chess === 'undefined') return;
     transpositionMap = {};
@@ -806,11 +836,10 @@ function getTranspositionHTML(currentKey) {
     const matches = transpositionMap[fen];
     if (!matches || matches.length < 1) return '';
     
-    // BUG FIX: Filter out current opening key and duplicates using Set
     const uniqueKeys = new Set();
     const others = matches.filter(m => {
         if (m.key === currentKey || m.key === 'builder_temp' || m.color !== currentUserColor) return false;
-        if (uniqueKeys.has(m.key)) return false; // Prevent duplicates
+        if (uniqueKeys.has(m.key)) return false;
         uniqueKeys.add(m.key);
         return true;
     });
@@ -825,10 +854,7 @@ function getTranspositionHTML(currentKey) {
         <div class="transposition-list">
             ${others.map(o => `
                 <div class="transposition-item" onclick="loadTransposition('${o.key}', '${fen.replace(/'/g, "\\'")}')">
-                    <div>
-                        <strong>${o.name}</strong>
-                        <div class="meta">via ${o.move}</div>
-                    </div>
+                    <div><strong>${o.name}</strong><div class="meta">via ${o.move}</div></div>
                     <span class="jump-icon">➜</span>
                 </div>
             `).join('')}
@@ -836,10 +862,7 @@ function getTranspositionHTML(currentKey) {
     `;
 }
 
-function toggleTranspositionList(el) {
-    const list = el.nextElementSibling;
-    list.classList.toggle('visible');
-}
+function toggleTranspositionList(el) { el.nextElementSibling.classList.toggle('visible'); }
 
 function loadTransposition(targetKey, targetFen) {
     const opening = OPENINGS[targetKey];
@@ -847,11 +870,10 @@ function loadTransposition(targetKey, targetFen) {
     const path = findPathToFenInOpening(opening, targetFen);
     
     if (!path && path.length === 0 && targetFen !== getStartFen()) {
-         alert("Could not locate precise path to this position.");
-         return;
+         alert("Could not locate precise path."); return;
     }
     if (document.getElementById('builderScreen').classList.contains('active')) {
-        if(!confirm("Switching to " + opening.name + ". Unsaved changes will be lost.")) return;
+        if(!confirm("Switching openings. Unsaved changes will be lost.")) return;
     }
     startTraining(targetKey); 
     currentPath = path; 
@@ -867,26 +889,15 @@ function findPathToFenInOpening(opening, targetFen) {
         if (foundPath) return; 
         const clean = node.move.replace(/^\d+\.+/, '').trim();
         game.move(clean);
-        if (game.fen() === targetFen) {
-            foundPath = [...currentPath];
-            game.undo();
-            return;
-        }
-        const children = node.children || [];
-        children.forEach(c => search(c, [...currentPath, c.id]));
+        if (game.fen() === targetFen) { foundPath = [...currentPath]; game.undo(); return; }
+        (node.children||[]).forEach(c => search(c, [...currentPath, c.id]));
         if (node.response) {
-            if (node.response.isChoice && node.response.choices) {
-                node.response.choices.forEach(c => search(c, [...currentPath, c.id]));
-            } else {
-                search(node.response, [...currentPath, node.response.id]); 
-            }
+            if (node.response.isChoice && node.response.choices) node.response.choices.forEach(c => search(c, [...currentPath, c.id]));
+            else search(node.response, [...currentPath, node.response.id]); 
         }
-        if (node.isChoice && node.choices) {
-            node.choices.forEach(c => search(c, [...currentPath, c.id]));
-        }
+        if (node.isChoice && node.choices) node.choices.forEach(c => search(c, [...currentPath, c.id]));
         game.undo();
     }
-    
     const root = opening.tree;
     const cleanRoot = root.move.replace(/^\d+\.+/, '').trim();
     game.move(cleanRoot);
@@ -895,24 +906,42 @@ function findPathToFenInOpening(opening, targetFen) {
     return foundPath || [];
 }
 
-function getStartFen() {
-    if (typeof Chess === 'undefined') return '';
-    return new Chess().fen();
+function getStartFen() { if (typeof Chess === 'undefined') return ''; return new Chess().fen(); }
+
+// =====================================================
+// V3.0 UI HELPERS (AUTO-COLOR & MIGRATION)
+// =====================================================
+function getColorForType(type) { return TYPE_COLORS[type] || 'blue'; }
+
+function migrateOpening(op) {
+    // Recursive walker to convert old fields to new fields
+    function walk(n) {
+        if (!n) return;
+        // Map old 'label' to 'status'
+        if (n.label && !n.status) n.status = n.label;
+        // Map old 'style' to 'type'
+        if (n.style && !n.type) {
+            // Simple keyword matching for migration
+            const s = n.style.toLowerCase();
+            if (s.includes('aggressive') || s.includes('tactical')) n.type = 'Tactical';
+            else if (s.includes('solid') || s.includes('positional')) n.type = 'Positional/Strategic';
+            else if (s.includes('safe')) n.type = 'Defensive/Prophylactic';
+            else n.type = 'Dynamic'; // Default fallback for styles
+        }
+        
+        if (n.children) n.children.forEach(walk);
+        if (n.response) walk(n.response);
+        if (n.choices) n.choices.forEach(walk);
+    }
+    walk(op.tree);
+    return op;
 }
 
 // =====================================================
 // SCREENS & MENU
 // =====================================================
-function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
-
-function goToMenu() {
-    isPreviewMode = false;
-    showScreen('menuScreen');
-    renderMenu();
-}
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function goToMenu() { isPreviewMode = false; showScreen('menuScreen'); renderMenu(); }
 
 function renderMenu() {
     const c = document.getElementById('openingsContainer');
@@ -930,7 +959,7 @@ function openingCard(k, o) {
         <p>${o.description}</p>
         <div class="moves">${o.startingMoves}</div>
         <div class="card-actions">
-            <button class="edit-btn" onclick="event.stopPropagation();downloadOpening('${k}')" title="Download JSON">📥</button>
+            <button class="edit-btn" onclick="event.stopPropagation();downloadOpening('${k}')" title="Download">📥</button>
             <button class="edit-btn" onclick="event.stopPropagation();editOpening('${k}')" title="Edit">✏️</button>
             <button class="delete-btn" onclick="event.stopPropagation();deleteOpening('${k}')" title="Delete">🗑</button>
         </div>
@@ -939,9 +968,7 @@ function openingCard(k, o) {
 
 function deleteOpening(k) {
     if (!confirm('Delete "' + (OPENINGS[k]?.name || k) + '"?')) return;
-    delete OPENINGS[k];
-    saveStorage();
-    renderMenu();
+    delete OPENINGS[k]; saveStorage(); renderMenu();
 }
 
 // =====================================================
@@ -949,40 +976,25 @@ function deleteOpening(k) {
 // =====================================================
 function startTraining(k) {
     currentOpening = OPENINGS[k];
-    currentOpeningKey = k; // FIX: Store key for self-reference check
+    currentOpeningKey = k;
     userColor = currentOpening.color;
     currentPath = [];
     showScreen('trainerScreen');
     document.getElementById('openingTitle').textContent = currentOpening.name;
     document.getElementById('openingSubtitle').textContent = 'Playing as ' + userColor[0].toUpperCase() + userColor.slice(1);
-    
-    const backBtn = document.getElementById('trainerBackBtn');
-    backBtn.textContent = isPreviewMode ? '← Back to Editor' : '← Back to Openings';
-    
+    document.getElementById('trainerBackBtn').textContent = isPreviewMode ? '← Back to Editor' : '← Back to Openings';
     renderTrainer();
 }
 
-function handleTrainerBack() {
-    if (isPreviewMode) {
-        isPreviewMode = false;
-        showScreen('builderScreen');
-    } else {
-        goToMenu();
-    }
-}
+function handleTrainerBack() { isPreviewMode ? (showScreen('builderScreen')) : goToMenu(); }
 
 function getTrainerNode() {
     let n = currentOpening.tree;
     for (const id of currentPath) {
-        if (n.isChoice && n.choices) {
-            const c = n.choices.find(x => x.id === id);
-            if (c) n = c;
-        } else if (n.children) {
+        if (n.isChoice && n.choices) { const c = n.choices.find(x => x.id === id); if (c) n = c; } 
+        else if (n.children) {
             const c = n.children.find(x => x.id === id);
-            if (c) {
-                if (c.player === userColor) { n = c; } 
-                else { n = c.response || c; }
-            }
+            if (c) { if (c.player === userColor) { n = c; } else { n = c.response || c; } }
         }
     }
     return n;
@@ -991,9 +1003,7 @@ function getTrainerNode() {
 function getTrainerOpts(n) {
     if (n.isChoice && n.choices) return { type: 'choices', opts: n.choices };
     if (n.children?.length) return { type: 'moves', opts: n.children };
-    if (n.player === userColor && n.response) {
-        return { type: 'moves', opts: [n.response] };
-    }
+    if (n.player === userColor && n.response) return { type: 'moves', opts: [n.response] };
     return { type: 'end', opts: [] };
 }
 
@@ -1001,17 +1011,12 @@ function getTrainerHistory() {
     let h = [{ m: currentOpening.tree.move, p: currentOpening.tree.player, isChoice: false }];
     let n = currentOpening.tree;
     for (const id of currentPath) {
-        if (n.isChoice && n.choices) {
-            const c = n.choices.find(x => x.id === id);
-            if (c) { h.push({ m: c.move, p: userColor, isChoice: true }); n = c; }
-        } else if (n.children) {
+        if (n.isChoice && n.choices) { const c = n.choices.find(x => x.id === id); if (c) { h.push({ m: c.move, p: userColor, isChoice: true }); n = c; } }
+        else if (n.children) {
             const c = n.children.find(x => x.id === id);
             if (c) {
                 h.push({ m: c.move, p: c.player });
-                if (c.player === userColor) { n = c; }
-                else {
-                    if (c.response) { h.push({ m: c.response.move, p: c.response.player, isChoice: c.response.isChoice }); n = c.response; }
-                }
+                if (c.player === userColor) { n = c; } else { if (c.response) { h.push({ m: c.response.move, p: c.response.player, isChoice: c.response.isChoice }); n = c.response; } }
             }
         }
     }
@@ -1020,73 +1025,41 @@ function getTrainerHistory() {
 
 function renderTrainer() {
     const n = getTrainerNode(), o = getTrainerOpts(n), h = getTrainerHistory(), mc = Math.ceil(h.length / 2);
-    
-    document.getElementById('moveHistory').innerHTML = h.map(x => 
-        `<span class="move-tag ${x.p === 'white' ? 'white-move' : 'black-move'} ${x.isChoice ? 'choice' : ''}">${x.m}</span>`
-    ).join('');
+    document.getElementById('moveHistory').innerHTML = h.map(x => `<span class="move-tag ${x.p==='white'?'white-move':'black-move'} ${x.isChoice?'choice':''}">${x.m}</span>`).join('');
     
     const isU = n.player === userColor || n.isChoice;
-    // FIX: Pass currentOpeningKey instead of name
     const transHTML = getTranspositionHTML(currentOpeningKey);
 
     let html = `
-        <div class="move-label">
-            <div class="move-dot ${isU ? 'your-move' : 'opponent-move'}"></div>
-            <span class="${isU ? 'your-move' : 'opponent-move'}">${isU ? 'Your Move' : 'Opponent\'s Move'}</span>
-        </div>
-        <div class="current-move ${isU ? '' : 'opponent'}">
-            <h2>${n.move}</h2>
-        </div>
+        <div class="move-label"><div class="move-dot ${isU?'your-move':'opponent-move'}"></div><span class="${isU?'your-move':'opponent-move'}">${isU?'Your Move':'Opponent\'s Move'}</span></div>
+        <div class="current-move ${isU?'':'opponent'}"><h2>${n.move}</h2></div>
         <p class="explanation">${n.explanation || ''}</p>
         ${transHTML}
-        `;
+    `;
     
     if (o.type === 'choices') {
-        html += `<div class="options-section">
-            <div class="options-label"><div class="move-dot your-move"></div><span>Choose your approach:</span></div>
-            <div class="choices-grid">`;
+        html += `<div class="options-section"><div class="options-label"><div class="move-dot your-move"></div><span>Choose approach:</span></div><div class="choices-grid">`;
         o.opts.forEach(x => {
-            html += `<button class="choice-card ${x.color || 'blue'}" onclick="trainerSelect('${x.id}')">
-                <h4>${x.move}</h4><p class="name">${x.name || ''}</p><p class="style">${x.style || ''}</p>
-            </button>`;
+            // V3.0: Auto color based on Type
+            const color = getColorForType(x.type);
+            html += `<button class="choice-card ${color}" onclick="trainerSelect('${x.id}')"><h4>${x.move}</h4><p class="name">${x.type||''}</p><p class="style">${x.status||''}</p></button>`;
         });
         html += '</div></div>';
     } else if (o.type === 'moves') {
-        const childrenAreYourMoves = o.opts.length > 0 && o.opts[0].player === userColor;
-        if (childrenAreYourMoves) {
-            html += `<div class="options-section">
-                <div class="options-label"><div class="move-dot your-move"></div><span>Your response...</span></div>`;
-            o.opts.forEach(x => {
-                const lbl = x.label?.includes('Blunder') ? 'blunder' : (x.label === 'Main Line' || x.label === 'Main') ? 'main' : '';
-                html += `<button class="option-btn" onclick="trainerSelect('${x.id}')">
-                    <div><span class="move-text">${x.move}</span>${x.label ? `<span class="label ${lbl}">${x.label}</span>` : ''}</div>
-                    <span class="arrow">→</span>
-                </button>`;
-            });
-            html += '</div>';
-        } else {
-            const opp = userColor === 'white' ? 'Black' : 'White';
-            html += `<div class="options-section">
-                <div class="options-label"><div class="move-dot opponent-move"></div><span>${opp} might play...</span></div>`;
-            o.opts.forEach(x => {
-                const lbl = x.label?.includes('Blunder') ? 'blunder' : (x.label === 'Main Line' || x.label === 'Main') ? 'main' : '';
-                html += `<button class="option-btn" onclick="trainerSelect('${x.id}')">
-                    <div><span class="move-text">${x.move}</span>${x.label ? `<span class="label ${lbl}">${x.label}</span>` : ''}</div>
-                    <span class="arrow">→</span>
-                </button>`;
-            });
-            html += '</div>';
-        }
+        const uMoves = o.opts.length > 0 && o.opts[0].player === userColor;
+        const lbl = uMoves ? `<div class="move-dot your-move"></div><span>Your response...</span>` : `<div class="move-dot opponent-move"></div><span>Opponent might play...</span>`;
+        html += `<div class="options-section"><div class="options-label">${lbl}</div>`;
+        o.opts.forEach(x => {
+            html += `<button class="option-btn" onclick="trainerSelect('${x.id}')"><div><span class="move-text">${x.move}</span></div><div class="tags">${x.status?`<span class="tag-pill status">${x.status}</span>`:''}${x.type?`<span class="tag-pill type">${x.type.split('/')[0]}</span>`:''}</div><span class="arrow">→</span></button>`;
+        });
+        html += '</div>';
     } else {
         html += `<div class="end-card"><div class="icon">🎯</div><h3>End of Line</h3><p>Move ${mc} reached</p></div>`;
     }
     
     document.getElementById('currentMoveCard').innerHTML = html;
-    document.getElementById('controls').innerHTML = currentPath.length ? 
-        `<button class="control-btn secondary" onclick="trainerBack()">← Back</button>
-         <button class="control-btn secondary" onclick="trainerReset()">Start Over</button>` : '';
-    document.getElementById('progressDots').innerHTML = Array.from({length: 12}, (_, i) => 
-        `<div class="progress-dot ${i < mc ? 'active' : ''}"></div>`).join('');
+    document.getElementById('controls').innerHTML = currentPath.length ? `<button class="control-btn secondary" onclick="trainerBack()">← Back</button><button class="control-btn secondary" onclick="trainerReset()">Start Over</button>` : '';
+    document.getElementById('progressDots').innerHTML = Array.from({length: 12}, (_, i) => `<div class="progress-dot ${i < mc ? 'active' : ''}"></div>`).join('');
 }
 
 function trainerSelect(id) { currentPath.push(id); renderTrainer(); }
@@ -1094,48 +1067,27 @@ function trainerBack() { currentPath.pop(); renderTrainer(); }
 function trainerReset() { currentPath = []; renderTrainer(); }
 
 // =====================================================
-// BUILDER LOGIC
+// BUILDER LOGIC V3.0
 // =====================================================
-
 function showBuilder() {
-    builderColor = 'white';
-    builderTree = null;
-    builderPath = [];
-    editingKey = null;
-    document.getElementById('openingName').value = '';
-    document.getElementById('openingDesc').value = '';
-    document.getElementById('builderTitle').textContent = '🛠️ Create Opening';
-    document.getElementById('saveBtn').textContent = 'Save';
+    builderColor = 'white'; builderTree = null; builderPath = []; editingKey = null; isDetailsDrawerOpen = false;
+    document.getElementById('openingName').value = ''; document.getElementById('openingDesc').value = '';
+    document.getElementById('builderTitle').textContent = '🛠️ Create Opening'; document.getElementById('saveBtn').textContent = 'Save';
     document.getElementById('downloadCurrentBtn').style.display = 'none';
-    updateColorToggle();
-    switchTab('build');
-    showScreen('builderScreen');
-    renderBuilder();
+    updateColorToggle(); switchTab('build'); showScreen('builderScreen'); renderBuilder();
 }
 
 function editOpening(key) {
-    const opening = OPENINGS[key];
-    if (!opening) return;
-    builderColor = opening.color;
-    builderTree = JSON.parse(JSON.stringify(opening.tree)); 
-    builderPath = [];
-    editingKey = key;
-    document.getElementById('openingName').value = opening.name;
-    document.getElementById('openingDesc').value = opening.description || '';
-    document.getElementById('builderTitle').textContent = '✏️ Edit Opening';
-    document.getElementById('saveBtn').textContent = 'Update';
+    const opening = OPENINGS[key]; if (!opening) return;
+    builderColor = opening.color; builderTree = JSON.parse(JSON.stringify(opening.tree)); 
+    builderPath = []; editingKey = key; isDetailsDrawerOpen = false;
+    document.getElementById('openingName').value = opening.name; document.getElementById('openingDesc').value = opening.description || '';
+    document.getElementById('builderTitle').textContent = '✏️ Edit Opening'; document.getElementById('saveBtn').textContent = 'Update';
     document.getElementById('downloadCurrentBtn').style.display = 'block';
-    updateColorToggle();
-    switchTab('build');
-    showScreen('builderScreen');
-    renderBuilder();
+    updateColorToggle(); switchTab('build'); showScreen('builderScreen'); renderBuilder();
 }
 
-function confirmExitBuilder() {
-    if (builderTree && !confirm('Exit without saving?')) return;
-    editingKey = null;
-    goToMenu();
-}
+function confirmExitBuilder() { if (builderTree && !confirm('Exit without saving?')) return; editingKey = null; goToMenu(); }
 
 function switchTab(t) {
     document.getElementById('tabBuild').classList.toggle('active', t === 'build');
@@ -1143,51 +1095,37 @@ function switchTab(t) {
     document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none';
     document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none';
     if (t === 'json') {
-        if (builderTree) { document.getElementById('jsonOut').value = JSON.stringify(buildOpeningObj(), null, 2); } 
-        else { const template = builderColor === 'white' ? JSON_TEMPLATE_WHITE : JSON_TEMPLATE_BLACK; document.getElementById('jsonOut').value = JSON.stringify(template, null, 2); }
+        const tpl = builderColor === 'white' ? JSON_TEMPLATE_WHITE : JSON_TEMPLATE_BLACK;
+        document.getElementById('jsonOut').value = JSON.stringify(builderTree ? buildOpeningObj() : tpl, null, 2);
     }
 }
 
-function setColor(c) {
-    if (editingKey) { alert('Cannot change color when editing.'); return; }
-    builderColor = c;
-    updateColorToggle();
-    builderTree = null;
-    builderPath = [];
-    renderBuilder();
-}
-
-function updateColorToggle() {
-    document.querySelectorAll('.color-option').forEach(el => 
-        el.classList.toggle('selected', el.classList.contains(builderColor)));
-}
+function setColor(c) { if (editingKey) { alert('Cannot change color when editing.'); return; } builderColor = c; updateColorToggle(); builderTree = null; builderPath = []; renderBuilder(); }
+function updateColorToggle() { document.querySelectorAll('.color-option').forEach(el => el.classList.toggle('selected', el.classList.contains(builderColor))); }
 
 function getBuilderPosition() {
     if (!builderTree) return { node: null, context: 'empty' };
-    let node = builderTree;
-    let parent = null, childRef = null;
+    let node = builderTree, parent = null, childRef = null;
     for (const step of builderPath) {
         if (step.type === 'child') {
             if (!node.children) return { node: null, context: 'error' };
-            const child = node.children.find(c => c.id === step.id);
-            if (!child) return { node: null, context: 'error' };
+            const child = node.children.find(c => c.id === step.id); if (!child) return { node: null, context: 'error' };
             parent = node; childRef = child; node = child;
         } else if (step.type === 'response') {
             if (!childRef || !childRef.response) return { node: null, context: 'error' };
             node = childRef.response; childRef = null;
         } else if (step.type === 'choice') {
             if (!node.isChoice || !node.choices) return { node: null, context: 'error' };
-            const choice = node.choices.find(c => c.id === step.id);
-            if (!choice) return { node: null, context: 'error' };
+            const choice = node.choices.find(c => c.id === step.id); if (!choice) return { node: null, context: 'error' };
             node = choice;
         }
     }
     let context;
-    if (builderPath.length === 0) { context = (node.player === builderColor) ? 'your-move' : 'opponent-move-root'; } 
+    if (builderPath.length === 0) context = (node.player === builderColor) ? 'your-move' : 'opponent-move-root';
     else {
         const lastStep = builderPath[builderPath.length - 1];
-        if (lastStep.type === 'child') { context = (node.player === builderColor) ? 'your-move-as-child' : 'opponent-move'; } 
-        else if (lastStep.type === 'response' || lastStep.type === 'choice') { context = 'your-move'; }
+        if (lastStep.type === 'child') context = (node.player === builderColor) ? 'your-move-as-child' : 'opponent-move';
+        else context = 'your-move';
     }
     return { node, context, parent, childRef };
 }
@@ -1196,11 +1134,8 @@ function getCurrentChildRef() {
     if (!builderTree || builderPath.length === 0) return null;
     let node = builderTree, childRef = null;
     for (const step of builderPath) {
-        if (step.type === 'child') {
-            if (!node.children) return null;
-            childRef = node.children.find(c => c.id === step.id);
-            node = childRef;
-        } else if (step.type === 'response') { node = childRef.response; childRef = null; } 
+        if (step.type === 'child') { childRef = node.children.find(c => c.id === step.id); node = childRef; }
+        else if (step.type === 'response') { node = childRef.response; childRef = null; }
         else if (step.type === 'choice') { node = node.choices.find(c => c.id === step.id); childRef = null; }
     }
     return childRef;
@@ -1210,179 +1145,202 @@ function getMoveNumber() {
     if (!builderTree) return 1;
     let num = 1, node = builderTree, childRef = null;
     for (const step of builderPath) {
-        if (step.type === 'child') {
-            childRef = node.children?.find(c => c.id === step.id);
-            if (childRef) node = childRef;
-        } else if (step.type === 'response') {
-            if (childRef?.response) { num++; node = childRef.response; childRef = null; }
-        } else if (step.type === 'choice') {
-            const choice = node.choices?.find(c => c.id === step.id);
-            if (choice) node = choice;
-        }
+        if (step.type === 'child') { childRef = node.children?.find(c => c.id === step.id); if (childRef) node = childRef; }
+        else if (step.type === 'response') { if (childRef?.response) { num++; node = childRef.response; childRef = null; } }
+        else if (step.type === 'choice') { const choice = node.choices?.find(c => c.id === step.id); if (choice) node = choice; }
     }
     return num;
 }
 
+// =====================================================
+// BUILDER RENDERING V3.0
+// =====================================================
 function renderBuilder() {
     const content = document.getElementById('builderContent');
     const pos = getBuilderPosition();
+    
+    // Standardized Form Helper
+    const renderStandardForm = (title, onClick) => `
+        <div class="add-form">
+            <div class="add-form-title">${title}</div>
+            <div class="form-group"><input type="text" id="newMove" placeholder="Move (e.g. e4)"></div>
+            <button class="details-toggle-btn" onclick="toggleDetails()">
+                ${isDetailsDrawerOpen ? '▴ Hide' : '▾ Add'} Details / Annotations
+            </button>
+            <div class="details-drawer ${isDetailsDrawerOpen ? 'visible' : ''}">
+                <div class="form-group"><label>Status</label><select id="newStatus">${STATUS_OPTIONS.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label><select id="newType">${TYPE_OPTIONS.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Explanation</label><textarea id="newExpl" placeholder="Why this move?"></textarea></div>
+            </div>
+            <button class="btn btn-primary" onclick="${onClick}">Add Move</button>
+        </div>`;
+
     if (!builderTree) {
-        const isWhite = builderColor === 'white';
-        content.innerHTML = `<div class="empty-state"><div class="icon">♟️</div><p>Start by adding ${isWhite ? 'your first move' : 'White\'s opening move'}</p></div>
-            <div class="add-form"><div class="add-form-title">${isWhite ? 'Your First Move (White)' : 'White\'s First Move'}</div>
-                <div class="form-group"><input type="text" id="newMove" placeholder="e.g., e4 or d4"></div>
-                ${isWhite ? `<div class="form-group"><input type="text" id="newExpl" placeholder="Explanation"></div>` : ''}
-                <button class="btn btn-primary" onclick="addFirstMove()">Add Move</button></div>`;
+        content.innerHTML = `<div class="empty-state"><div class="icon">♟️</div><p>Start with the first move</p></div>${renderStandardForm('First Move', 'addFirstMove()')}`;
         setupEnter(); return;
     }
+    
     if (!pos.node) return;
     const node = pos.node, opponent = builderColor === 'white' ? 'Black' : 'White', you = builderColor === 'white' ? 'White' : 'Black';
     let pathParts = [builderTree.move], tempNode = builderTree, tempChild = null;
+    
+    // Path Builder
     for (const step of builderPath) {
-        if (step.type === 'child') {
-            tempChild = tempNode.children?.find(c => c.id === step.id);
-            if (tempChild) { pathParts.push(tempChild.move); tempNode = tempChild; }
-        } else if (step.type === 'response') {
-            if (tempChild?.response) { pathParts.push(tempChild.response.move); tempNode = tempChild.response; tempChild = null; }
-        } else if (step.type === 'choice') {
-            const choice = tempNode.choices?.find(c => c.id === step.id);
-            if (choice) { pathParts.push(choice.move); tempNode = choice; }
-        }
+        if (step.type === 'child') { tempChild = tempNode.children?.find(c => c.id === step.id); if (tempChild) { pathParts.push(tempChild.move); tempNode = tempChild; } }
+        else if (step.type === 'response') { if (tempChild?.response) { pathParts.push(tempChild.response.move); tempNode = tempChild.response; tempChild = null; } }
+        else if (step.type === 'choice') { const choice = tempNode.choices?.find(c => c.id === step.id); if (choice) { pathParts.push(choice.move); tempNode = choice; } }
     }
+    
     const transHTML = getTranspositionHTML(document.getElementById('openingName').value || 'Current');
     let html = builderPath.length > 0 ? `<button class="btn btn-secondary" onclick="builderBack()" style="margin-bottom:16px">← Back</button>` : '';
     html += `<div class="path-display"><span class="current">${pathParts.join(' → ')}</span></div>`;
-    if (pos.context.includes('your-move')) html += renderYourMoveView(node, opponent, transHTML);
-    else html += renderOpponentMoveView(node, you, pos.context === 'opponent-move-root', transHTML);
+    
+    // RENDER LOGIC
+    if (pos.context.includes('your-move')) {
+        // --- YOUR MOVE CONTEXT ---
+        if (node.isChoice) {
+            html += `<div class="position-card"><div class="position-label">Choice Point</div><div class="position-move">${node.move}</div>${node.explanation?`<div class="position-expl">${node.explanation}</div>`:''}</div>${transHTML}`;
+            if (node.choices?.length) {
+                html += `<p class="section-title">Your Options</p><div class="choices-grid">`;
+                node.choices.forEach(c => {
+                    const color = getColorForType(c.type);
+                    html += `<div class="choice-card ${color}"><div onclick="navigateToChoice('${c.id}')"><h4>${c.move}</h4><p class="name">${c.type||''}</p><p class="style">${c.status||''}</p></div><button class="delete-item-btn" onclick="deleteChoice('${c.id}')">×</button></div>`;
+                });
+                html += '</div>';
+            }
+            html += renderStandardForm('Add Another Option', 'addChoiceToExisting()');
+        } else {
+            // Standard Your Move
+            html += `<div class="position-card"><div class="position-label">Your Move</div><div class="position-move">${node.move}</div>${node.explanation?`<div class="position-expl">${node.explanation}</div>`:''}</div>${transHTML}`;
+            html += renderEditExplanation(node);
+            
+            if (node.children?.length) {
+                html += `<p class="section-title">${opponent}'s Responses</p><div class="response-list">`;
+                node.children.forEach(c => {
+                    html += `<div class="response-item"><div onclick="navigateToChild('${c.id}')" style="flex:1"><span class="move">${c.move}</span>${c.status?`<span class="tag">${c.status}</span>`:''}</div><button class="delete-item-btn" onclick="deleteChildFromList('${c.id}')">×</button><span class="arrow">→</span></div>`;
+                });
+                html += '</div>';
+            }
+            html += renderStandardForm(`Add ${opponent}'s Response`, 'addChildMove()');
+        }
+    } else {
+        // --- OPPONENT MOVE CONTEXT ---
+        html += `<div class="position-card opponent"><div class="position-label">Opponent's Move</div><div class="position-move">${node.move}</div>${node.status?`<div class="position-expl">${node.status}</div>`:''}</div>${transHTML}`;
+        
+        if (pos.context === 'opponent-move-root') {
+            if (node.children?.length) {
+                html += `<p class="section-title">Your Responses</p><div class="response-list">`;
+                node.children.forEach(c => {
+                    html += `<div class="response-item"><div onclick="navigateToChild('${c.id}')" style="flex:1"><span class="move">${c.move}</span></div><button class="delete-item-btn" onclick="deleteChildFromRoot('${c.id}')">×</button><span class="arrow">→</span></div>`;
+                });
+                html += '</div>';
+            }
+            html += renderStandardForm(`Add Your (${you}) Response`, 'addYourResponseAtRoot()');
+        } else {
+            const childRef = getCurrentChildRef();
+            if (childRef?.response) {
+                const resp = childRef.response;
+                html += `<p class="section-title">Your Response${resp.isChoice?' (Choice Point)':''}</p><div class="your-response-card" onclick="navigateToResponse()"><div style="flex:1"><div class="label">Tap to continue</div><div class="move">${resp.move}</div></div><span class="arrow">→</span></div>`;
+                if (!resp.isChoice) {
+                    html += `<div style="margin-bottom:16px;text-align:center;font-size:0.8rem;color:#94a3b8">To create a choice point, add an alternative:</div>`;
+                    html += renderStandardForm('Add Alternative Response', 'addAlternativeResponse()');
+                }
+                html += `<div class="detail-actions"><button class="btn btn-danger" onclick="deleteCurrentBranch()">Delete Branch</button></div>`;
+            } else {
+                html += renderStandardForm(`Add Your (${you}) Response`, 'addResponse()');
+            }
+        }
+    }
+    
     content.innerHTML = html;
     setupEnter();
-    setupLabelDropdown();
 }
 
-function renderYourMoveView(node, opponent, transHTML) {
-    let html = '';
-    if (node.isChoice) {
-        html += `<div class="position-card"><div class="position-label">Choice Point</div><div class="position-move">${node.move}</div>${node.explanation?`<div class="position-expl">${node.explanation}</div>`:''}</div>${transHTML}`;
-        if (node.choices?.length) {
-            html += `<p class="section-title">Your Options</p><div class="choices-grid">`;
-            node.choices.forEach(c => {
-                html += `<div class="choice-card ${c.color||'blue'}"><div onclick="navigateToChoice('${c.id}')"><h4>${c.move}</h4><p class="name">${c.name||''}</p><p class="style">${c.style||''}</p></div><button class="delete-item-btn" onclick="deleteChoice('${c.id}')">×</button></div>`;
-            });
-            html += '</div>';
-        }
-        html += renderAddChoiceForm();
-    } else {
-        html += `<div class="position-card"><div class="position-label">Your Move</div><div class="position-move">${node.move}</div>${node.explanation?`<div class="position-expl">${node.explanation}</div>`:''}</div>${transHTML}`;
-        html += renderEditExplanation(node);
-        if (node.children?.length) {
-            html += `<p class="section-title">${opponent}'s Responses</p><div class="response-list">`;
-            node.children.forEach(c => {
-                html += `<div class="response-item"><div onclick="navigateToChild('${c.id}')" style="flex:1"><span class="move">${c.move}</span>${c.label?`<span class="tag">${c.label}</span>`:''}</div><button class="delete-item-btn" onclick="deleteChildFromList('${c.id}')">×</button><span class="arrow">→</span></div>`;
-            });
-            html += '</div>';
-        }
-        html += `<div class="add-form"><div class="add-form-title">Add ${opponent}'s Response</div><div class="form-group"><input type="text" id="newMove" placeholder="e.g. e5"></div><div class="form-group"><select id="newLabel">${LABEL_OPTIONS.map(l=>`<option value="${l}">${l||'(No label)'}</option>`).join('')}</select></div><div class="form-group" id="customLabelGroup" style="display:none"><input type="text" id="customLabel"></div><button class="btn btn-purple" onclick="addChildMove()">+ Add Response</button></div>`;
-    }
-    return html;
-}
-
-function renderOpponentMoveView(node, you, isRoot, transHTML) {
-    let html = `<div class="position-card opponent"><div class="position-label">Opponent's Move</div><div class="position-move">${node.move}</div>${node.label?`<div class="position-expl">Label: ${node.label}</div>`:''}</div>${transHTML}`;
-    if (isRoot) {
-        if (node.children?.length) {
-            html += `<p class="section-title">Your Responses</p><div class="response-list">`;
-            node.children.forEach(c => {
-                html += `<div class="response-item"><div onclick="navigateToChild('${c.id}')" style="flex:1"><span class="move">${c.move}</span></div><button class="delete-item-btn" onclick="deleteChildFromRoot('${c.id}')">×</button><span class="arrow">→</span></div>`;
-            });
-            html += '</div>';
-        }
-        html += `<div class="add-form"><div class="add-form-title">Add Your (${you}) Response</div><div class="form-group"><input type="text" id="newMove"></div><div class="form-group"><select id="newLabel">${LABEL_OPTIONS.map(l=>`<option value="${l}">${l||'(No label)'}</option>`).join('')}</select></div><div class="form-group" id="customLabelGroup" style="display:none"><input type="text" id="customLabel"></div><div class="form-group"><input type="text" id="newExpl" placeholder="Explanation"></div><button class="btn btn-primary" onclick="addYourResponseAtRoot()">Add Response</button></div>`;
-        return html;
-    }
-    const childRef = getCurrentChildRef();
-    if (childRef?.response) {
-        const resp = childRef.response;
-        html += `<p class="section-title">Your Response${resp.isChoice?' (Choice Point)':''}</p><div class="your-response-card" onclick="navigateToResponse()"><div style="flex:1"><div class="label">Tap to continue</div><div class="move">${resp.move}</div></div><span class="arrow">→</span></div>`;
-        if (!resp.isChoice) html += `<div class="add-form choice-form"><div class="add-form-title">Add Alternative</div><div class="form-group"><input type="text" id="altMove" placeholder="Move"></div><div class="form-group"><input type="text" id="altName" placeholder="Name"></div><div class="form-group"><input type="text" id="altStyle" placeholder="Style"></div><div class="form-group"><div class="style-colors"><div class="style-color red" onclick="selectStyleColor('red')">Aggressive</div><div class="style-color blue" onclick="selectStyleColor('blue')">Solid</div></div></div><button class="btn btn-purple" onclick="addAlternativeResponse()">+ Add Alternative</button></div>`;
-        html += `<div class="detail-actions"><button class="btn btn-danger" onclick="deleteCurrentBranch()">Delete Branch</button></div>`;
-    } else {
-        html += `<div class="add-form"><div class="add-form-title">Add Your (${you}) Response</div><div class="toggle-row"><span class="toggle-label">Create choice point</span><div class="toggle-switch" id="choiceToggle" onclick="toggleChoiceMode()"></div></div><div id="singleResponseFields"><div class="form-group"><input type="text" id="newMove" placeholder="Move"></div><div class="form-group"><input type="text" id="newExpl" placeholder="Explanation"></div><button class="btn btn-primary" onclick="addResponse()">Add Response</button></div><div class="choice-fields" id="choicePointFields"><div class="form-group"><input type="text" id="choiceMove" placeholder="Move"></div><div class="form-group"><input type="text" id="choiceName" placeholder="Name"></div><div class="form-group"><div class="style-colors"><div class="style-color red selected" onclick="selectStyleColor('red')">Aggressive</div><div class="style-color blue" onclick="selectStyleColor('blue')">Solid</div></div></div><button class="btn btn-purple" onclick="addChoicePointResponse()">Create Choice Point</button></div></div><div class="detail-actions"><button class="btn btn-danger" onclick="deleteCurrentBranch()">Delete Branch</button></div>`;
-    }
-    return html;
-}
-
+// Edit Explanation Block
 function renderEditExplanation(node) {
-    return `<div class="edit-explanation"><label>Explanation</label><textarea id="editExpl">${node.explanation || ''}</textarea><button class="btn btn-secondary" onclick="saveExplanation()">Save</button></div>`;
-}
-
-function renderAddChoiceForm() {
-    return `<div class="add-form choice-form"><div class="add-form-title">Add Option</div><div class="form-group"><input type="text" id="choiceMove" placeholder="Move"></div><div class="form-group"><input type="text" id="choiceName" placeholder="Name"></div><div class="form-group"><div class="style-colors"><div class="style-color red" onclick="selectStyleColor('red')">Aggressive</div><div class="style-color blue selected" onclick="selectStyleColor('blue')">Solid</div></div></div><button class="btn btn-purple" onclick="addChoiceToExisting()">+ Add Option</button></div>`;
+    return `<div class="edit-explanation"><label>Explanation</label><textarea id="editExpl">${node.explanation || ''}</textarea><button class="btn btn-secondary" onclick="saveExplanation()">Save Notes</button></div>`;
 }
 
 // =====================================================
-// UTILS & EVENTS
+// HELPERS
 // =====================================================
-function setupEnter() {
-    setTimeout(() => {
-        const input = document.getElementById('newMove') || document.getElementById('choiceMove');
-        if (input) { input.focus(); input.addEventListener('keypress', e => { if (e.key === 'Enter') document.querySelectorAll('.add-form .btn')[0].click(); }); }
-    }, 50);
-}
+function toggleDetails() { isDetailsDrawerOpen = !isDetailsDrawerOpen; renderBuilder(); }
+function toggleRefModal() { document.getElementById('refModal').classList.toggle('active'); }
+function setupEnter() { setTimeout(() => { const i = document.getElementById('newMove'); if(i){i.focus(); i.addEventListener('keypress',e=>{if(e.key==='Enter')document.querySelector('.add-form .btn-primary').click()});}}, 50); }
 
-function setupLabelDropdown() {
-    const select = document.getElementById('newLabel'), grp = document.getElementById('customLabelGroup');
-    if (select && grp) select.addEventListener('change', () => grp.style.display = select.value === 'Custom' ? 'block' : 'none');
-}
-
-function toggleChoiceMode() {
-    const t = document.getElementById('choiceToggle'); t.classList.toggle('active');
-    document.getElementById('singleResponseFields').style.display = t.classList.contains('active') ? 'none' : 'block';
-    document.getElementById('choicePointFields').style.display = t.classList.contains('active') ? 'block' : 'none';
-}
-
-let selectedStyleColor = 'red';
-function selectStyleColor(c) { selectedStyleColor = c; document.querySelectorAll('.style-color').forEach(el => el.classList.toggle('selected', el.classList.contains(c))); }
-
-// Navigation Actions
+// Navigation
 function navigateToChild(id) { builderPath.push({ type: 'child', id }); renderBuilder(); }
 function navigateToResponse() { builderPath.push({ type: 'response' }); renderBuilder(); }
 function navigateToChoice(id) { builderPath.push({ type: 'choice', id }); renderBuilder(); }
 function builderBack() { builderPath.pop(); renderBuilder(); }
 
-// Builder Actions
-function addFirstMove() {
-    const m = document.getElementById('newMove').value.trim(), e = document.getElementById('newExpl')?.value.trim()||'';
-    if(!m)return; builderTree={id:'root',move:'1. '+m,player:'white',explanation:builderColor==='white'?e:'',children:[]}; renderBuilder();
+// Actions V3.0 (Using new inputs)
+function getFormValues() {
+    return {
+        move: document.getElementById('newMove').value.trim(),
+        status: document.getElementById('newStatus')?.value || '',
+        type: document.getElementById('newType')?.value || '',
+        expl: document.getElementById('newExpl')?.value.trim() || ''
+    };
 }
+
+function addFirstMove() {
+    const v = getFormValues(); if(!v.move)return;
+    builderTree={id:'root',move:'1. '+v.move,player:'white',explanation:builderColor==='white'?v.expl:'',status:v.status,type:v.type,children:[]};
+    renderBuilder();
+}
+
 function addChildMove() {
-    const m=document.getElementById('newMove').value.trim(); if(!m)return;
-    let l=document.getElementById('newLabel')?.value||''; if(l==='Custom')l=document.getElementById('customLabel')?.value||'';
-    const num=getMoveNumber(), opp=builderColor==='white'?'black':'white', not=opp==='black'?`${num}... ${m}`:`${num}. ${m}`;
-    const child={id:'c'+Date.now(),move:not,player:opp,label:l,response:null};
-    const pos=getBuilderPosition(); if(!pos.node.children)pos.node.children=[]; pos.node.children.push(child);
+    const v=getFormValues(); if(!v.move)return;
+    const num=getMoveNumber(), opp=builderColor==='white'?'black':'white', not=opp==='black'?`${num}... ${v.move}`:`${num}. ${v.move}`;
+    const child={id:'c'+Date.now(),move:not,player:opp,status:v.status,type:v.type,explanation:v.expl,response:null};
+    getBuilderPosition().node.children.push(child);
     builderPath.push({type:'child',id:child.id}); renderBuilder();
 }
+
 function addResponse() {
-    const m=document.getElementById('newMove').value.trim(); if(!m)return;
-    const ref=getCurrentChildRef(), num=getMoveNumber()+1, not=builderColor==='white'?`${num}. ${m}`:`${num}... ${m}`;
-    ref.response={id:'r'+Date.now(),move:not,player:builderColor,explanation:document.getElementById('newExpl').value,children:[]};
+    const v=getFormValues(); if(!v.move)return;
+    const ref=getCurrentChildRef(), num=getMoveNumber()+1, not=builderColor==='white'?`${num}. ${v.move}`:`${num}... ${v.move}`;
+    ref.response={id:'r'+Date.now(),move:not,player:builderColor,status:v.status,type:v.type,explanation:v.expl,children:[]};
     builderPath.push({type:'response'}); renderBuilder();
 }
-function addChoicePointResponse() {
-    const m=document.getElementById('choiceMove').value.trim(); if(!m)return;
-    const ref=getCurrentChildRef(), num=getMoveNumber()+1, not=builderColor==='white'?`${num}. ${m}`:`${num}... ${m}`;
-    ref.response={id:'cp'+Date.now(),move:'Choose Style',player:builderColor,isChoice:true,choices:[{
-        id:'ch'+Date.now(),move:not,name:document.getElementById('choiceName').value,style:document.getElementById('choiceStyle')?.value,color:selectedStyleColor,children:[]
-    }]};
-    builderPath.push({type:'response'}); renderBuilder();
+
+function addYourResponseAtRoot() {
+    const v=getFormValues(); if(!v.move)return;
+    const child={id:'c'+Date.now(),move:'1... '+v.move,player:builderColor,status:v.status,type:v.type,explanation:v.expl,children:[]};
+    if(!builderTree.children)builderTree.children=[]; builderTree.children.push(child);
+    builderPath.push({type:'child',id:child.id}); renderBuilder();
 }
+
 function addChoiceToExisting() {
-    const m=document.getElementById('choiceMove').value.trim(); if(!m)return;
-    const pos=getBuilderPosition(), num=getMoveNumber(), not=builderColor==='white'?`${num}. ${m}`:`${num}... ${m}`;
-    pos.node.choices.push({id:'ch'+Date.now(),move:not,name:document.getElementById('choiceName').value,color:selectedStyleColor,children:[]}); renderBuilder();
+    const v=getFormValues(); if(!v.move)return;
+    const pos=getBuilderPosition(), num=getMoveNumber(), not=builderColor==='white'?`${num}. ${v.move}`:`${num}... ${v.move}`;
+    pos.node.choices.push({id:'ch'+Date.now(),move:not,status:v.status,type:v.type,explanation:v.expl,children:[]}); renderBuilder();
 }
+
+function addAlternativeResponse() {
+    const v=getFormValues(); if(!v.move)return;
+    const ref=getCurrentChildRef(), old=ref.response, num=getMoveNumber()+1;
+    const not=builderColor==='white'?`${num}. ${v.move}`:`${num}... ${v.move}`;
+    
+    // Convert old response to choice format
+    const oldChoice = {
+        id:'ch_old'+Date.now(), move:old.move, status:old.status||'Mainline', type:old.type||'Positional/Strategic', 
+        explanation:old.explanation||'', children:old.children||[]
+    };
+    const newChoice = {
+        id:'ch'+Date.now(), move:not, status:v.status, type:v.type, explanation:v.expl, children:[]
+    };
+    
+    ref.response = {
+        id:'cp'+Date.now(), move:'Choose Style', player:builderColor, isChoice:true, choices:[oldChoice, newChoice]
+    };
+    renderBuilder();
+}
+
 function saveExplanation() { getBuilderPosition().node.explanation = document.getElementById('editExpl').value; renderBuilder(); }
-function deleteCurrentBranch() { if(!confirm('Delete branch?'))return; 
+
+function deleteCurrentBranch() { if(!confirm('Delete?'))return; 
     if(builderPath.length===0)builderTree=null; else {
         const last=builderPath.pop(), prev=getBuilderPosition().node;
         if(last.type==='child') prev.children=prev.children.filter(c=>c.id!==last.id);
@@ -1391,27 +1349,10 @@ function deleteCurrentBranch() { if(!confirm('Delete branch?'))return;
 }
 function deleteChildFromList(id) { const n=getBuilderPosition().node; n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
 function deleteChildFromRoot(id) { builderTree.children=builderTree.children.filter(c=>c.id!==id); renderBuilder(); }
-function addYourResponseAtRoot() {
-    const m=document.getElementById('newMove').value.trim(); if(!m)return;
-    let l=document.getElementById('newLabel')?.value||''; if(l==='Custom')l=document.getElementById('customLabel')?.value||'';
-    const child={id:'c'+Date.now(),move:'1... '+m,player:builderColor,label:l,explanation:document.getElementById('newExpl').value,children:[]};
-    if(!builderTree.children)builderTree.children=[]; builderTree.children.push(child);
-    builderPath.push({type:'child',id:child.id}); renderBuilder();
-}
 function deleteChoice(id) { const n=getBuilderPosition().node; n.choices=n.choices.filter(c=>c.id!==id); renderBuilder(); }
-function addAlternativeResponse() {
-    const m=document.getElementById('altMove').value.trim(); if(!m)return;
-    const ref=getCurrentChildRef(), old=ref.response, num=getMoveNumber()+1;
-    const newChoice={id:'ch'+Date.now(),move:builderColor==='white'?`${num}. ${m}`:`${num}... ${m}`,name:document.getElementById('altName').value,color:selectedStyleColor,children:[]};
-    const oldChoice={id:'ch_old'+Date.now(),move:old.move,name:'Original',color:'blue',children:old.children||[]};
-    ref.response={id:'cp'+Date.now(),move:'Choose Style',player:builderColor,isChoice:true,choices:[oldChoice,newChoice]};
-    renderBuilder();
-}
 
 // IO
-function buildOpeningObj() {
-    return { name:document.getElementById('openingName').value||'Opening', color:builderColor, description:document.getElementById('openingDesc').value, startingMoves:getStartingMoves(), tree:builderTree };
-}
+function buildOpeningObj() { return { name:document.getElementById('openingName').value||'Opening', color:builderColor, description:document.getElementById('openingDesc').value, startingMoves:getStartingMoves(), tree:builderTree }; }
 function getStartingMoves() {
     if(!builderTree)return''; let m=[builderTree.move],n=builderTree;
     while(n.children?.length && m.length<6) { const c=n.children[0]; m.push(c.move); 
@@ -1425,7 +1366,7 @@ function saveOpening() {
     OPENINGS[k]=o; saveStorage(); alert('Saved!'); editingKey=null; goToMenu();
 }
 function copyJson() { navigator.clipboard.writeText(document.getElementById('jsonOut').value); alert('Copied!'); }
-function importJson() { try { const o=JSON.parse(document.getElementById('jsonIn').value); OPENINGS['imp_'+Date.now()]=o; saveStorage(); alert('Imported!'); goToMenu(); } catch(e){alert('Invalid JSON');} }
+function importJson() { try { const o=JSON.parse(document.getElementById('jsonIn').value); OPENINGS['imp_'+Date.now()]=migrateOpening(o); saveStorage(); alert('Imported!'); goToMenu(); } catch(e){alert('Invalid JSON');} }
 function downloadOpening(k) { downloadObj(OPENINGS[k], OPENINGS[k].name); }
 function downloadCurrentOpening() { downloadObj(buildOpeningObj(), document.getElementById('openingName').value); }
 function downloadObj(o, n) {
@@ -1434,13 +1375,13 @@ function downloadObj(o, n) {
 }
 function triggerFileUpload() { document.getElementById('fileUploadInput').click(); }
 function handleFileUpload(e) { 
-    const r=new FileReader(); r.onload=ev=>{try{const o=JSON.parse(ev.target.result);OPENINGS['imp_'+Date.now()]=o;saveStorage();alert('Imported!');renderMenu();}catch{alert('Error');}};
+    const r=new FileReader(); r.onload=ev=>{try{const o=JSON.parse(ev.target.result);OPENINGS['imp_'+Date.now()]=migrateOpening(o);saveStorage();alert('Imported!');renderMenu();}catch{alert('Error');}};
     if(e.target.files[0])r.readAsText(e.target.files[0]); e.target.value='';
 }
 function showUrlImport() { document.getElementById('urlImportSection').style.display='block'; }
 function hideUrlImport() { document.getElementById('urlImportSection').style.display='none'; }
 async function importFromUrl() {
-    try { const r=await fetch(document.getElementById('importUrl').value); const o=await r.json(); OPENINGS['imp_'+Date.now()]=o; saveStorage(); alert('Imported!'); hideUrlImport(); renderMenu(); } catch(e){alert('Error fetching');}
+    try { const r=await fetch(document.getElementById('importUrl').value); const o=await r.json(); OPENINGS['imp_'+Date.now()]=migrateOpening(o); saveStorage(); alert('Imported!'); hideUrlImport(); renderMenu(); } catch(e){alert('Error fetching');}
 }
 
 document.addEventListener('DOMContentLoaded', init);
