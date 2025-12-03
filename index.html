@@ -467,8 +467,16 @@
         .choice-fields { display: none; padding-top: 14px; border-top: 1px solid #334155; margin-top: 14px; }
         .choice-fields.visible { display: block; }
 
+        /* FIXED: Explanation Textarea Styling */
         .edit-explanation { margin-top: 16px; padding-top: 16px; border-top: 1px solid #334155; }
-        .edit-explanation textarea { min-height: 80px; resize: vertical; }
+        .edit-explanation textarea {
+            width: 100%; padding: 14px; background: #1e293b;
+            border: 1px solid #334155; border-radius: 10px; color: #e2e8f0;
+            font-size: 0.95rem; min-height: 80px; resize: vertical;
+            font-family: inherit;
+        }
+        .edit-explanation textarea:focus { outline: none; border-color: #fbbf24; }
+        .edit-explanation .btn { margin-top: 10px; padding: 12px; min-height: 44px; }
 
         /* Misc */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -798,11 +806,11 @@ function getTranspositionHTML(currentKey) {
     const matches = transpositionMap[fen];
     if (!matches || matches.length < 1) return '';
     
-    // BUG FIX: Filter out current opening key and duplicates
+    // BUG FIX: Filter out current opening key and duplicates using Set
     const uniqueKeys = new Set();
     const others = matches.filter(m => {
         if (m.key === currentKey || m.key === 'builder_temp' || m.color !== currentUserColor) return false;
-        if (uniqueKeys.has(m.key)) return false; // Prevent duplicates in list
+        if (uniqueKeys.has(m.key)) return false; // Prevent duplicates
         uniqueKeys.add(m.key);
         return true;
     });
@@ -885,6 +893,11 @@ function findPathToFenInOpening(opening, targetFen) {
     if (game.fen() === targetFen) return []; 
     if (root.children) root.children.forEach(c => search(c, [c.id]));
     return foundPath || [];
+}
+
+function getStartFen() {
+    if (typeof Chess === 'undefined') return '';
+    return new Chess().fen();
 }
 
 // =====================================================
