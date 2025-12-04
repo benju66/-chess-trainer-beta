@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V4.7</title>
+    <title>Chess Trainer V4.8</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -31,9 +31,15 @@
         }
 
         .container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; }
+        
+        /* HEADER WITH TOOLS */
         .header { text-align: center; padding: 20px 0; position: relative; }
         .header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--header-color); }
-        .version-tag { background: #10b981; color: #1e293b; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+        .header-tools { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .tool-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .tool-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        
+        .version-tag { background: #f43f5e; color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
 
         /* FOLDERS */
         .folder-header {
@@ -66,7 +72,7 @@
         }
 
         /* TRAINER */
-        .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; }
+        .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; }
         .move-tag { padding: 4px 8px; border-radius: 4px; font-family: monospace; margin-right: 6px; display: inline-block; }
         .move-tag.white { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
         .move-tag.black { color: #e2e8f0; background: rgba(255, 255, 255, 0.1); }
@@ -93,6 +99,8 @@
         .option-btn.red { border-left: 4px solid #ef4444; }
         .option-btn.green { border-left: 4px solid #22c55e; }
         .option-btn.purple { border-left: 4px solid #a855f7; }
+        
+        /* Remote Buttons (Ghost) */
         .option-btn.remote { background: transparent; border: 1px dashed #8b5cf6; opacity: 0.9; }
         .option-btn.remote h4 { color: #c4b5fd; }
         .option-btn.remote .badge { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; }
@@ -151,21 +159,27 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V4.7</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V4.8</span></h1>
                 <p>Unified Repertoire Manager</p>
+                <div class="header-tools">
+                    <button class="tool-btn" onclick="backupLibrary()">☁️ Backup All</button>
+                    <button class="tool-btn" onclick="document.getElementById('restoreInput').click()">📥 Restore</button>
+                </div>
             </div>
             <div id="openingsContainer"></div>
             <button class="nav-btn" style="width:100%; margin-top:20px; background:#22c55e; color:white;" onclick="showBuilder()">+ Create New Opening</button>
             
             <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="nav-btn" style="flex:1" onclick="document.getElementById('fileInput').click()">📂 Import JSON</button>
-                <button class="nav-btn" style="flex:1" onclick="toggleUrlImport()">🔗 Import URL</button>
+                <button class="nav-btn" style="flex:1" onclick="document.getElementById('fileInput').click()">📂 Add File</button>
+                <button class="nav-btn" style="flex:1" onclick="toggleUrlImport()">🔗 Add URL</button>
             </div>
             <div id="urlImportBox" style="display:none; margin-top:10px;">
                 <input type="text" id="importUrl" placeholder="Paste raw JSON URL..." style="width:100%; padding:12px; border-radius:8px; margin-bottom:8px;">
                 <button class="nav-btn" style="width:100%" onclick="importFromUrl()">Fetch</button>
             </div>
+            
             <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(this)">
+            <input type="file" id="restoreInput" style="display:none" onchange="restoreLibrary(this)">
         </div>
 
         <div id="trainerScreen" class="screen" style="display:none;">
@@ -238,7 +252,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Type</label>
+                            <label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label>
                             <select id="newType">
                                 <option>Positional/Strategic</option><option>Tactical</option><option>Dynamic</option><option>Defensive/Prophylactic</option><option>Forcing</option><option>Quiet</option>
                             </select>
@@ -272,7 +286,7 @@
 
 <script>
 // =====================================================
-// V4.7 DATA CONSTANTS (RESTORED)
+// DATA & CONFIG
 // =====================================================
 const DEFAULT_OPENINGS = {
     italian_game: {
@@ -313,9 +327,6 @@ const DEFAULT_OPENINGS = {
     }
 };
 
-const JSON_TEMPLATE_WHITE = { "_comment": "V4.0 UNIVERSAL TEMPLATE (WHITE)", "version": "4.0", "name": "New White Opening", "color": "white", "description": "", "startingMoves": "1. e4", "tree": { "id": "root", "move": "1. e4", "player": "white", "status": "Mainline", "type": "Positional", "explanation": "Start here", "children": [] } };
-const JSON_TEMPLATE_BLACK = { "_comment": "V4.0 UNIVERSAL TEMPLATE (BLACK)", "version": "4.0", "name": "New Black Opening", "color": "black", "description": "", "startingMoves": "1. d4 d5", "tree": { "id": "root", "move": "1. d4", "player": "white", "status": "Mainline", "explanation": "Opponent move", "children": [] } };
-
 const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
 const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
 
@@ -329,7 +340,7 @@ const TYPE_DEFINITIONS = [
 ];
 
 // =====================================================
-// STATE & CONFIG
+// STATE
 // =====================================================
 let OPENINGS = {};
 let currentOpening = null, currentOpeningKey = null, originalOpeningKey = null;
@@ -345,7 +356,6 @@ function init() {
     if (stored) {
         OPENINGS = JSON.parse(stored);
     } else {
-        // Load defaults if empty
         OPENINGS = JSON.parse(JSON.stringify(DEFAULT_OPENINGS));
     }
     
@@ -363,7 +373,7 @@ function saveStorage() {
 }
 
 // =====================================================
-// THE BRAIN: TRANSPOSITION MAP
+// TRANSPOSITION BRAIN (UPDATED V4.8)
 // =====================================================
 function rebuildTranspositionMap() {
     if (typeof Chess === 'undefined') return;
@@ -381,9 +391,13 @@ function rebuildTranspositionMap() {
             const fen = game.fen();
             if (!transpositionMap[fen]) transpositionMap[fen] = [];
             
+            // Store Color for Filtering
             if (!transpositionMap[fen].find(x => x.key === key)) {
                 transpositionMap[fen].push({
-                    key: key, name: op.name, group: op.group || "Uncategorized",
+                    key: key, 
+                    name: op.name,
+                    color: op.color, // V4.8: Store color
+                    group: op.group || "Uncategorized",
                     nextMoves: node.children ? node.children.map(c => ({
                         move: c.move, type: c.type, status: c.status
                     })) : []
@@ -409,15 +423,23 @@ function getUnifiedOptions(currentNode) {
             if (ptr) game.move(ptr.move.replace(/^\d+\.+/, '').trim());
         }
         
+        // Get Last Move for "Via" text
+        const history = game.history();
+        const lastMove = history.length > 0 ? history[history.length - 1] : "Start";
+        
         const matches = transpositionMap[game.fen()] || [];
         matches.forEach(match => {
+            // Filter: Don't show self, don't show wrong color
             if (match.key === currentOpeningKey) return;
+            if (match.color !== userColor) return; // V4.8 Color Filter
+            
             match.nextMoves.forEach(next => {
                 if (options.find(o => o.move === next.move)) return;
                 options.push({
                     id: 'remote_' + match.key,
                     move: next.move, type: next.type, status: next.status,
-                    source: 'remote', targetKey: match.key, targetName: match.name
+                    source: 'remote', targetKey: match.key, targetName: match.name,
+                    via: lastMove // V4.8 Context
                 });
             });
         });
@@ -426,7 +448,7 @@ function getUnifiedOptions(currentNode) {
 }
 
 // =====================================================
-// TRAINER LOGIC
+// TRAINER
 // =====================================================
 function startTraining(key) {
     currentOpening = OPENINGS[key];
@@ -438,29 +460,11 @@ function startTraining(key) {
     renderTrainer();
 }
 
-function jumpToOpening(targetKey, moveText) {
-    // 1. Push current state to history
-    historyStack.push({
-        key: currentOpeningKey,
-        path: [...currentPath],
-        name: currentOpening.name
-    });
-    
-    // 2. Load new opening
+function jumpToOpening(targetKey) {
+    historyStack.push({ key: currentOpeningKey, path: [...currentPath], name: currentOpening.name });
     currentOpeningKey = targetKey;
     currentOpening = OPENINGS[targetKey];
-    
-    // 3. Find the path in new opening that matches current FEN
-    // (For simplicity in V4.5, we just start at root, but a real deep-link 
-    // requires searching the tree for the FEN. Implementing simple root jump for now).
-    // *Advanced Logic*: In a real app, we would use findPathToFen() here.
-    // Since we are jumping based on a matching position, let's assume user wants to explore the NEW file from that spot.
-    // Re-calculating the path in the new file is complex. 
-    // SIMPLIFICATION: We just load the file. User navigates.
-    // Ideally: path = findPathByFEN(currentFEN, newFile);
-    
-    currentPath = []; // Reset path for new file (Simplified)
-    
+    currentPath = []; 
     updateTheme();
     renderTrainer();
 }
@@ -468,314 +472,135 @@ function jumpToOpening(targetKey, moveText) {
 function returnToPrevious() {
     if (historyStack.length === 0) return;
     const state = historyStack.pop();
-    
     currentOpeningKey = state.key;
     currentOpening = OPENINGS[state.key];
     currentPath = state.path;
-    
     updateTheme();
     renderTrainer();
 }
 
-function updateTheme() {
-    const body = document.body;
-    if (currentOpeningKey !== originalOpeningKey) {
-        body.classList.add('theme-purple');
-    } else {
-        body.classList.remove('theme-purple');
-    }
-    
-    // Update Return Button
-    const container = document.getElementById('returnContainer');
-    if (historyStack.length > 0) {
-        const last = historyStack[historyStack.length - 1];
-        container.innerHTML = `<button class="return-btn" onclick="returnToPrevious()">↩ Return to ${last.name}</button>`;
-    } else {
-        container.innerHTML = '';
-    }
-}
-
 function renderTrainer() {
-    // 1. Get Current Node
     let node = currentOpening.tree;
     let movesText = [node.move];
     
     for (let id of currentPath) {
         const child = node.children?.find(c => c.id === id);
-        if (child) {
-            node = child;
-            movesText.push(child.move);
-        }
+        if (child) { node = child; movesText.push(child.move); }
     }
     
-    // 2. Update Display
     document.getElementById('currentMoveText').textContent = node.move;
-    document.getElementById('currentExplanation').textContent = node.explanation || "No explanation available.";
-    document.getElementById('moveHistory').innerHTML = movesText.map(m => 
-        `<span class="move-tag ${m.includes('...')?'black':'white'}">${m}</span>`
-    ).join('');
+    document.getElementById('currentExplanation').textContent = node.explanation || "No notes.";
     
-    // 3. Get Unified Options
+    const histEl = document.getElementById('moveHistory');
+    histEl.innerHTML = movesText.map(m => `<span class="move-tag ${m.includes('...')?'black':'white'}">${m}</span>`).join('');
+    // Auto Scroll
+    histEl.scrollLeft = histEl.scrollWidth;
+    
     const options = getUnifiedOptions(node);
     const container = document.getElementById('trainerOptions');
     
     if (options.length === 0) {
-        container.innerHTML = `<div class="end-card"><h3>End of Line</h3><p>No moves defined here.</p></div>`;
+        container.innerHTML = `<div class="end-card"><h3>End of Line</h3><p>No moves defined.</p></div>`;
         return;
     }
     
     container.innerHTML = options.map(opt => {
         if (opt.source === 'local') {
-            const color = getColorClass(opt.type);
-            return `<div class="option-btn ${color}" onclick="handleLocalMove('${opt.id}')">
-                <div class="main">
-                    <h4>${opt.move}</h4>
-                    <p>${opt.status || ''} • ${opt.type || ''}</p>
-                </div>
-                <span class="arrow">➜</span>
-            </div>`;
+            return `<div class="option-btn ${getColorClass(opt.type)}" onclick="handleLocalMove('${opt.id}')">
+                <div class="main"><h4>${opt.move}</h4><p>${opt.status||''} ${opt.type||''}</p></div><span>➜</span></div>`;
         } else {
-            // Remote / Ghost
-            return `<div class="option-btn remote" onclick="jumpToOpening('${opt.targetKey}', '${opt.move}')">
+            // V4.8: Restored "Via" and Short Label
+            return `<div class="option-btn remote" onclick="jumpToOpening('${opt.targetKey}')">
                 <div class="main">
-                    <h4>${opt.move} <span class="badge">Found in: ${opt.targetName}</span></h4>
-                    <p>Tap to jump to this file</p>
+                    <h4>${opt.move} <span class="badge">${opt.targetName}</span></h4>
+                    <p>via ${opt.via} • Tap to jump</p>
                 </div>
-                <span class="arrow">↗</span>
+                <span>↗</span>
             </div>`;
         }
     }).join('');
 }
 
-function handleLocalMove(id) {
-    currentPath.push(id);
-    renderTrainer();
-}
-
-function getColorClass(type) {
-    if (!type) return 'blue';
-    const t = type.toLowerCase();
-    if (t.includes('tact') || t.includes('forc')) return 'red';
-    if (t.includes('dynam')) return 'purple';
-    if (t.includes('defen')) return 'green';
-    return 'blue';
+function handleLocalMove(id) { currentPath.push(id); renderTrainer(); }
+function updateTheme() {
+    document.body.className = (currentOpeningKey !== originalOpeningKey) ? 'theme-purple' : '';
+    document.getElementById('returnContainer').innerHTML = historyStack.length ? 
+        `<button class="return-btn" onclick="returnToPrevious()">↩ Return</button>` : '';
 }
 
 // =====================================================
-// MENU & FOLDERS
+// BUILDER & MENU (STANDARD)
 // =====================================================
-function renderMenu() {
-    const container = document.getElementById('openingsContainer');
-    container.innerHTML = '';
-    
-    // Group by Folder
-    const groups = { "Uncategorized": [] };
-    
-    Object.entries(OPENINGS).forEach(([key, op]) => {
-        // Auto-migrate on load if old version
-        if (!op.version) op = migrateOpening(op);
-        
-        const g = op.group || "Uncategorized";
-        if (!groups[g]) groups[g] = [];
-        groups[g].push({ key, ...op });
-    });
-    
-    // Render Groups
-    Object.keys(groups).sort().forEach(groupName => {
-        const items = groups[groupName];
-        if (items.length === 0) return;
-        
-        const groupId = 'g_' + groupName.replace(/\s/g, '');
-        
-        // Header
-        const header = document.createElement('div');
-        header.className = 'folder-header';
-        header.innerHTML = `<span>📁 ${groupName}</span> <span class="folder-count">${items.length}</span>`;
-        header.onclick = () => {
-            toggleFolder(groupId);
-        };
-        container.appendChild(header);
-        
-        // Content
-        const content = document.createElement('div');
-        content.id = groupId;
-        content.className = 'folder-content ' + (groupName === 'Uncategorized' ? 'open' : ''); // Default open uncat
-        
-        items.forEach(op => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.onclick = () => startTraining(op.key);
-            card.innerHTML = `
-                <div class="card-actions">
-                    <button class="icon-btn" onclick="event.stopPropagation(); editOpening('${op.key}')">✏️</button>
-                    <button class="icon-btn" onclick="event.stopPropagation(); deleteOpening('${op.key}')">🗑</button>
-                </div>
-                <h3>${op.name} <span class="version-tag" style="background:${op.color==='white'?'#fbbf24':'#94a3b8'}">${op.color}</span></h3>
-                <p>${op.description || ''}</p>
-                <div class="moves">${op.startingMoves}</div>
-            `;
-            content.appendChild(card);
-        });
-        container.appendChild(content);
-    });
-}
-
-function toggleFolder(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('open');
-}
-
-function deleteOpening(key) {
-    if(confirm('Delete this opening?')) {
-        delete OPENINGS[key];
-        saveStorage();
-        renderMenu();
-    }
-}
-
-// =====================================================
-// BUILDER (Simplified V4)
-// =====================================================
-// ... (Builder Logic remains mostly same as V4.0 but populates OPENINGS)
-
-function showBuilder() {
-    builderTree = { id: 'root', move: 'Start', children: [] }; // Reset
-    builderPath = [];
-    editingKey = null;
-    showScreen('builderScreen');
-    renderBuilder();
-}
-
-function editOpening(key) {
-    editingKey = key;
-    const op = OPENINGS[key];
-    builderTree = JSON.parse(JSON.stringify(op.tree));
-    builderColor = op.color;
-    document.getElementById('builderName').value = op.name;
-    document.getElementById('builderGroup').value = op.group || '';
-    document.getElementById('builderColor').value = op.color;
-    builderPath = [];
-    showScreen('builderScreen');
-    renderBuilder();
-}
+function showBuilder() { builderTree = { id: 'root', move: 'Start', children: [] }; builderPath = []; editingKey = null; showScreen('builderScreen'); renderBuilder(); }
+function editOpening(key) { editingKey = key; const op = OPENINGS[key]; builderTree = JSON.parse(JSON.stringify(op.tree)); builderColor = op.color; document.getElementById('builderName').value = op.name; document.getElementById('builderGroup').value = op.group || ''; document.getElementById('builderColor').value = op.color; builderPath = []; showScreen('builderScreen'); renderBuilder(); }
 
 function renderBuilder() {
-    // Identify Current Node
     let node = builderTree;
     let historyHtml = '';
-    
-    for (let id of builderPath) {
-        const child = node.children.find(c => c.id === id);
-        if (child) {
-            node = child;
-            historyHtml += `<span class="move-tag white">${child.move}</span> `;
-        }
-    }
-    
+    for (let id of builderPath) { const child = node.children.find(c => c.id === id); if (child) { node = child; historyHtml += `<span class="move-tag white">${child.move}</span> `; } }
     document.getElementById('builderHistory').innerHTML = historyHtml || 'Root';
+    const isOpponent = (builderColor === 'white' && (builderPath.length % 2 !== 0)) || (builderColor === 'black' && (builderPath.length % 2 === 0));
+    document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card';
+    document.getElementById('builderCurrentNode').innerHTML = `<div class="move-label">${isOpponent?"Opponent":"You"}</div><h2>${node.move}</h2><p>${node.explanation||''}</p>`;
     
-    // Current Node Card
-    document.getElementById('builderCurrentNode').innerHTML = `
-        <h2>${node.move}</h2>
-        <p>${node.explanation || 'No explanation'}</p>
-        <div style="margin-top:5px;">
-            <span class="version-tag">${node.status || '-'}</span>
-            <span class="version-tag">${node.type || '-'}</span>
-        </div>
-    `;
-    
-    // Responses List
     const list = document.getElementById('builderResponses');
     list.innerHTML = '';
     if (node.children) {
         node.children.forEach(c => {
-            const color = getColorClass(c.type);
-            list.innerHTML += `
-                <div class="option-btn ${color}" onclick="builderPath.push('${c.id}'); renderBuilder();">
-                    <div class="main"><h4>${c.move}</h4><p>${c.status}</p></div>
-                    <span>➜</span>
-                </div>
-            `;
+            list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`;
         });
     }
-}
-
-function toggleDetails() {
-    const d = document.getElementById('builderDetails');
-    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('addFormTitle').innerText = `Add ${isOpponent?"You":"Opponent"}'s Move`;
+    setupEnter();
 }
 
 function addBuilderMove() {
-    const move = document.getElementById('newMoveInput').value;
-    if (!move) return;
-    
-    // Find parent
-    let parent = builderTree;
-    for (let id of builderPath) {
-        parent = parent.children.find(c => c.id === id);
-    }
-    
-    if (!parent.children) parent.children = [];
-    
-    const newId = 'node_' + Date.now();
-    parent.children.push({
-        id: newId,
-        move: move, // User must type full notation "1. e4" for now
-        status: document.getElementById('newStatus').value,
-        type: document.getElementById('newType').value,
-        explanation: document.getElementById('newExpl').value,
-        children: []
-    });
-    
-    // Clear inputs
-    document.getElementById('newMoveInput').value = '';
-    document.getElementById('newExpl').value = '';
-    
-    renderBuilder();
+    const move = document.getElementById('newMoveInput').value; if(!move)return;
+    let node = builderTree; for(let id of builderPath) node = node.children.find(c => c.id === id);
+    if(!node.children) node.children=[];
+    node.children.push({ id:'n'+Date.now(), move:move, status:document.getElementById('newStatus').value, type:document.getElementById('newType').value, explanation:document.getElementById('newExpl').value, children:[] });
+    document.getElementById('newMoveInput').value = ''; renderBuilder();
 }
 
-function deleteBuilderNode() {
-    if (builderPath.length === 0) return;
-    if (!confirm('Delete current branch?')) return;
+function deleteBuilderNode() { if(!builderPath.length || !confirm('Delete branch?'))return; const id=builderPath.pop(); let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
+function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
+function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
+
+// =====================================================
+// BACKUP & RESTORE (V4.8 NEW)
+// =====================================================
+function backupLibrary() {
+    const json = JSON.stringify(OPENINGS, null, 2);
+    const blob = new Blob([json], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'chess_library_backup_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+}
+
+function restoreLibrary(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!confirm("Warning: This will OVERWRITE your current library. Continue?")) return;
     
-    const currentId = builderPath.pop();
-    // Find parent
-    let parent = builderTree;
-    for (let id of builderPath) {
-        parent = parent.children.find(c => c.id === id);
-    }
-    // Remove child
-    parent.children = parent.children.filter(c => c.id !== currentId);
-    renderBuilder();
-}
-
-function saveExplanation() {
-    const val = document.getElementById('editExpl').value;
-    let node = builderTree;
-    for (let id of builderPath) node = node.children.find(c => c.id === id);
-    node.explanation = val;
-    renderBuilder();
-}
-
-function renderEditExplanation(node) {
-    return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;">
-        <textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea>
-        <button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button>
-    </div>`;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            OPENINGS = data;
+            saveStorage();
+            alert("Library Restored Successfully!");
+            renderMenu();
+        } catch (err) { alert("Invalid Backup File"); }
+    };
+    reader.readAsText(file);
 }
 
 // =====================================================
-// HELPERS
+// HELPERS & IO
 // =====================================================
-function getColorClass(type) {
-    if (!type) return 'blue';
-    const t = type.toLowerCase();
-    if (t.includes('tact') || t.includes('forc')) return 'red';
-    if (t.includes('dynam')) return 'purple';
-    if (t.includes('defen')) return 'green';
-    return 'blue';
-}
-function toggleDetails() { const d = document.getElementById('builderDetails'); d.style.display = d.style.display === 'none' ? 'block' : 'none'; }
+function getColorClass(type) { if (!type) return 'blue'; const t = type.toLowerCase(); if (t.includes('tact')||t.includes('forc')) return 'red'; if (t.includes('dynam')) return 'purple'; if (t.includes('defen')) return 'green'; return 'blue'; }
+function toggleDetails() { const d=document.getElementById('builderDetails'); d.style.display=d.style.display==='none'?'block':'none'; }
 function toggleRefModal() { document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; }
 function setupEnter() { setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); }
 function navigateToChild(id) { builderPath.push(id); renderBuilder(); }
@@ -783,135 +608,53 @@ function builderBack() { builderPath.pop(); renderBuilder(); }
 function goBack() { showScreen('menuScreen'); }
 function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
 
-// =====================================================
-// IO & MIGRATION (THE FIX)
-// =====================================================
 function saveOpening() {
     const name = document.getElementById('builderName').value || "Untitled";
     const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now());
-    OPENINGS[key] = {
-        version: "4.0",
-        name: name,
-        group: document.getElementById('builderGroup').value || "Uncategorized",
-        color: document.getElementById('builderColor').value,
-        tree: builderTree,
-        startingMoves: "Custom"
-    };
-    saveStorage();
-    exitBuilder();
+    OPENINGS[key] = { version: "4.0", name: name, group: document.getElementById('builderGroup').value || "Uncategorized", color: document.getElementById('builderColor').value, tree: builderTree, startingMoves: "Custom" };
+    saveStorage(); exitBuilder();
 }
 
-function downloadCurrentJSON() {
-    const json = JSON.stringify(OPENINGS[editingKey], null, 2);
-    const blob = new Blob([json], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'opening.json';
-    a.click();
-}
+function downloadCurrentJSON() { const json = JSON.stringify(OPENINGS[editingKey], null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'opening.json'; a.click(); }
 
-// THIS IS THE REAL RECURSIVE MIGRATOR FROM V3 -> V4
 function migrateOpening(op) {
-    // 1. If already migrated, stop.
     if (op.version === "4.0") return op;
-    
-    console.log("Migrating " + op.name + " to V4.0...");
-
-    // 2. Recursive walker to fix every node
-    function walk(node) {
-        if (!node) return;
-
-        // Ensure children array exists
-        if (!node.children) node.children = [];
-
-        // MIGRATION: Move 'response' into 'children'
-        if (node.response) {
-            if (node.response.isChoice && node.response.choices) {
-                // If it was a choice, push all choices to children
-                node.response.choices.forEach(c => node.children.push(c));
-            } else {
-                // If it was a single response, push it to children
-                node.children.push(node.response);
-            }
-            // Destructive: Remove the old field so V4 logic doesn't get confused
-            delete node.response;
-        }
-
-        // MIGRATION: Fix old Labels/Styles
-        if (node.label && !node.status) node.status = node.label;
-        if (node.style && !node.type) {
-            const s = node.style.toLowerCase();
-            if (s.includes('aggressive') || s.includes('tactical')) node.type = 'Tactical';
-            else if (s.includes('solid') || s.includes('positional')) node.type = 'Positional/Strategic';
-            else if (s.includes('safe')) node.type = 'Defensive/Prophylactic';
-            else node.type = 'Dynamic';
-        }
-
-        // Recurse down the tree
-        if (node.children && node.children.length > 0) {
-            node.children.forEach(walk);
-        }
+    function walk(n) {
+        if (!n) return;
+        if (!n.children) n.children = [];
+        if (n.label && !n.status) n.status = n.label;
+        if (n.style && !n.type) { const s = n.style.toLowerCase(); if (s.includes('agg')||s.includes('tact')) n.type='Tactical'; else if (s.includes('sol')||s.includes('pos')) n.type='Positional/Strategic'; else if (s.includes('safe')) n.type='Defensive/Prophylactic'; else n.type='Dynamic'; }
+        if (n.response) { if (n.response.isChoice && n.response.choices) n.response.choices.forEach(c => n.children.push(c)); else n.children.push(n.response); delete n.response; }
+        n.children.forEach(walk);
     }
-
-    // 3. Execute
-    walk(op.tree);
-    op.version = "4.0"; // Mark as done
-    return op;
+    walk(op.tree); op.version = "4.0"; return op;
 }
 
 function handleFileUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
+    const file = input.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const json = JSON.parse(e.target.result);
-            // CRITICAL: Run Migrator Here
-            const migrated = migrateOpening(json);
-            
-            const key = 'import_' + Date.now();
-            OPENINGS[key] = migrated;
-            saveStorage();
-            alert('Imported & Migrated successfully!');
-            renderMenu();
-        } catch (err) { alert('Invalid JSON: ' + err.message); }
-    };
+    reader.onload = (e) => { try { const json = JSON.parse(e.target.result); const migrated = migrateOpening(json); const key = 'import_' + Date.now(); OPENINGS[key] = migrated; saveStorage(); alert('Imported!'); renderMenu(); } catch (err) { alert('Invalid JSON'); } };
     reader.readAsText(file);
 }
 
-async function importFromUrl() {
-    const url = document.getElementById('importUrl').value;
-    try {
-        const res = await fetch(url);
-        const json = await res.json();
-        // CRITICAL: Run Migrator Here
-        const migrated = migrateOpening(json);
-        
-        const key = 'import_' + Date.now();
-        OPENINGS[key] = migrated;
-        saveStorage();
-        alert('Imported!');
-        document.getElementById('urlImportBox').style.display='none';
-        renderMenu();
-    } catch (e) { alert('Failed to load URL'); }
-}
+async function importFromUrl() { try { const res = await fetch(document.getElementById('importUrl').value); const json = await res.json(); const migrated = migrateOpening(json); OPENINGS['import_' + Date.now()] = migrated; saveStorage(); alert('Imported!'); document.getElementById('urlImportBox').style.display='none'; renderMenu(); } catch (e) { alert('Error loading URL'); } }
+function toggleUrlImport() { const el = document.getElementById('urlImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
 
-// =====================================================
-// MISSING UI FUNCTIONS (FIX)
-// =====================================================
-function showScreen(id) {
-    // Hide all screens
-    ['menuScreen', 'trainerScreen', 'builderScreen'].forEach(s => {
-        document.getElementById(s).style.display = 'none';
+// UI Functions
+function showScreen(id) { ['menuScreen', 'trainerScreen', 'builderScreen'].forEach(s => document.getElementById(s).style.display = 'none'); document.getElementById(id).style.display = 'block'; window.scrollTo(0, 0); }
+function renderMenu() {
+    const container = document.getElementById('openingsContainer'); container.innerHTML = '';
+    const groups = {};
+    Object.entries(OPENINGS).forEach(([key, op]) => { if (!op.version) op = migrateOpening(op); const g = op.group || "Uncategorized"; if (!groups[g]) groups[g] = []; groups[g].push({ key, ...op }); });
+    if (Object.keys(groups).length === 0) { container.innerHTML = `<div class="empty-state"><div class="icon">♟️</div><p>No openings found.</p></div>`; return; }
+    Object.entries(groups).forEach(([groupName, items]) => {
+        const folderId = 'folder_' + groupName.replace(/\s/g, '');
+        container.innerHTML += `<div class="folder-header" onclick="toggleFolder('${folderId}')"><span>📂 ${groupName}</span><span class="folder-count">${items.length}</span></div><div id="${folderId}" class="folder-content open">${items.map(item => `<div class="card" onclick="startTraining('${item.key}')"><div class="card-actions"><button class="icon-btn" onclick="event.stopPropagation(); editOpening('${item.key}')">✏️</button><button class="icon-btn" onclick="event.stopPropagation(); deleteOpening('${item.key}')">🗑</button></div><h3>${item.name} <span class="version-tag" style="background:${item.color==='white'?'#fbbf24':'#334155'}; color:${item.color==='white'?'#000':'#fff'}">${item.color.toUpperCase()}</span></h3><p>${item.description || ''}</p><div class="moves">${item.startingMoves || ''}</div></div>`).join('')}</div>`;
     });
-    // Show target
-    document.getElementById(id).style.display = 'block';
-    
-    // Scroll to top
-    window.scrollTo(0, 0);
 }
+function toggleFolder(id) { const el = document.getElementById(id); if (el) el.classList.toggle('open'); }
+function deleteOpening(key) { if (confirm(`Delete "${OPENINGS[key].name}"?`)) { delete OPENINGS[key]; saveStorage(); renderMenu(); } }
 
-// Start
 init();
 </script>
 </body>
