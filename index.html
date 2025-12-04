@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chess Opening Trainer V4.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <style>
+        /* =========================================
+           CORE STYLES (Mobile First)
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 16px;
+            padding-bottom: 120px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .version-tag {
+            background: #10b981; /* Green for Stable V4 */
+            color: #1e293b;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        .header p { color: #94a3b8; font-size: 0.875rem; }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #64748b;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+
+        /* =========================================
+           CARDS & LISTS
+           ========================================= */
+        .card {
+            background: rgba(51, 65, 85, 0.5);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .card:hover, .card:active {
+            background: rgba(71, 85, 105, 0.5);
+            border-color: #475569;
+        }
+
+        .card h3 { font-size: 1.125rem; margin-bottom: 6px; }
+        .card p { color: #94a3b8; font-size: 0.875rem; }
+
+        .card .moves {
+            font-family: monospace;
+            color: #fbbf24;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        .color-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .color-badge.white { background: #fbbf24; color: #1e293b; }
+        .color-badge.black { background: #475569; color: #e2e8f0; }
+
+        .card-actions {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-btn, .delete-btn {
+            background: rgba(100, 116, 139, 0.3);
+            border: none;
+            color: #94a3b8;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .edit-btn:hover { background: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+        .delete-btn:hover { background: rgba(239, 68, 68, 0.3); color: #f87171; }
+
+        /* =========================================
+           SCREENS & NAV
+           ========================================= */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(71, 85, 105, 0.5);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            color: #e2e8f0;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 14px 20px;
+            margin-bottom: 16px;
+            min-height: 50px;
+        }
+
+        .nav-btn:hover { background: rgba(71, 85, 105, 0.7); }
+
+        /* =========================================
+           TRAINER UI
+           ========================================= */
+        .move-history {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+        }
+
+        .move-history-inner { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .move-tag {
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            white-space: nowrap;
+        }
+
+        .move-tag.white-move { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .move-tag.black-move { background: rgba(71, 85, 105, 0.5); color: #cbd5e1; }
+        .move-tag.choice { border: 1px solid #fbbf24; }
+
+        .current-move-card {
+            background: #334155;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .move-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .move-dot { width: 14px; height: 14px; border-radius: 50%; }
+        .move-dot.your-move { background: #fbbf24; box-shadow: 0 0 12px rgba(251, 191, 36, 0.4); }
+        .move-dot.opponent-move { background: #64748b; }
+
+        .move-label span { font-weight: 600; font-size: 0.9rem; }
+        .move-label span.your-move { color: #fbbf24; }
+        .move-label span.opponent-move { color: #94a3b8; }
+
+        .current-move {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .current-move.opponent { background: linear-gradient(135deg, #475569 0%, #334155 100%); }
+        .current-move h2 { font-family: monospace; font-size: 1.6rem; color: #1e293b; }
+        .current-move.opponent h2 { color: #e2e8f0; }
+
+        .explanation { color: #cbd5e1; font-size: 1rem; line-height: 1.6; }
+
+        /* === Transposition Styles === */
+        .transposition-badge {
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid #8b5cf6;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: #c4b5fd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .transposition-badge:hover { background: rgba(139, 92, 246, 0.25); }
+
+        .transposition-list {
+            margin-top: 8px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .transposition-list.visible { display: block; }
+
+        .transposition-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .transposition-item:last-child { border-bottom: none; }
+        .transposition-item:hover { background: rgba(139, 92, 246, 0.1); }
+        .transposition-item .meta { font-size: 0.75rem; color: #94a3b8; }
+        .transposition-item .jump-icon { color: #a78bfa; font-size: 1.1rem; }
+
+        /* Options & Controls */
+        .options-section { margin-top: 24px; }
+        .options-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .option-btn {
+            width: 100%;
+            background: rgba(51, 65, 85, 0.5);
+            border: 1px solid #475569;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            color: #e2e8f0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .option-btn:hover { background: rgba(71, 85, 105, 0.6); border-color: #64748b; }
+        .option-btn .move-text { font-family: monospace; font-size: 1.2rem; font-weight: 600; }
+        
+        .option-btn .tags { display: flex; gap: 6px; }
+        .tag-pill {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .tag-pill.status { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .tag-pill.type { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .option-btn .arrow { color: #64748b; font-size: 1.4rem; }
+
+        /* Choices Grid */
+        .choices-grid { display: grid; gap: 12px; margin-bottom: 16px; }
+        .choice-card {
+            background: rgba(51, 65, 85, 0.3);
+            border: 2px solid;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            position: relative;
+        }
+
+        .choice-card:hover { transform: scale(1.02); }
+        
+        /* Smart Colors */
+        .choice-card.red { border-color: rgba(239, 68, 68, 0.5); }
+        .choice-card.red:hover { background: rgba(239, 68, 68, 0.1); }
+        .choice-card.red h4 { color: #f87171; }
+        
+        .choice-card.blue { border-color: rgba(59, 130, 246, 0.5); }
+        .choice-card.blue:hover { background: rgba(59, 130, 246, 0.1); }
+        .choice-card.blue h4 { color: #60a5fa; }
+        
+        .choice-card.purple { border-color: rgba(168, 85, 247, 0.5); }
+        .choice-card.purple:hover { background: rgba(168, 85, 247, 0.1); }
+        .choice-card.purple h4 { color: #c084fc; }
+        
+        .choice-card.green { border-color: rgba(34, 197, 94, 0.5); }
+        .choice-card.green:hover { background: rgba(34, 197, 94, 0.1); }
+        .choice-card.green h4 { color: #4ade80; }
+        
+        .choice-card h4 { font-family: monospace; font-size: 1.125rem; margin-bottom: 4px; }
+        .choice-card .name { font-weight: 600; font-size: 0.875rem; margin-bottom: 4px; }
+        .choice-card .style { font-size: 0.75rem; color: #94a3b8; }
+
+        /* End State & Tips */
+        .end-card { text-align: center; padding: 40px 20px; }
+        .end-card .icon { font-size: 3.5rem; margin-bottom: 16px; }
+        .end-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
+        .end-card p { color: #94a3b8; }
+
+        .controls { display: flex; gap: 12px; margin-top: 24px; }
+        .control-btn {
+            flex: 1; padding: 16px; border: none; border-radius: 12px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; min-height: 54px;
+        }
+        .control-btn.secondary { background: #475569; color: #e2e8f0; }
+        
+        .progress-dots { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
+        .progress-dot { width: 10px; height: 10px; border-radius: 50%; background: #334155; }
+        .progress-dot.active { background: #fbbf24; }
+        
+        .tip-box {
+            background: rgba(30, 41, 59, 0.5); border: 1px solid #334155;
+            border-radius: 12px; padding: 14px; margin-top: 24px;
+            font-size: 0.85rem; color: #94a3b8; text-align: center;
+        }
+
+        /* Standard Buttons */
+        .btn {
+            width: 100%; padding: 18px 24px; border-radius: 14px;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            text-align: center; border: none; min-height: 58px; margin-bottom: 12px;
+        }
+        .btn-primary { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; }
+        .btn-secondary { background: rgba(71, 85, 105, 0.5); border: 1px solid #475569; color: #e2e8f0; }
+        .btn-purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; }
+        .btn-row { display: flex; gap: 12px; }
+        .btn-row .btn { flex: 1; }
+
+        /* =========================================
+           BUILDER UI V4.0
+           ========================================= */
+        .builder-section {
+            background: rgba(30, 41, 59, 0.5); border: 1px solid #334155;
+            border-radius: 16px; padding: 20px; margin-bottom: 16px;
+        }
+        .builder-section h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 16px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 16px; background: #1e293b;
+            border: 1px solid #334155; border-radius: 12px; color: #e2e8f0; font-size: 1.1rem;
+        }
+        /* Specific Fix for Textarea White Box */
+        .form-group textarea, .edit-explanation textarea {
+            background-color: #1e293b !important;
+            color: #e2e8f0 !important;
+            border-color: #334155 !important;
+        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #fbbf24; }
+
+        .info-icon { cursor: pointer; color: #60a5fa; font-size: 1rem; }
+
+        /* Color Toggle */
+        .color-toggle { display: flex; gap: 12px; }
+        .color-option {
+            flex: 1; padding: 16px; border-radius: 12px; text-align: center;
+            cursor: pointer; font-weight: 600; min-height: 56px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .color-option.white { background: rgba(251, 191, 36, 0.1); border: 2px solid rgba(251, 191, 36, 0.3); color: #fbbf24; }
+        .color-option.white.selected { background: rgba(251, 191, 36, 0.2); border-color: #fbbf24; }
+        .color-option.black { background: rgba(100, 116, 139, 0.1); border: 2px solid rgba(100, 116, 139, 0.3); color: #94a3b8; }
+        .color-option.black.selected { background: rgba(100, 116, 139, 0.2); border-color: #94a3b8; }
+
+        /* Builder Position & Responses */
+        .position-card {
+            background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 14px; padding: 18px; margin-bottom: 16px;
+        }
+        .position-card.opponent { background: rgba(100, 116, 139, 0.1); border-color: rgba(100, 116, 139, 0.3); }
+        .position-label { font-size: 0.75rem; text-transform: uppercase; color: #fbbf24; margin-bottom: 8px; }
+        .position-card.opponent .position-label { color: #94a3b8; }
+        .position-move { font-family: monospace; font-size: 1.4rem; font-weight: 700; color: #e2e8f0; }
+        .position-expl { font-size: 0.9rem; color: #cbd5e1; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; }
+
+        .path-display {
+            background: #1e293b; border-radius: 10px; padding: 12px 14px;
+            margin-bottom: 16px; font-size: 0.85rem; color: #64748b;
+            overflow-x: auto; white-space: nowrap;
+        }
+        .path-display .current { color: #fbbf24; font-weight: 600; }
+
+        .response-list { margin-bottom: 16px; }
+        .response-item {
+            background: rgba(51, 65, 85, 0.5); border: 1px solid #475569;
+            border-radius: 14px; padding: 18px 20px; margin-bottom: 10px;
+            cursor: pointer; display: flex; align-items: center; min-height: 64px;
+        }
+        .response-item .move { font-family: monospace; font-size: 1.15rem; font-weight: 600; color: #cbd5e1; flex: 1; }
+        .response-item .arrow { color: #64748b; font-size: 1.3rem; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+
+        /* V4.0 Standardized Add Form */
+        .add-form {
+            background: rgba(34, 197, 94, 0.05); border: 2px dashed rgba(34, 197, 94, 0.3);
+            border-radius: 14px; padding: 20px;
+        }
+        .add-form-title { font-size: 0.85rem; color: #4ade80; font-weight: 600; margin-bottom: 16px; }
+        
+        .details-toggle-btn {
+            background: none; border: none; color: #94a3b8; 
+            font-size: 0.85rem; cursor: pointer; padding: 0;
+            margin-bottom: 16px; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .details-toggle-btn:hover { color: #fbbf24; }
+        
+        .details-drawer { display: none; margin-bottom: 16px; border-top: 1px solid #334155; padding-top: 16px; }
+        .details-drawer.visible { display: block; }
+
+        /* Reference Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95); z-index: 1000;
+            display: none; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: #1e293b; border: 1px solid #334155; border-radius: 16px;
+            width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto;
+            padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 1.2rem; font-weight: 700; color: #e2e8f0; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; }
+        
+        .ref-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #334155; }
+        .ref-item:last-child { border-bottom: none; }
+        .ref-term { color: #fbbf24; font-weight: 700; margin-bottom: 4px; }
+        .ref-def { color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; }
+
+        /* Misc */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab {
+            flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3);
+            border: 1px solid #334155; border-radius: 12px; color: #94a3b8;
+            font-weight: 600; cursor: pointer; text-align: center;
+        }
+        .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
+        
+        .json-area {
+            width: 100%; min-height: 180px; background: #0f172a; border: 1px solid #334155;
+            border-radius: 12px; padding: 14px; color: #e2e8f0; font-family: monospace;
+            font-size: 0.8rem; resize: vertical;
+        }
+
+        .delete-item-btn {
+            background: rgba(239, 68, 68, 0.2); border: none; color: #f87171;
+            width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+            font-size: 1.2rem; margin-right: 8px; flex-shrink: 0;
+        }
+        .choice-card .delete-item-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; font-size: 1rem; }
+
+        .template-info {
+            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd;
+        }
+        .template-info summary { cursor: pointer; font-weight: 600; margin-bottom: 8px; }
+        .template-info ul { margin: 8px 0 0 16px; color: #94a3b8; }
+        .template-info code { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; color: #fbbf24; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="screen active" id="menuScreen">
+            <div class="header">
+                <h1>♟️ Opening Trainer <span class="version-tag">V4.0</span></h1>
+                <p>Coach Mode • Universal Tree • Smart Analysis</p>
+            </div>
+            <div id="openingsContainer"></div>
+            <button class="btn btn-primary" onclick="showBuilder()">+ Create New Opening</button>
+            <div class="btn-row" style="margin-top: 8px;">
+                <button class="btn btn-secondary" onclick="triggerFileUpload()">📁 Upload JSON</button>
+                <button class="btn btn-secondary" onclick="showUrlImport()">🔗 Import URL</button>
+            </div>
+            <div id="urlImportSection" style="display:none; margin-top: 12px;">
+                <div class="builder-section">
+                    <h3>Import from URL</h3>
+                    <div class="form-group">
+                        <input type="text" id="importUrl" placeholder="https://raw.githubusercontent.com/...">
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-secondary" onclick="hideUrlImport()">Cancel</button>
+                        <button class="btn btn-primary" onclick="importFromUrl()">Import</button>
+                    </div>
+                </div>
+            </div>
+            <input type="file" id="fileUploadInput" accept=".json" style="display:none" onchange="handleFileUpload(event)">
+        </div>
+
+        <div class="screen" id="trainerScreen">
+            <button class="nav-btn" id="trainerBackBtn" onclick="handleTrainerBack()">← Back to Openings</button>
+            <div class="header">
+                <h1 id="openingTitle"></h1>
+                <p id="openingSubtitle"></p>
+            </div>
+            <div class="move-history"><div class="move-history-inner" id="moveHistory"></div></div>
+            <div class="current-move-card" id="currentMoveCard"></div>
+            <div class="controls" id="controls"></div>
+            <div class="progress-dots" id="progressDots"></div>
+            <div class="tip-box">💡 <span id="tipText">Tap a move to continue</span></div>
+        </div>
+
+        <div class="screen" id="builderScreen">
+            <button class="nav-btn" onclick="confirmExitBuilder()">← Back</button>
+            <div class="header">
+                <h1 id="builderTitle">🛠️ Create Opening</h1>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('build')" id="tabBuild">Build</button>
+                <button class="tab" onclick="switchTab('json')" id="tabJson">Import/Export</button>
+            </div>
+
+            <div id="buildTab">
+                <div class="builder-section">
+                    <h3>Opening Details</h3>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="openingName" placeholder="e.g., Italian Game">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="openingDesc" placeholder="e.g., Targets f7 weakness">
+                    </div>
+                    <div class="form-group">
+                        <label>You Play As</label>
+                        <div class="color-toggle">
+                            <div class="color-option white selected" onclick="setColor('white')">♔ White</div>
+                            <div class="color-option black" onclick="setColor('black')">♚ Black</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="builder-section">
+                    <h3>Moves</h3>
+                    <div id="builderContent"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="previewOpening()">Preview</button>
+                    <button class="btn btn-primary" id="saveBtn" onclick="saveOpening()">Save</button>
+                </div>
+                <button class="btn btn-secondary" id="downloadCurrentBtn" style="display:none; margin-top: 8px;" onclick="downloadCurrentOpening()">📥 Download JSON</button>
+            </div>
+
+            <div id="jsonTab" style="display:none">
+                <div class="builder-section">
+                    <h3>Import from JSON</h3>
+                    <details class="template-info">
+                        <summary>📋 V4.0 Universal Schema</summary>
+                        <ul>
+                            <li><code>children</code> - ALWAYS an array. Holds all next moves.</li>
+                            <li><code>status</code> - Mainline, Sideline, etc.</li>
+                            <li><code>type</code> - Tactical, Positional, etc.</li>
+                        </ul>
+                        <p style="margin-top:8px;font-size:0.8rem;color:#10b981;"><b>Universal Migrator Active:</b> V1/V2/V3 files are automatically upgraded to V4 structure on upload.</p>
+                    </details>
+                    <textarea class="json-area" id="jsonIn" placeholder="Paste opening JSON here..."></textarea>
+                    <button class="btn btn-primary" onclick="importJson()">Import</button>
+                </div>
+                <div class="builder-section">
+                    <h3>Export Current / Template</h3>
+                    <textarea class="json-area" id="jsonOut" readonly style="min-height:280px;"></textarea>
+                    <button class="btn btn-secondary" onclick="copyJson()">Copy to Clipboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="refModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Move Types Guide</div>
+                <button class="modal-close" onclick="toggleRefModal()">×</button>
+            </div>
+            <div id="refContent"></div>
+            <button class="btn btn-secondary" onclick="toggleRefModal()" style="margin-top:16px">Close</button>
+        </div>
+    </div>
+
+<script>
+// =====================================================
+// V4.0 DATA & LOGIC (Universal Arrays)
+// =====================================================
+const DEFAULT_OPENINGS = {
+    italian_game: {
+        name: "Italian Game", color: "white", description: "Classic 1.e4 opening targeting f7", startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
+        tree: { id: 'root', move: '1. e4', player: 'white', status: 'Mainline', type: 'Positional', explanation: 'Control the center.', children: [
+            { id: 'e5', move: '1... e5', player: 'black', status: 'Mainline', children: [
+                { id: 'Nf3', move: '2. Nf3', player: 'white', status: 'Mainline', type: 'Dynamic', explanation: 'Attack e5, develop knight.', children: [
+                    { id: 'Nc6', move: '2... Nc6', player: 'black', status: 'Mainline', children: [
+                        { id: 'Bc4', move: '3. Bc4', player: 'white', status: 'Mainline', type: 'Strategic', explanation: 'Italian Game! Targets f7.', children: [] }
+                    ]}
+                ]}
+            ]}
+        ]}
+    }
+};
+
+const JSON_TEMPLATE_WHITE = {
+    "_comment": "V4.0 UNIVERSAL TEMPLATE (WHITE)",
+    "name": "New White Opening", "color": "white", "description": "", "startingMoves": "1. e4",
+    "tree": { "id": "root", "move": "1. e4", "player": "white", "status": "Mainline", "type": "Positional", "explanation": "Start here", "children": [] }
+};
+
+const JSON_TEMPLATE_BLACK = {
+    "_comment": "V4.0 UNIVERSAL TEMPLATE (BLACK)",
+    "name": "New Black Opening", "color": "black", "description": "", "startingMoves": "1. d4 d5",
+    "tree": { "id": "root", "move": "1. d4", "player": "white", "status": "Mainline", "explanation": "Opponent move", "children": [] }
+};
+
+const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
+const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
+
+const TYPE_DEFINITIONS = [
+    { t: 'Positional/Strategic', d: 'Long-term improvements, better piece placement, controlling key squares, or creating pawn weaknesses.' },
+    { t: 'Tactical', d: 'Short-term, forcing sequences that aim for immediate gains (material or checkmate).' },
+    { t: 'Defensive/Prophylactic', d: 'Moves made to neutralize threats or prevent future plans.' },
+    { t: 'Dynamic', d: 'Creates complex, fluid positions prioritizing initiative over static material.' },
+    { t: 'Forcing', d: 'Severely limits opponent options (checks, captures, threats).' },
+    { t: 'Quiet', d: 'Not a check or capture, but improves position or prepares a plan.' }
+];
+
+const TYPE_COLORS = {
+    'Positional/Strategic': 'blue', 'Tactical': 'red', 'Defensive/Prophylactic': 'green',
+    'Dynamic': 'purple', 'Forcing': 'red', 'Quiet': 'blue'
+};
+
+// =====================================================
+// STATE
+// =====================================================
+let OPENINGS = {};
+let currentOpening = null;
+let currentOpeningKey = null;
+let currentPath = [];
+let userColor = 'white';
+let isPreviewMode = false;
+
+// Builder State
+let builderColor = 'white';
+let builderTree = null;
+let builderPath = [];
+let editingKey = null;
+let isDetailsDrawerOpen = false;
+
+// Brain
+let transpositionMap = {};
+
+// =====================================================
+// INIT
+// =====================================================
+function init() {
+    OPENINGS = JSON.parse(JSON.stringify(DEFAULT_OPENINGS));
+    try {
+        const del = JSON.parse(localStorage.getItem('deletedOp5') || '[]');
+        del.forEach(k => delete OPENINGS[k]);
+        const custom = JSON.parse(localStorage.getItem('customOp5') || '{}');
+        Object.assign(OPENINGS, custom);
+    } catch(e) {}
+    
+    // Populate Reference Modal
+    const refHTML = TYPE_DEFINITIONS.map(x => `<div class="ref-item"><div class="ref-term">${x.t}</div><div class="ref-def">${x.d}</div></div>`).join('');
+    document.getElementById('refContent').innerHTML = refHTML;
+
+    rebuildTranspositionMap();
+    renderMenu();
+}
+
+function saveStorage() {
+    const custom = {};
+    for (const [k, v] of Object.entries(OPENINGS)) {
+        if (!DEFAULT_OPENINGS[k]) custom[k] = v;
+    }
+    localStorage.setItem('customOp5', JSON.stringify(custom));
+    rebuildTranspositionMap();
+}
+
+// =====================================================
+// CHESS INTELLIGENCE (V4 RECURSION)
+// =====================================================
+function rebuildTranspositionMap() {
+    if (typeof Chess === 'undefined') return;
+    transpositionMap = {};
+    Object.entries(OPENINGS).forEach(([key, op]) => {
+        if (key === '_preview') return;
+        const game = new Chess();
+        analyzeNodeRecursive(op.tree, game, key, op.name, op.color);
+    });
+}
+
+function analyzeNodeRecursive(node, game, key, name, color) {
+    if (!node) return;
+    const cleanMove = node.move.replace(/^\d+\.+/, '').trim();
+    const moveResult = game.move(cleanMove);
+    
+    if (moveResult || node.id === 'root') {
+        const fen = game.fen();
+        if (!transpositionMap[fen]) transpositionMap[fen] = [];
+        const exists = transpositionMap[fen].find(i => i.key === key);
+        if (!exists) {
+            transpositionMap[fen].push({ key: key, name: name, move: node.move, color: color });
+        }
+        
+        // V4: Simplified recursion (always children)
+        if (node.children) {
+            node.children.forEach(child => {
+                analyzeNodeRecursive(child, game, key, name, color);
+                game.undo();
+            });
+        }
+    }
+}
+
+function getCurrentFenFromPath(opening, pathIds) {
+    if (typeof Chess === 'undefined') return null;
+    const game = new Chess();
+    let currentNode = opening.tree;
+    let clean = currentNode.move.replace(/^\d+\.+/, '').trim();
+    game.move(clean);
+    
+    for (const id of pathIds) {
+        if (currentNode.children) {
+            const child = currentNode.children.find(c => c.id === id);
+            if (child) {
+                clean = child.move.replace(/^\d+\.+/, '').trim();
+                game.move(clean);
+                currentNode = child;
+            }
+        }
+    }
+    return game.fen();
+}
+
+function getTranspositionHTML(currentKey) {
+    if (typeof Chess === 'undefined') return '';
+    let fen = null;
+    let currentUserColor = userColor;
+
+    if (document.getElementById('builderScreen').classList.contains('active')) {
+        if (!builderTree) return '';
+        const tempOp = { tree: builderTree, name: "BuilderTemp" };
+        const ids = builderPath.map(step => step.id).filter(id => id); 
+        fen = getCurrentFenFromPath(tempOp, ids);
+        currentUserColor = builderColor;
+        currentKey = editingKey || 'builder_temp';
+    } else {
+        if (!currentOpening) return '';
+        fen = getCurrentFenFromPath(currentOpening, currentPath);
+    }
+    
+    if (!fen) return '';
+    const matches = transpositionMap[fen];
+    if (!matches || matches.length < 1) return '';
+    
+    const uniqueKeys = new Set();
+    const others = matches.filter(m => {
+        if (m.key === currentKey || m.key === 'builder_temp' || m.color !== currentUserColor) return false;
+        if (uniqueKeys.has(m.key)) return false;
+        uniqueKeys.add(m.key);
+        return true;
+    });
+    
+    if (others.length === 0) return '';
+    
+    return `
+        <div class="transposition-badge" onclick="toggleTranspositionList(this)">
+            <span>🔀 Found in <strong>${others.length} other(s)</strong></span>
+            <span style="margin-left:auto;font-size:1.2rem;">▾</span>
+        </div>
+        <div class="transposition-list">
+            ${others.map(o => `
+                <div class="transposition-item" onclick="loadTransposition('${o.key}', '${fen.replace(/'/g, "\\'")}')">
+                    <div><strong>${o.name}</strong><div class="meta">via ${o.move}</div></div>
+                    <span class="jump-icon">➜</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function toggleTranspositionList(el) { el.nextElementSibling.classList.toggle('visible'); }
+
+function loadTransposition(targetKey, targetFen) {
+    const opening = OPENINGS[targetKey];
+    if (!opening) return;
+    const path = findPathToFenInOpening(opening, targetFen);
+    
+    if (!path && path.length === 0 && targetFen !== getStartFen()) {
+         alert("Could not locate precise path."); return;
+    }
+    if (document.getElementById('builderScreen').classList.contains('active')) {
+        if(!confirm("Switching openings. Unsaved changes will be lost.")) return;
+    }
+    startTraining(targetKey); 
+    currentPath = path; 
+    renderTrainer(); 
+}
+
+function findPathToFenInOpening(opening, targetFen) {
+    if (typeof Chess === 'undefined') return [];
+    const game = new Chess();
+    let foundPath = null;
+    
+    function search(node, currentPath) {
+        if (foundPath) return; 
+        const clean = node.move.replace(/^\d+\.+/, '').trim();
+        game.move(clean);
+        if (game.fen() === targetFen) { foundPath = [...currentPath]; game.undo(); return; }
+        (node.children||[]).forEach(c => search(c, [...currentPath, c.id]));
+        game.undo();
+    }
+    const root = opening.tree;
+    const cleanRoot = root.move.replace(/^\d+\.+/, '').trim();
+    game.move(cleanRoot);
+    if (game.fen() === targetFen) return []; 
+    if (root.children) root.children.forEach(c => search(c, [c.id]));
+    return foundPath || [];
+}
+
+function getStartFen() { if (typeof Chess === 'undefined') return ''; return new Chess().fen(); }
+
+// =====================================================
+// V4.0 UI HELPERS & MIGRATION (The Magic)
+// =====================================================
+function getColorForType(type) { return TYPE_COLORS[type] || 'blue'; }
+
+// The V4 Migrator: Flattens response/choices into children
+function migrateOpening(op) {
+    function walk(n) {
+        if (!n) return;
+        // Ensure children array exists
+        if (!n.children) n.children = [];
+        
+        // Migrate Labels
+        if (n.label && !n.status) n.status = n.label;
+        if (n.style && !n.type) {
+            const s = n.style.toLowerCase();
+            if (s.includes('aggressive')||s.includes('tactical')) n.type='Tactical';
+            else if (s.includes('solid')||s.includes('positional')) n.type='Positional/Strategic';
+            else if (s.includes('safe')) n.type='Defensive/Prophylactic';
+            else n.type='Dynamic';
+        }
+
+        // Migrate Structure (Flatten Response)
+        if (n.response) {
+            if (n.response.isChoice && n.response.choices) {
+                // If it was a choice, push all choices to children
+                n.response.choices.forEach(c => n.children.push(c));
+            } else {
+                // If it was a single response, push it to children
+                n.children.push(n.response);
+            }
+            delete n.response;
+        }
+        
+        // Recurse
+        n.children.forEach(walk);
+    }
+    walk(op.tree);
+    return op;
+}
+
+// =====================================================
+// SCREENS & MENU
+// =====================================================
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function goToMenu() { isPreviewMode = false; showScreen('menuScreen'); renderMenu(); }
+
+function renderMenu() {
+    const c = document.getElementById('openingsContainer');
+    const w = Object.entries(OPENINGS).filter(([k, o]) => o.color === 'white' && k !== '_preview');
+    const b = Object.entries(OPENINGS).filter(([k, o]) => o.color === 'black' && k !== '_preview');
+    let h = '';
+    if (w.length) { h += '<p class="section-title">White Openings</p>'; w.forEach(([k, o]) => h += openingCard(k, o)); }
+    if (b.length) { h += '<p class="section-title">Black Openings</p>'; b.forEach(([k, o]) => h += openingCard(k, o)); }
+    c.innerHTML = h;
+}
+
+function openingCard(k, o) {
+    return `<div class="card" onclick="startTraining('${k}')">
+        <h3>${o.name}<span class="color-badge ${o.color}">${o.color[0].toUpperCase() + o.color.slice(1)}</span></h3>
+        <p>${o.description}</p>
+        <div class="moves">${o.startingMoves}</div>
+        <div class="card-actions">
+            <button class="edit-btn" onclick="event.stopPropagation();downloadOpening('${k}')" title="Download">📥</button>
+            <button class="edit-btn" onclick="event.stopPropagation();editOpening('${k}')" title="Edit">✏️</button>
+            <button class="delete-btn" onclick="event.stopPropagation();deleteOpening('${k}')" title="Delete">🗑</button>
+        </div>
+    </div>`;
+}
+
+function deleteOpening(k) {
+    if (!confirm('Delete "' + (OPENINGS[k]?.name || k) + '"?')) return;
+    delete OPENINGS[k]; saveStorage(); renderMenu();
+}
+
+// =====================================================
+// TRAINER V4 (Simplified Logic)
+// =====================================================
+function startTraining(k) {
+    currentOpening = OPENINGS[k];
+    currentOpeningKey = k;
+    userColor = currentOpening.color;
+    currentPath = [];
+    showScreen('trainerScreen');
+    document.getElementById('openingTitle').textContent = currentOpening.name;
+    document.getElementById('openingSubtitle').textContent = 'Playing as ' + userColor[0].toUpperCase() + userColor.slice(1);
+    document.getElementById('trainerBackBtn').textContent = isPreviewMode ? '← Back to Editor' : '← Back to Openings';
+    renderTrainer();
+}
+
+function handleTrainerBack() { isPreviewMode ? (showScreen('builderScreen')) : goToMenu(); }
+
+function getTrainerNode() {
+    let n = currentOpening.tree;
+    for (const id of currentPath) {
+        // V4: Simple traversal, just look in children
+        if (n.children) {
+            const c = n.children.find(x => x.id === id);
+            if (c) n = c;
+        }
+    }
+    return n;
+}
+
+function getTrainerOpts(n) {
+    // V4: Single source of truth - children array
+    if (!n.children || n.children.length === 0) return { type: 'end', opts: [] };
+    if (n.children.length === 1) return { type: 'moves', opts: n.children }; // Single move (Arrow)
+    return { type: 'choices', opts: n.children }; // Multiple moves (Choice Cards)
+}
+
+function getTrainerHistory() {
+    let h = [{ m: currentOpening.tree.move, p: currentOpening.tree.player }];
+    let n = currentOpening.tree;
+    for (const id of currentPath) {
+        if (n.children) {
+            const c = n.children.find(x => x.id === id);
+            if (c) {
+                // Is this a choice point in history?
+                const isChoice = n.children.length > 1;
+                h.push({ m: c.move, p: c.player, isChoice: isChoice });
+                n = c;
+            }
+        }
+    }
+    return h;
+}
+
+function renderTrainer() {
+    const n = getTrainerNode(), o = getTrainerOpts(n), h = getTrainerHistory(), mc = Math.ceil(h.length / 2);
+    document.getElementById('moveHistory').innerHTML = h.map(x => `<span class="move-tag ${x.p==='white'?'white-move':'black-move'} ${x.isChoice?'choice':''}">${x.m}</span>`).join('');
+    
+    const isU = n.player === userColor;
+    const transHTML = getTranspositionHTML(currentOpeningKey);
+
+    let html = `
+        <div class="move-label"><div class="move-dot ${isU?'your-move':'opponent-move'}"></div><span class="${isU?'your-move':'opponent-move'}">${isU?'Your Move':'Opponent\'s Move'}</span></div>
+        <div class="current-move ${isU?'':'opponent'}"><h2>${n.move}</h2></div>
+        <p class="explanation">${n.explanation || ''}</p>
+        ${transHTML}
+    `;
+    
+    // V4: Render based on Array Length (Simpler)
+    if (o.type === 'choices') {
+        html += `<div class="options-section"><div class="options-label"><div class="move-dot your-move"></div><span>Choose approach:</span></div><div class="choices-grid">`;
+        o.opts.forEach(x => {
+            const color = getColorForType(x.type);
+            html += `<button class="choice-card ${color}" onclick="trainerSelect('${x.id}')"><h4>${x.move}</h4><p class="name">${x.type||''}</p><p class="style">${x.status||''}</p></button>`;
+        });
+        html += '</div></div>';
+    } else if (o.type === 'moves') {
+        const nextMove = o.opts[0];
+        const isNextUser = nextMove.player === userColor;
+        const lbl = isNextUser ? `<div class="move-dot your-move"></div><span>Your response...</span>` : `<div class="move-dot opponent-move"></div><span>Opponent might play...</span>`;
+        html += `<div class="options-section"><div class="options-label">${lbl}</div>`;
+        o.opts.forEach(x => {
+            html += `<button class="option-btn" onclick="trainerSelect('${x.id}')"><div><span class="move-text">${x.move}</span></div><div class="tags">${x.status?`<span class="tag-pill status">${x.status}</span>`:''}${x.type?`<span class="tag-pill type">${x.type.split('/')[0]}</span>`:''}</div><span class="arrow">→</span></button>`;
+        });
+        html += '</div>';
+    } else {
+        html += `<div class="end-card"><div class="icon">🎯</div><h3>End of Line</h3><p>Move ${mc} reached</p></div>`;
+    }
+    
+    document.getElementById('currentMoveCard').innerHTML = html;
+    document.getElementById('controls').innerHTML = currentPath.length ? `<button class="control-btn secondary" onclick="trainerBack()">← Back</button><button class="control-btn secondary" onclick="trainerReset()">Start Over</button>` : '';
+    document.getElementById('progressDots').innerHTML = Array.from({length: 12}, (_, i) => `<div class="progress-dot ${i < mc ? 'active' : ''}"></div>`).join('');
+}
+
+function trainerSelect(id) { currentPath.push(id); renderTrainer(); }
+function trainerBack() { currentPath.pop(); renderTrainer(); }
+function trainerReset() { currentPath = []; renderTrainer(); }
+
+// =====================================================
+// BUILDER LOGIC V4.0 (Universal Array)
+// =====================================================
+function showBuilder() {
+    builderColor = 'white'; builderTree = null; builderPath = []; editingKey = null; isDetailsDrawerOpen = false;
+    document.getElementById('openingName').value = ''; document.getElementById('openingDesc').value = '';
+    document.getElementById('builderTitle').textContent = '🛠️ Create Opening'; document.getElementById('saveBtn').textContent = 'Save';
+    document.getElementById('downloadCurrentBtn').style.display = 'none';
+    updateColorToggle(); switchTab('build'); showScreen('builderScreen'); renderBuilder();
+}
+
+function editOpening(key) {
+    const opening = OPENINGS[key]; if (!opening) return;
+    builderColor = opening.color; builderTree = JSON.parse(JSON.stringify(opening.tree)); 
+    builderPath = []; editingKey = key; isDetailsDrawerOpen = false;
+    document.getElementById('openingName').value = opening.name; document.getElementById('openingDesc').value = opening.description || '';
+    document.getElementById('builderTitle').textContent = '✏️ Edit Opening'; document.getElementById('saveBtn').textContent = 'Update';
+    document.getElementById('downloadCurrentBtn').style.display = 'block';
+    updateColorToggle(); switchTab('build'); showScreen('builderScreen'); renderBuilder();
+}
+
+function confirmExitBuilder() { if (builderTree && !confirm('Exit without saving?')) return; editingKey = null; goToMenu(); }
+
+function switchTab(t) {
+    document.getElementById('tabBuild').classList.toggle('active', t === 'build');
+    document.getElementById('tabJson').classList.toggle('active', t === 'json');
+    document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none';
+    document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none';
+    if (t === 'json') {
+        const tpl = builderColor === 'white' ? JSON_TEMPLATE_WHITE : JSON_TEMPLATE_BLACK;
+        document.getElementById('jsonOut').value = JSON.stringify(builderTree ? buildOpeningObj() : tpl, null, 2);
+    }
+}
+
+function setColor(c) { if (editingKey) { alert('Cannot change color when editing.'); return; } builderColor = c; updateColorToggle(); builderTree = null; builderPath = []; renderBuilder(); }
+function updateColorToggle() { document.querySelectorAll('.color-option').forEach(el => el.classList.toggle('selected', el.classList.contains(builderColor))); }
+
+function getBuilderPosition() {
+    if (!builderTree) return { node: null, context: 'empty' };
+    let node = builderTree, parent = null;
+    for (const step of builderPath) {
+        if (!node.children) return { node: null, context: 'error' };
+        const child = node.children.find(c => c.id === step.id);
+        if (!child) return { node: null, context: 'error' };
+        parent = node; node = child;
+    }
+    // V4 Context Logic: Who plays next?
+    const nextPlayer = node.player === 'white' ? 'black' : 'white';
+    // Is it your turn to input? (Context for UI)
+    const context = (nextPlayer === builderColor) ? 'your-turn' : 'opponent-turn';
+    return { node, context, parent };
+}
+
+function getMoveNumber() {
+    // Basic approximation for V4
+    if (!builderTree) return 1;
+    return Math.floor((builderPath.length + 1) / 2) + 1;
+}
+
+// =====================================================
+// BUILDER RENDERING V4.0
+// =====================================================
+function renderBuilder() {
+    const content = document.getElementById('builderContent');
+    const pos = getBuilderPosition();
+    
+    const renderStandardForm = (title, onClick) => `
+        <div class="add-form">
+            <div class="add-form-title">${title}</div>
+            <div class="form-group"><input type="text" id="newMove" placeholder="Move (e.g. e4)"></div>
+            <button class="details-toggle-btn" onclick="toggleDetails()">
+                ${isDetailsDrawerOpen ? '▴ Hide' : '▾ Add'} Details / Annotations
+            </button>
+            <div class="details-drawer ${isDetailsDrawerOpen ? 'visible' : ''}">
+                <div class="form-group"><label>Status</label><select id="newStatus">${STATUS_OPTIONS.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label><select id="newType">${TYPE_OPTIONS.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Explanation</label><textarea id="newExpl" placeholder="Why this move?"></textarea></div>
+            </div>
+            <button class="btn btn-primary" onclick="${onClick}">Add Move</button>
+        </div>`;
+
+    if (!builderTree) {
+        const isWhite = builderColor === 'white';
+        content.innerHTML = `<div class="empty-state"><div class="icon">♟️</div><p>Start with the first move</p></div>${renderStandardForm('First Move', 'addFirstMove()')}`;
+        setupEnter(); return;
+    }
+    
+    if (!pos.node) return;
+    const node = pos.node;
+    
+    let pathParts = [builderTree.move], tempNode = builderTree;
+    for (const step of builderPath) {
+        if(tempNode.children) {
+            const c = tempNode.children.find(x => x.id === step.id);
+            if(c) { pathParts.push(c.move); tempNode = c; }
+        }
+    }
+    
+    const transHTML = getTranspositionHTML(document.getElementById('openingName').value || 'Current');
+    let html = builderPath.length > 0 ? `<button class="btn btn-secondary" onclick="builderBack()" style="margin-bottom:16px">← Back</button>` : '';
+    html += `<div class="path-display"><span class="current">${pathParts.join(' → ')}</span></div>`;
+    
+    // CURRENT POSITION CARD
+    const isOpponentPos = node.player !== builderColor; // The move just played
+    html += `<div class="position-card ${isOpponentPos?'opponent':''}"><div class="position-label">${isOpponentPos?"Opponent's Move":"Your Move"}</div><div class="position-move">${node.move}</div>${node.explanation?`<div class="position-expl">${node.explanation}</div>`:''}</div>${transHTML}`;
+    
+    html += renderEditExplanation(node);
+
+    // EXISTING RESPONSES (Children)
+    if (node.children && node.children.length > 0) {
+        const nextIsYou = node.player !== builderColor; // If opponent played node, next is you
+        html += `<p class="section-title">${nextIsYou?'Your Responses':'Opponent Responses'}</p><div class="response-list">`;
+        
+        node.children.forEach(c => {
+            // V4: Display differently if it's a choice or linear
+            const color = c.type ? getColorForType(c.type) : '';
+            const styleClass = color ? `choice-card ${color}` : 'response-item';
+            
+            if (color) {
+                 html += `<div class="choice-card ${color}" style="margin-bottom:10px; position:relative;"><div onclick="navigateToChild('${c.id}')"><h4>${c.move}</h4><p class="name">${c.type||''}</p><p class="style">${c.status||''}</p></div><button class="delete-item-btn" onclick="deleteChild('${c.id}')">×</button></div>`;
+            } else {
+                 html += `<div class="response-item"><div onclick="navigateToChild('${c.id}')" style="flex:1"><span class="move">${c.move}</span>${c.status?`<span class="tag">${c.status}</span>`:''}</div><button class="delete-item-btn" onclick="deleteChild('${c.id}')">×</button><span class="arrow">→</span></div>`;
+            }
+        });
+        html += '</div>';
+    }
+    
+    // ADD FORM
+    const nextPlayerColor = node.player === 'white' ? 'black' : 'white';
+    const isNextYou = nextPlayerColor === builderColor;
+    const title = isNextYou ? `Add Your (${nextPlayerColor}) Move` : `Add Opponent (${nextPlayerColor}) Move`;
+    
+    html += renderStandardForm(title, 'addChildMove()');
+    
+    if (builderPath.length > 0) {
+        html += `<div class="detail-actions"><button class="btn btn-danger" onclick="deleteCurrentBranch()">Delete Current Move & Branch</button></div>`;
+    }
+
+    content.innerHTML = html;
+    setupEnter();
+}
+
+// Edit Explanation Block
+function renderEditExplanation(node) {
+    return `<div class="edit-explanation"><label>Edit Current Explanation</label><textarea id="editExpl">${node.explanation || ''}</textarea><button class="btn btn-secondary" onclick="saveExplanation()">Save Notes</button></div>`;
+}
+
+// =====================================================
+// HELPERS
+// =====================================================
+function toggleDetails() { isDetailsDrawerOpen = !isDetailsDrawerOpen; renderBuilder(); }
+function toggleRefModal() { document.getElementById('refModal').classList.toggle('active'); }
+function setupEnter() { setTimeout(() => { const i = document.getElementById('newMove'); if(i){i.focus(); i.addEventListener('keypress',e=>{if(e.key==='Enter')document.querySelector('.add-form .btn-primary').click()});}}, 50); }
+
+// Navigation V4
+function navigateToChild(id) { builderPath.push({ id }); renderBuilder(); }
+function builderBack() { builderPath.pop(); renderBuilder(); }
+
+// Actions V4
+function getFormValues() {
+    return {
+        move: document.getElementById('newMove').value.trim(),
+        status: document.getElementById('newStatus')?.value || '',
+        type: document.getElementById('newType')?.value || '',
+        expl: document.getElementById('newExpl')?.value.trim() || ''
+    };
+}
+
+function addFirstMove() {
+    const v = getFormValues(); if(!v.move)return;
+    builderTree={id:'root',move:'1. '+v.move,player:'white',explanation:builderColor==='white'?v.expl:'',status:v.status,type:v.type,children:[]};
+    renderBuilder();
+}
+
+function addChildMove() {
+    const v=getFormValues(); if(!v.move)return;
+    const pos = getBuilderPosition();
+    const parent = pos.node;
+    
+    // Auto-calculate notation
+    const nextPlayer = parent.player === 'white' ? 'black' : 'white';
+    // Approximation for display notation
+    const num = Math.ceil((builderPath.length + 2)/2); 
+    const not = nextPlayer==='black'?`${num}... ${v.move}`:`${num}. ${v.move}`;
+    
+    const child={
+        id:'c'+Date.now(),
+        move:not,
+        player:nextPlayer,
+        status:v.status,
+        type:v.type,
+        explanation:v.expl,
+        children:[]
+    };
+    
+    if(!parent.children) parent.children = [];
+    parent.children.push(child);
+    navigateToChild(child.id);
+}
+
+function saveExplanation() { getBuilderPosition().node.explanation = document.getElementById('editExpl').value; renderBuilder(); }
+
+function deleteCurrentBranch() { if(!confirm('Delete?'))return; 
+    if(builderPath.length===0)builderTree=null; else {
+        const last=builderPath.pop();
+        const parent=getBuilderPosition().node;
+        parent.children = parent.children.filter(c=>c.id!==last.id);
+    } renderBuilder();
+}
+
+function deleteChild(id) {
+    if(!confirm('Delete variation?'))return;
+    const node = getBuilderPosition().node;
+    node.children = node.children.filter(c=>c.id!==id);
+    renderBuilder();
+}
+
+// IO
+function buildOpeningObj() { return { name:document.getElementById('openingName').value||'Opening', color:builderColor, description:document.getElementById('openingDesc').value, startingMoves:getStartingMoves(), tree:builderTree }; }
+function getStartingMoves() {
+    if(!builderTree)return''; let m=[builderTree.move],n=builderTree;
+    while(n.children?.length && m.length<6) { const c=n.children[0]; m.push(c.move); n=c; }
+    return m.join(' ');
+}
+function previewOpening() { if(!builderTree)return; OPENINGS['_preview']=buildOpeningObj(); isPreviewMode=true; startTraining('_preview'); }
+function saveOpening() {
+    if(!builderTree)return alert('Add moves first'); const o=buildOpeningObj();
+    const k=editingKey || (o.name.toLowerCase().replace(/[^a-z0-9]/g,'_')+'_'+Date.now());
+    OPENINGS[k]=o; saveStorage(); alert('Saved!'); editingKey=null; goToMenu();
+}
+function copyJson() { navigator.clipboard.writeText(document.getElementById('jsonOut').value); alert('Copied!'); }
+function importJson() { try { const o=JSON.parse(document.getElementById('jsonIn').value); OPENINGS['imp_'+Date.now()]=migrateOpening(o); saveStorage(); alert('Imported!'); goToMenu(); } catch(e){alert('Invalid JSON');} }
+function downloadOpening(k) { downloadObj(OPENINGS[k], OPENINGS[k].name); }
+function downloadCurrentOpening() { downloadObj(buildOpeningObj(), document.getElementById('openingName').value); }
+function downloadObj(o, n) {
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}));
+    a.download=n.replace(/[^a-z0-9]/g,'-')+'.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function triggerFileUpload() { document.getElementById('fileUploadInput').click(); }
+function handleFileUpload(e) { 
+    const r=new FileReader(); r.onload=ev=>{try{const o=JSON.parse(ev.target.result);OPENINGS['imp_'+Date.now()]=migrateOpening(o);saveStorage();alert('Imported!');renderMenu();}catch{alert('Error');}};
+    if(e.target.files[0])r.readAsText(e.target.files[0]); e.target.value='';
+}
+function showUrlImport() { document.getElementById('urlImportSection').style.display='block'; }
+function hideUrlImport() { document.getElementById('urlImportSection').style.display='none'; }
+async function importFromUrl() {
+    try { const r=await fetch(document.getElementById('importUrl').value); const o=await r.json(); OPENINGS['imp_'+Date.now()]=migrateOpening(o); saveStorage(); alert('Imported!'); hideUrlImport(); renderMenu(); } catch(e){alert('Error fetching');}
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
