@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V4.6</title>
+    <title>Chess Trainer V4.7 (Restored)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -116,20 +116,42 @@
         .position-label { font-size: 0.75rem; text-transform: uppercase; color: #fbbf24; margin-bottom: 8px; }
         .position-card.opponent .position-label { color: #94a3b8; }
         .position-move { font-family: monospace; font-size: 1.4rem; font-weight: 700; color: #e2e8f0; }
+        .position-expl { font-size: 0.9rem; color: #cbd5e1; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; }
 
+        /* CHOICE CARD */
+        .choice-card { background: rgba(51, 65, 85, 0.3); border: 2px solid; border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; }
+        .choice-card:hover { transform: scale(1.02); }
+        .choice-card.red { border-color: rgba(239, 68, 68, 0.5); } .choice-card.red:hover { background: rgba(239, 68, 68, 0.1); } .choice-card.red h4 { color: #f87171; }
+        .choice-card.blue { border-color: rgba(59, 130, 246, 0.5); } .choice-card.blue:hover { background: rgba(59, 130, 246, 0.1); } .choice-card.blue h4 { color: #60a5fa; }
+        .choice-card.purple { border-color: rgba(168, 85, 247, 0.5); } .choice-card.purple:hover { background: rgba(168, 85, 247, 0.1); } .choice-card.purple h4 { color: #c084fc; }
+        .choice-card.green { border-color: rgba(34, 197, 94, 0.5); } .choice-card.green:hover { background: rgba(34, 197, 94, 0.1); } .choice-card.green h4 { color: #4ade80; }
+        .choice-card h4 { font-family: monospace; font-size: 1.125rem; margin-bottom: 4px; } .choice-card .name { font-weight: 600; font-size: 0.875rem; margin-bottom: 4px; } .choice-card .style { font-size: 0.75rem; color: #94a3b8; }
+        
         /* MODAL */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; display:none; justify-content:center; align-items:center; padding:20px; }
         .modal-content { background:#1e293b; padding:24px; border-radius:16px; width:100%; max-width:400px; max-height:80vh; overflow-y:auto; }
         .ref-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #334155; }
         .ref-term { color: #fbbf24; font-weight: 700; margin-bottom: 4px; }
         .ref-def { color: #cbd5e1; font-size: 0.9rem; }
+
+        .response-list { margin-bottom: 16px; } 
+        .response-item { background: rgba(51, 65, 85, 0.5); border: 1px solid #475569; border-radius: 14px; padding: 18px 20px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; min-height: 64px; } 
+        .response-item .move { font-family: monospace; font-size: 1.15rem; font-weight: 600; color: #cbd5e1; flex: 1; } 
+        .response-item .arrow { color: #64748b; font-size: 1.3rem; }
+        .delete-item-btn { background: rgba(239, 68, 68, 0.2); border: none; color: #f87171; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; margin-right: 8px; flex-shrink: 0; } .choice-card .delete-item-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; font-size: 1rem; }
+
+        .path-display { background: #1e293b; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 0.85rem; color: #64748b; overflow-x: auto; white-space: nowrap; } .path-display .current { color: #fbbf24; font-weight: 600; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; } .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; } .tab { flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3); border: 1px solid #334155; border-radius: 12px; color: #94a3b8; font-weight: 600; cursor: pointer; text-align: center; } .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
+        .json-area { width: 100%; min-height: 180px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 14px; color: #e2e8f0; font-family: monospace; font-size: 0.8rem; resize: vertical; }
+        .template-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd; } .template-info summary { cursor: pointer; font-weight: 600; margin-bottom: 8px; } .template-info ul { margin: 8px 0 0 16px; color: #94a3b8; } .template-info code { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; color: #fbbf24; }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V4.6</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V4.7</span></h1>
                 <p>Unified Repertoire Manager</p>
             </div>
             <div id="openingsContainer"></div>
@@ -203,7 +225,7 @@
                 <div id="builderCurrentNode" class="current-move-card"></div>
                 
                 <div class="add-form" style="margin-top:20px;">
-                    <h4 id="addFormTitle">Add Move</h4>
+                    <h4>Add Move</h4>
                     <div class="form-group">
                         <input type="text" id="newMoveInput" placeholder="Move (e.g. Nf3)">
                     </div>
@@ -216,7 +238,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label>
+                            <label>Type</label>
                             <select id="newType">
                                 <option>Positional/Strategic</option><option>Tactical</option><option>Dynamic</option><option>Defensive/Prophylactic</option><option>Forcing</option><option>Quiet</option>
                             </select>
@@ -250,13 +272,52 @@
 
 <script>
 // =====================================================
-// STATE & CONFIG
+// V4.7 DATA CONSTANTS (RESTORED)
 // =====================================================
-let OPENINGS = {};
-let currentOpening = null, currentOpeningKey = null, originalOpeningKey = null;
-let currentPath = [], historyStack = [];
-let builderTree = null, builderPath = [], editingKey = null, builderColor = 'white';
-let transpositionMap = {};
+const DEFAULT_OPENINGS = {
+    italian_game: {
+        version: "4.0",
+        name: "Italian Game", color: "white", description: "Classic 1.e4 opening targeting f7", startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
+        group: "White Repertoire",
+        tree: { id: 'root', move: '1. e4', player: 'white', status: 'Mainline', type: 'Positional', explanation: 'Control the center.', children: [
+            { id: 'e5', move: '1... e5', player: 'black', status: 'Mainline', children: [
+                { id: 'Nf3', move: '2. Nf3', player: 'white', status: 'Mainline', type: 'Dynamic', explanation: 'Attack e5, develop knight.', children: [
+                    { id: 'Nc6', move: '2... Nc6', player: 'black', status: 'Mainline', children: [
+                        { id: 'Bc4', move: '3. Bc4', player: 'white', status: 'Mainline', type: 'Strategic', explanation: 'Italian Game! Targets f7.', children: [] }
+                    ]}
+                ]}
+            ]}
+        ]}
+    },
+    london_system: {
+        version: "4.0",
+        name: "London System", color: "white", description: "Solid d4 setup with early Bf4", startingMoves: "1. d4 d5 2. Bf4",
+        group: "White Repertoire",
+        tree: { id: 'root', move: '1. d4', player: 'white', explanation: 'Queen\'s Pawn.', children: [
+            { id: 'd5', move: '1... d5', player: 'black', label: 'Main Line', children: [
+                { id: 'Bf4', move: '2. Bf4', player: 'white', explanation: 'The London! Develop bishop before e3.', children: [] }
+            ]}
+        ]}
+    },
+    sicilian_najdorf: {
+        version: "4.0",
+        name: "Sicilian Najdorf", color: "black", description: "Fighting defense to 1.e4", startingMoves: "1. e4 c5 2. Nf3 d6",
+        group: "Black Repertoire",
+        tree: { id: 'root', move: '1. e4', player: 'white', explanation: 'White opens with King\'s pawn.', children: [
+            { id: 'c5', move: '1... c5', player: 'black', label: 'Sicilian!', explanation: 'Fight for the center.', children: [
+                { id: 'Nf3', move: '2. Nf3', player: 'white', label: 'Open Sicilian', children: [
+                    { id: 'd6', move: '2... d6', player: 'black', explanation: 'Preparing the Najdorf.', children: [] }
+                ]}
+            ]}
+        ]}
+    }
+};
+
+const JSON_TEMPLATE_WHITE = { "_comment": "V4.0 UNIVERSAL TEMPLATE (WHITE)", "version": "4.0", "name": "New White Opening", "color": "white", "description": "", "startingMoves": "1. e4", "tree": { "id": "root", "move": "1. e4", "player": "white", "status": "Mainline", "type": "Positional", "explanation": "Start here", "children": [] } };
+const JSON_TEMPLATE_BLACK = { "_comment": "V4.0 UNIVERSAL TEMPLATE (BLACK)", "version": "4.0", "name": "New Black Opening", "color": "black", "description": "", "startingMoves": "1. d4 d5", "tree": { "id": "root", "move": "1. d4", "player": "white", "status": "Mainline", "explanation": "Opponent move", "children": [] } };
+
+const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
+const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
 
 const TYPE_DEFINITIONS = [
     { t: 'Positional/Strategic', d: 'Long-term improvements, better piece placement, controlling key squares.' },
@@ -268,11 +329,25 @@ const TYPE_DEFINITIONS = [
 ];
 
 // =====================================================
-// INIT
+// STATE & CONFIG
+// =====================================================
+let OPENINGS = {};
+let currentOpening = null, currentOpeningKey = null, originalOpeningKey = null;
+let currentPath = [], historyStack = [];
+let builderTree = null, builderPath = [], editingKey = null, builderColor = 'white';
+let transpositionMap = {};
+
+// =====================================================
+// INIT & STORAGE
 // =====================================================
 function init() {
     const stored = localStorage.getItem('customOp5');
-    if (stored) OPENINGS = JSON.parse(stored);
+    if (stored) {
+        OPENINGS = JSON.parse(stored);
+    } else {
+        // Load defaults if empty
+        OPENINGS = JSON.parse(JSON.stringify(DEFAULT_OPENINGS));
+    }
     
     document.getElementById('refContent').innerHTML = TYPE_DEFINITIONS.map(x => 
         `<div class="ref-item"><div class="ref-term">${x.t}</div><div class="ref-def">${x.d}</div></div>`
@@ -288,14 +363,13 @@ function saveStorage() {
 }
 
 // =====================================================
-// TRANSPOSITION & MIGRATION (BRAIN)
+// THE BRAIN: TRANSPOSITION MAP
 // =====================================================
 function rebuildTranspositionMap() {
     if (typeof Chess === 'undefined') return;
     transpositionMap = {};
     
     Object.entries(OPENINGS).forEach(([key, op]) => {
-        // AUTO-MIGRATE OLD FILES ON LOAD
         if (!op.version) op = migrateOpening(op);
         
         const game = new Chess();
@@ -316,54 +390,17 @@ function rebuildTranspositionMap() {
                 });
             }
             
-            if (node.children) node.children.forEach(mapNode);
+            if (node.children) node.children.forEach(child => mapNode(child));
             game.undo();
         }
         mapNode(op.tree);
     });
 }
 
-function migrateOpening(op) {
-    if (op.version === "4.0") return op;
-    console.log("Migrating " + op.name + " to V4.0...");
-
-    function walk(n) {
-        if (!n) return;
-        if (!n.children) n.children = [];
-        
-        // Map V3 fields to V4
-        if (n.label && !n.status) n.status = n.label;
-        if (n.style && !n.type) {
-            const s = n.style.toLowerCase();
-            if (s.includes('aggress')||s.includes('tact')) n.type='Tactical';
-            else if (s.includes('solid')||s.includes('pos')) n.type='Positional/Strategic';
-            else if (s.includes('safe')) n.type='Defensive/Prophylactic';
-            else n.type='Dynamic';
-        }
-
-        // Flatten Structure (Response -> Children)
-        if (n.response) {
-            if (n.response.isChoice && n.response.choices) {
-                n.response.choices.forEach(c => n.children.push(c));
-            } else {
-                n.children.push(n.response);
-            }
-            delete n.response;
-        }
-        
-        if (n.children) n.children.forEach(walk);
-    }
-    
-    walk(op.tree);
-    op.version = "4.0";
-    return op;
-}
-
 function getUnifiedOptions(currentNode) {
     let options = (currentNode.children || []).map(c => ({ ...c, source: 'local' }));
     
     if (document.getElementById('transpoToggle').checked) {
-        // Calc FEN
         const game = new Chess();
         let ptr = currentOpening.tree;
         game.move(ptr.move.replace(/^\d+\.+/, '').trim());
@@ -389,7 +426,7 @@ function getUnifiedOptions(currentNode) {
 }
 
 // =====================================================
-// TRAINER
+// TRAINER LOGIC
 // =====================================================
 function startTraining(key) {
     currentOpening = OPENINGS[key];
@@ -405,7 +442,7 @@ function jumpToOpening(targetKey) {
     historyStack.push({ key: currentOpeningKey, path: [...currentPath], name: currentOpening.name });
     currentOpeningKey = targetKey;
     currentOpening = OPENINGS[targetKey];
-    currentPath = []; // Deep link logic omitted for simplicity
+    currentPath = []; 
     updateTheme();
     renderTrainer();
 }
@@ -460,7 +497,7 @@ function updateTheme() {
 }
 
 // =====================================================
-// BUILDER (FIXED V4 LOGIC)
+// BUILDER
 // =====================================================
 function showBuilder() {
     builderTree = { id: 'root', move: 'Start', children: [] };
@@ -483,23 +520,16 @@ function editOpening(key) {
 }
 
 function renderBuilder() {
-    // 1. Navigate to current node
     let node = builderTree;
     let historyHtml = '';
     
     for (let id of builderPath) {
         const child = node.children.find(c => c.id === id);
-        if (child) {
-            node = child;
-            historyHtml += `<span class="move-tag white">${child.move}</span> `;
-        }
+        if (child) { node = child; historyHtml += `<span class="move-tag white">${child.move}</span> `; }
     }
     
     document.getElementById('builderHistory').innerHTML = historyHtml || 'Root';
-    
-    // 2. Render Current Node info
-    const isOpponent = (builderColor === 'white' && (builderPath.length % 2 !== 0)) || 
-                       (builderColor === 'black' && (builderPath.length % 2 === 0));
+    const isOpponent = (builderColor === 'white' && (builderPath.length % 2 !== 0)) || (builderColor === 'black' && (builderPath.length % 2 === 0));
                        
     document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card';
     document.getElementById('builderCurrentNode').innerHTML = `
@@ -513,7 +543,6 @@ function renderBuilder() {
         ${renderEditExplanation(node)}
     `;
     
-    // 3. Render Children (Next Moves)
     const list = document.getElementById('builderResponses');
     list.innerHTML = '';
     if (node.children) {
@@ -526,7 +555,6 @@ function renderBuilder() {
         });
     }
     
-    // 4. Update Form Title
     const nextPlayer = isOpponent ? "You" : "Opponent";
     document.getElementById('addFormTitle').innerText = `Add ${nextPlayer}'s Move`;
     setupEnter();
@@ -535,29 +563,15 @@ function renderBuilder() {
 function addBuilderMove() {
     const move = document.getElementById('newMoveInput').value;
     if (!move) return;
-    
-    // Find current node
     let node = builderTree;
     for (let id of builderPath) node = node.children.find(c => c.id === id);
-    
     if (!node.children) node.children = [];
-    
-    // Auto-notation
-    const ply = builderPath.length + (builderTree.id === 'root' ? 0 : 1); // Simple ply count
-    // Note: You can enhance this with chess.js validation later
-    
     const newId = 'node_' + Date.now();
     node.children.push({
-        id: newId,
-        move: move,
-        status: document.getElementById('newStatus').value,
-        type: document.getElementById('newType').value,
-        explanation: document.getElementById('newExpl').value,
-        children: []
+        id: newId, move: move, status: document.getElementById('newStatus').value,
+        type: document.getElementById('newType').value, explanation: document.getElementById('newExpl').value, children: []
     });
-    
     document.getElementById('newMoveInput').value = '';
-    document.getElementById('newExpl').value = '';
     renderBuilder();
 }
 
@@ -614,7 +628,7 @@ function goBack() { showScreen('menuScreen'); }
 function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
 
 // =====================================================
-// IO
+// IO & MIGRATION (THE FIX)
 // =====================================================
 function saveOpening() {
     const name = document.getElementById('builderName').value || "Untitled";
@@ -638,6 +652,43 @@ function downloadCurrentJSON() {
     a.href = URL.createObjectURL(blob);
     a.download = 'opening.json';
     a.click();
+}
+
+// THIS IS THE REAL RECURSIVE MIGRATOR FROM V3 -> V4
+function migrateOpening(op) {
+    if (op.version === "4.0") return op;
+    console.log("Migrating " + op.name + " to V4.0...");
+
+    function walk(n) {
+        if (!n) return;
+        if (!n.children) n.children = [];
+        
+        // Fix Labels
+        if (n.label && !n.status) n.status = n.label;
+        if (n.style && !n.type) {
+            const s = n.style.toLowerCase();
+            if (s.includes('agg')||s.includes('tact')) n.type='Tactical';
+            else if (s.includes('sol')||s.includes('pos')) n.type='Positional/Strategic';
+            else if (s.includes('safe')) n.type='Defensive/Prophylactic';
+            else n.type='Dynamic';
+        }
+
+        // Flatten Structure
+        if (n.response) {
+            if (n.response.isChoice && n.response.choices) {
+                n.response.choices.forEach(c => n.children.push(c));
+            } else {
+                n.children.push(n.response);
+            }
+            delete n.response;
+        }
+        
+        if (n.children) n.children.forEach(walk);
+    }
+    
+    walk(op.tree);
+    op.version = "4.0";
+    return op;
 }
 
 function handleFileUpload(input) {
