@@ -1,44 +1,108 @@
-♟️ App Profile: Chess Opening Trainer
-Current Version: 3.0 (Coach Mode Update) Architecture: Single-File HTML/JS (Offline Capable, Mobile-First)
+♟️ Chess Opening Trainer V4.0
+"The Coach Mode Update"
 
-Description: A lightweight but powerful tool designed for players who want to build, manage, and memorize a custom chess repertoire. Unlike generic database apps, this tool focuses on "Coach Mode"—emphasizing the nature and purpose of every move rather than just the order. It features a "Brain" (Transposition detection) that automatically links identical board positions across different opening files, turning isolated lines into a connected web of knowledge.
+A single-file, mobile-first web application for building, memorizing, and connecting your chess repertoire.
 
-Core Features:
+🚀 What is New in V4.0?
+Version 4.0 introduces the "Universal Tree" Architecture.
 
-Tree-Based Builder: Create complex branching repertoires with unlimited depth. Support for "Choice Points" where multiple playable options exist.
+Unified Structure: We removed the complex distinction between "Linear Responses" and "Branching Choices." Now, every move is a child node. This makes the app faster, more robust, and significantly easier for AI tools to generate content for.
 
-Active Recall Trainer: A practice mode that hides the upcoming moves, forcing the user to play from memory. It intelligently handles "Your Turn" vs. "Opponent's Turn" logic.
+Universal Migrator: A built-in engine that automatically converts your old V1, V2, and V3 JSON files into the new V4 format upon upload. You lose nothing.
 
-The "Brain" (Transposition Engine): A background system that analyzes every move using chess.js. If you reach a position you have studied in a completely different opening file, a Smart Badge appears, allowing you to jump instantly to that other file.
+Coach Mode Data: Standardized fields for "Status" (e.g., Mainline) and "Type" (e.g., Tactical), replacing unstructured text labels.
 
-Mobile-First Design: Built specifically for vertical phone screens with large touch targets, sticky headers, and drawer-based navigation.
+✨ Key Features
+1. The "Coach Mode" Builder
+Progressive Input: The "Add Move" form is fast and compact by default.
 
-Portable Data: Uses simple JSON files for storage. You can edit them manually, share them, or host them on GitHub for raw URL importing.
+Sticky Details Drawer: Tap "Add Details ▾" to reveal the Coach fields (Status, Type, Explanation). This drawer stays open for rapid entry of detailed moves.
 
-🚀 V3.0 Release Summary: "The Coach Mode Update"
-This update fundamentally changes how data is structured and entered, moving from simple text labels to structured chess data.
+Reference Guide: A built-in clickable ⓘ icon opens a full-screen mobile modal defining complex terms like "Prophylactic" or "Dynamic" so you always pick the right label.
 
-1. Data Standardization (The "Clean Slate")
-New Fields: Replaced loose text inputs with two strict dropdowns for every move:
+2. Smart Visuals
+Auto-Coloring Cards: The interface automatically assigns colors to moves based on their type:
 
-Status: (e.g., Mainline, Sideline, Novelty, Blunder).
+🔴 Red: Tactical / Forcing
 
-Type: (e.g., Positional, Tactical, Prophylactic, Dynamic).
+🔵 Blue: Positional / Strategic / Quiet
 
-Auto-Migration: Includes a smart importer that automatically converts legacy V1/V2 files to the new V3 structure so no data is lost.
+🟢 Green: Defensive / Prophylactic
 
-2. Progressive Input UI
-Fast Path: The "Add Move" form is now compact by default, showing only the move input for rapid entry.
+🟣 Purple: Dynamic
 
-Sticky "Coach" Drawer: Tapping "Add Details ▾" opens a drawer for Status, Type, and Explanation. Crucially, this drawer is sticky—if you leave it open, it stays open for the next move, allowing for seamless detailed entry.
+3. The "Brain" (Transposition Engine)
+Cross-File Linking: If you reach a position in your French Defense file that you have also studied in your English Opening file, a purple "Transposition" badge appears.
 
-3. Integrated Reference Guide
-Educational Modal: Added a clickable ⓘ icon next to the "Type" dropdown. This triggers a full-screen, mobile-friendly overlay defining complex terms like "Prophylactic" or "Quiet Move," helping beginners select the correct tag.
+Smart Filtering: The badge only appears if the match is in a different file, preventing the app from telling you "This position is found in the current file."
 
-4. Smart Visuals
-Auto-Coloring: The app now automatically assigns colors to cards based on the move type (e.g., "Tactical" moves turn Red, "Positional" moves turn Blue), eliminating manual color selection and ensuring visual consistency.
+📂 V4.0 JSON Data Structure
+V4.0 uses a strict Array-Only structure. The response object has been deprecated.
 
-5. Stability & Logic Fixes (Carried from V2.2)
-Robust Transposition Logic: Fixed self-referencing bugs where an opening would list itself as a match.
+The Golden Rule: Every move—whether it is a single reply or a list of variations—must be inside a children array.
 
-Visual Polish: Fixed unstyled white text areas to match the dark theme.
+JSON
+
+{
+  "name": "Opening Name",
+  "color": "white",
+  "startingMoves": "1. e4",
+  "tree": {
+    "id": "root",
+    "move": "1. e4",
+    "player": "white",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "explanation": "Controls the center.",
+    "children": [  <-- ALWAYS AN ARRAY
+      {
+        "id": "c1",
+        "move": "1... e5",
+        "children": [  <-- ALWAYS AN ARRAY
+           { "id": "c2", "move": "2. Nf3", "children": [] }
+        ]
+      }
+    ]
+  }
+}
+🤖 AI Generation Instructions
+To generate new opening files using a Gemini Gem, paste these instructions into your "Chess Coach Architect" custom Gem.
+
+System Instructions:
+
+Plaintext
+
+You are the "Chess Coach Architect." Your specific purpose is to generate valid JSON files for the "Chess Opening Trainer V4.0" application.
+
+### OUTPUT FORMAT
+- You must output raw JSON code only. No markdown formatting (no ```json blocks).
+- Validate all JSON before outputting to ensure no trailing commas.
+
+### 1. THE GOLDEN RULE (V4.0 ARCHITECTURE)
+**Everything is a Child.**
+- Do NOT use the `response` object.
+- Do NOT use the `choices` array.
+- Every move node—whether it is a single reply or a list of variations—must be inside a `children` array.
+
+### 2. DATA INTEGRITY RULES
+**A. Status & Type (Strict Enums):**
+- *Status:* "Mainline", "Sideline", "Novelty", "Blunder", "Mistake", "Theoretical"
+- *Type:* "Positional/Strategic", "Tactical", "Defensive/Prophylactic", "Dynamic", "Forcing", "Quiet"
+
+**B. Coach Mode Explanations:**
+- Every node must have an `explanation` string answering "Why?" (e.g., "Prevents the pin.").
+
+**C. Player Perspective:**
+- If User is WHITE: Root is White. Root `children` are Black.
+- If User is BLACK: Root is White (Opponent). Root `children` are Black (User).
+
+### 3. FORMATTING RULES
+- **Wrappers:** Always wrap the tree in the full object (`name`, `color`, `description`, `tree`).
+- **Notation:** Always include move numbers (e.g., "1. e4", "1... e5").
+- **Escaping:** If an explanation contains quotes, use single quotes (e.g., "The 'French Bishop' problem") to avoid syntax errors.
+📲 How to Install (Mobile)
+Save the V4.0 source code as index.html on a computer.
+
+Email the file to yourself or upload it to Google Drive/iCloud.
+
+Open the file on your phone. It runs instantly in the browser—no app store required.
