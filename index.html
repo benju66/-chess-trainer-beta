@@ -727,11 +727,50 @@ function goBack() { showScreen('menuScreen'); }
 // MIGRATION & IO
 // =====================================================
 function migrateOpening(op) {
+    // 1. If already migrated, stop.
     if (op.version === "4.0") return op;
-    // Simple flat migrator (placeholder for full logic)
-    // Since V4.0 logic uses pure recursion, V3 files might need simple tweak.
-    // For this demo, we assume V4 structure.
-    op.version = "4.0";
+    
+    console.log("Migrating " + op.name + " to V4.0...");
+
+    // 2. Recursive walker to fix every node
+    function walk(node) {
+        if (!node) return;
+
+        // Ensure children array exists
+        if (!node.children) node.children = [];
+
+        // MIGRATION: Move 'response' into 'children'
+        if (node.response) {
+            if (node.response.isChoice && node.response.choices) {
+                // If it was a choice, push all choices to children
+                node.response.choices.forEach(c => node.children.push(c));
+            } else {
+                // If it was a single response, push it to children
+                node.children.push(node.response);
+            }
+            // Destructive: Remove the old field so V4 logic doesn't get confused
+            delete node.response;
+        }
+
+        // MIGRATION: Fix old Labels/Styles
+        if (node.label && !node.status) node.status = node.label;
+        if (node.style && !node.type) {
+            const s = node.style.toLowerCase();
+            if (s.includes('aggressive') || s.includes('tactical')) node.type = 'Tactical';
+            else if (s.includes('solid') || s.includes('positional')) node.type = 'Positional/Strategic';
+            else if (s.includes('safe')) node.type = 'Defensive/Prophylactic';
+            else node.type = 'Dynamic';
+        }
+
+        // Recurse down the tree
+        if (node.children && node.children.length > 0) {
+            node.children.forEach(walk);
+        }
+    }
+
+    // 3. Execute
+    walk(op.tree);
+    op.version = "4.0"; // Mark as done
     return op;
 }
 
