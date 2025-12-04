@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V4.5</title>
+    <title>Chess Trainer V4.6 (Fixed)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -34,7 +34,7 @@
         .container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; }
         .header { text-align: center; padding: 20px 0; position: relative; }
         .header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--header-color); }
-        .version-tag { background: #8b5cf6; color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+        .version-tag { background: #10b981; color: #1e293b; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
 
         /* =========================================
            MENU & FOLDERS
@@ -141,7 +141,7 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V4.5</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V4.6</span></h1>
                 <p>Unified Repertoire Manager</p>
             </div>
             <div id="openingsContainer"></div>
@@ -401,17 +401,7 @@ function jumpToOpening(targetKey, moveText) {
     // 2. Load new opening
     currentOpeningKey = targetKey;
     currentOpening = OPENINGS[targetKey];
-    
-    // 3. Find the path in new opening that matches current FEN
-    // (For simplicity in V4.5, we just start at root, but a real deep-link 
-    // requires searching the tree for the FEN. Implementing simple root jump for now).
-    // *Advanced Logic*: In a real app, we would use findPathToFen() here.
-    // Since we are jumping based on a matching position, let's assume user wants to explore the NEW file from that spot.
-    // Re-calculating the path in the new file is complex. 
-    // SIMPLIFICATION: We just load the file. User navigates.
-    // Ideally: path = findPathByFEN(currentFEN, newFile);
-    
-    currentPath = []; // Reset path for new file (Simplified)
+    currentPath = []; // Reset path for new file
     
     updateTheme();
     renderTrainer();
@@ -583,8 +573,6 @@ function deleteOpening(key) {
 // =====================================================
 // BUILDER (Simplified V4)
 // =====================================================
-// ... (Builder Logic remains mostly same as V4.0 but populates OPENINGS)
-
 function showBuilder() {
     builderTree = { id: 'root', move: 'Start', children: [] }; // Reset
     builderPath = [];
@@ -667,7 +655,7 @@ function addBuilderMove() {
     const newId = 'node_' + Date.now();
     parent.children.push({
         id: newId,
-        move: move, // User must type full notation "1. e4" for now
+        move: move,
         status: document.getElementById('newStatus').value,
         type: document.getElementById('newType').value,
         explanation: document.getElementById('newExpl').value,
@@ -724,8 +712,10 @@ function exitBuilder() {
 function goBack() { showScreen('menuScreen'); }
 
 // =====================================================
-// MIGRATION & IO
+// MIGRATION & IO (THE HEALING LOGIC)
 // =====================================================
+
+// THIS IS THE CRITICAL FIX
 function migrateOpening(op) {
     // 1. If already migrated, stop.
     if (op.version === "4.0") return op;
@@ -795,12 +785,15 @@ function handleFileUpload(input) {
     reader.onload = (e) => {
         try {
             const json = JSON.parse(e.target.result);
-            // Auto-assign ID if missing
+            // CRITICAL: Run Migrator Here
+            const migrated = migrateOpening(json);
+            
             const key = 'import_' + Date.now();
-            OPENINGS[key] = json;
+            OPENINGS[key] = migrated;
             saveStorage();
             renderMenu();
-        } catch (err) { alert('Invalid JSON'); }
+            alert('Imported & Migrated successfully!');
+        } catch (err) { alert('Invalid JSON: ' + err.message); }
     };
     reader.readAsText(file);
 }
@@ -810,8 +803,11 @@ async function importFromUrl() {
     try {
         const res = await fetch(url);
         const json = await res.json();
+        // CRITICAL: Run Migrator Here
+        const migrated = migrateOpening(json);
+        
         const key = 'import_' + Date.now();
-        OPENINGS[key] = json;
+        OPENINGS[key] = migrated;
         saveStorage();
         renderMenu();
         document.getElementById('urlImportBox').style.display = 'none';
