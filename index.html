@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V5.1 (Robust)</title>
+    <title>Chess Trainer V5.3 (Robust)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -39,7 +39,7 @@
         .header-tools { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
         .tool-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .tool-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
-        .version-tag { background: #8b5cf6; color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+        .version-tag { background: #0ea5e9; color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
 
         /* FOLDERS */
         .folder-header {
@@ -47,6 +47,7 @@
             margin-top: 20px; margin-bottom: 10px; cursor: pointer; font-weight: 600;
             color: var(--accent-color); display: flex; justify-content: space-between; align-items: center;
         }
+        .folder-header:hover { background: rgba(255, 255, 255, 0.1); }
         .folder-content { display: none; }
         .folder-content.open { display: block; }
         .folder-count { background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; color: #94a3b8; }
@@ -71,6 +72,11 @@
         }
         .screen { display: none; }
 
+        /* TABS */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3); border: 1px solid #334155; border-radius: 12px; color: #94a3b8; font-weight: 600; cursor: pointer; text-align: center; }
+        .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
+
         /* TRAINER UI */
         .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; }
         .move-tag { padding: 4px 8px; border-radius: 4px; font-family: monospace; margin-right: 6px; display: inline-block; }
@@ -92,17 +98,30 @@
             width: 100%; display: flex; justify-content: space-between; align-items: center;
             padding: 16px; margin-bottom: 10px; border-radius: 12px; cursor: pointer;
             background: rgba(51, 65, 85, 0.5); border: 1px solid #475569; color: #e2e8f0; text-align: left;
+            position: relative;
         }
         .option-btn:hover { background: rgba(71, 85, 105, 0.6); }
         .option-btn h4 { font-family: monospace; font-size: 1.1rem; margin-bottom: 4px; }
         .option-btn p { font-size: 0.8rem; opacity: 0.8; }
         
+        .option-btn .tags { display: flex; gap: 6px; margin-top: 4px; }
+        .tag-pill { padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; text-transform: uppercase; font-weight: 700; }
+        .tag-pill.status { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+        .tag-pill.type { background: rgba(0,0,0,0.2); color: #fbbf24; }
+
         /* Colors */
         .option-btn.blue { border-left: 4px solid #3b82f6; }
         .option-btn.red { border-left: 4px solid #ef4444; }
         .option-btn.green { border-left: 4px solid #22c55e; }
         .option-btn.purple { border-left: 4px solid #a855f7; }
-        .option-btn.remote { background: transparent; border: 1px dashed #8b5cf6; opacity: 0.9; }
+        
+        /* Remote Buttons (Ghost) */
+        .option-btn.remote { background: transparent; border: 1px dashed; opacity: 0.9; }
+        .option-btn.remote.blue { border-color: #3b82f6; }
+        .option-btn.remote.red { border-color: #ef4444; }
+        .option-btn.remote.green { border-color: #22c55e; }
+        .option-btn.remote.purple { border-color: #a855f7; }
+        
         .option-btn.remote h4 { color: #c4b5fd; }
         .option-btn.remote .badge { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; }
 
@@ -125,20 +144,21 @@
         .end-card { text-align: center; padding: 40px 20px; } 
         .end-card h3 { font-size: 1.3rem; margin-bottom: 8px; } 
 
-        /* BREADCRUMB STYLES (V5.0) */
+        /* BREADCRUMB STYLES (V5.2 Updated) */
         .breadcrumb-item { 
             display: inline-block; 
-            padding: 4px 8px; 
-            border-radius: 4px; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
             background: rgba(255,255,255,0.1); 
             color: #94a3b8; 
-            margin-right: 4px; 
+            margin-right: 6px; 
             cursor: pointer; 
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+            font-weight: 500;
             transition: all 0.2s;
         }
-        .breadcrumb-item:hover { background: rgba(255,255,255,0.2); color: #fff; }
-        .breadcrumb-item.active { background: var(--accent-color); color: #1e293b; font-weight: bold; pointer-events: none; }
+        .breadcrumb-item:hover { background: var(--accent-color); color: #1e293b; }
+        .breadcrumb-item.active { background: rgba(255,255,255,0.05); color: #e2e8f0; border: 1px solid #475569; pointer-events: none; }
 
         /* MODAL */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; display:none; justify-content:center; align-items:center; padding:20px; }
@@ -157,8 +177,8 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V5.1</span></h1>
-                <p>Polished Builder & Unified Manager</p>
+                <h1>♟️ Opening Trainer <span class="version-tag">V5.3</span></h1>
+                <p>Unified Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
                     <button class="tool-btn" onclick="document.getElementById('restoreInput').click()">📥 Restore</button>
@@ -238,62 +258,91 @@
                 <button class="nav-btn" style="background:#22c55e" onclick="saveOpening()">Save</button>
             </div>
             
-            <div class="add-form">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h3>Opening Metadata</h3>
-                    <button class="icon-btn" onclick="downloadCurrentJSON()">📥</button>
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('build')" id="tabBuild">Build</button>
+                <button class="tab" onclick="switchTab('json')" id="tabJson">JSON</button>
+            </div>
+            
+            <div id="buildTab">
+                <div class="add-form">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3>Metadata</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="builderName">
+                    </div>
+                    <div class="form-group">
+                        <label>Folder / Group</label>
+                        <input type="text" id="builderGroup" placeholder="e.g. White Repertoire">
+                    </div>
+                    <div class="form-group">
+                        <label>You Play As</label>
+                        <select id="builderColor">
+                            <option value="white">White</option>
+                            <option value="black">Black</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="builderDesc" rows="2" placeholder="Brief summary..."></textarea>
+                    </div>
                 </div>
-                <input type="hidden" id="builderColor">
-                
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="builderName">
-                </div>
-                <div class="form-group">
-                    <label>Folder / Group</label>
-                    <input type="text" id="builderGroup">
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="builderDesc" rows="2" placeholder="Brief summary..."></textarea>
+
+                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #334155;">
+                    <div class="move-history" id="builderHistory" style="flex-wrap: wrap; height: auto; white-space: normal;"></div>
+                    <div id="builderCurrentNode" class="current-move-card"></div>
+                    
+                    <div class="add-form" style="margin-top:20px;">
+                        <h4 id="addFormTitle">Add Move</h4>
+                        <div class="form-group">
+                            <input type="text" id="newMoveInput" placeholder="Move (e.g. Nf3)">
+                        </div>
+                        <button class="nav-btn" style="width:100%; font-size:0.8rem; margin-bottom:10px;" onclick="toggleDetails()">▼ Add Details (Coach Mode)</button>
+                        <div id="builderDetails" style="display:none;">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="newStatus">
+                                    <option>Mainline</option><option>Sideline</option><option>Novelty</option><option>Blunder</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label>
+                                <select id="newType">
+                                    <option>Positional/Strategic</option><option>Tactical</option><option>Dynamic</option><option>Defensive/Prophylactic</option><option>Forcing</option><option>Quiet</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Explanation</label>
+                                <textarea id="newExpl" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <button class="nav-btn" style="width:100%; background:#3b82f6" onclick="addBuilderMove()">Add Move</button>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="nav-btn" style="flex:1; background:#64748b;" onclick="builderBack()">↑ Up (Back)</button>
+                            <button id="btnDeleteBranch" class="nav-btn" style="flex:1; background:#ef4444;" onclick="deleteBuilderNode()">Delete</button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top:20px;">
+                        <p class="section-title">Existing Responses:</p>
+                        <div id="builderResponses"></div>
+                    </div>
                 </div>
             </div>
-
-            <div style="margin-top:20px; padding-top:20px; border-top:1px solid #334155;">
-                <div class="move-history" id="builderHistory" style="flex-wrap: wrap; height: auto;"></div>
-                <div id="builderCurrentNode" class="current-move-card"></div>
-                
-                <div class="add-form" style="margin-top:20px;">
-                    <h4 id="addFormTitle">Add Move</h4>
-                    <div class="form-group">
-                        <input type="text" id="newMoveInput" placeholder="Move (e.g. Nf3)">
+            
+            <div id="jsonTab" style="display:none">
+                <div class="builder-section">
+                    <h3>Raw JSON</h3>
+                    <details class="template-info">
+                        <summary>📋 V4 Schema</summary>
+                        <p style="font-size:0.8rem; color:#94a3b8">Paste valid JSON here to overwrite the current opening.</p>
+                    </details>
+                    <textarea class="json-area" id="jsonIn" placeholder="Paste opening JSON here..."></textarea>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="nav-btn" style="background:#3b82f6" onclick="importBuilderJson()">Import & Overwrite</button>
+                        <button class="nav-btn" onclick="copyBuilderJson()">Copy to Clipboard</button>
                     </div>
-                    <button class="nav-btn" style="width:100%; font-size:0.8rem; margin-bottom:10px;" onclick="toggleDetails()">▼ Add Details (Coach Mode)</button>
-                    <div id="builderDetails" style="display:none;">
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select id="newStatus">
-                                <option>Mainline</option><option>Sideline</option><option>Novelty</option><option>Blunder</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label>
-                            <select id="newType">
-                                <option>Positional/Strategic</option><option>Tactical</option><option>Dynamic</option><option>Defensive/Prophylactic</option><option>Forcing</option><option>Quiet</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Explanation</label>
-                            <textarea id="newExpl" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <button class="nav-btn" style="width:100%; background:#3b82f6" onclick="addBuilderMove()">Add Move</button>
-                    <button id="btnDeleteBranch" class="nav-btn" style="width:100%; background:#ef4444; margin-top:10px;" onclick="deleteBuilderNode()">Delete Branch</button>
-                </div>
-                
-                <div style="margin-top:20px;">
-                    <p class="section-title">Existing Responses:</p>
-                    <div id="builderResponses"></div>
                 </div>
             </div>
         </div>
@@ -388,7 +437,6 @@ function rebuildTranspositionMap() {
         const game = new Chess();
         function mapNode(node) {
             if (!node) return;
-            // Robust cleaning
             const clean = node.move.replace(/^[0-9]+\.+/, '').trim();
             game.move(clean);
             
@@ -432,7 +480,6 @@ function migrateOpening(op) {
     function walk(n) {
         if (!n) return;
         if (!n.children) n.children = [];
-        
         if (n.label && !n.status) n.status = n.label;
         if (n.style && !n.type) {
             const s = n.style.toLowerCase();
@@ -441,7 +488,6 @@ function migrateOpening(op) {
             else if (s.includes('safe')) n.type='Defensive/Prophylactic';
             else n.type='Dynamic';
         }
-        
         if (n.response) {
             if (n.response.isChoice && n.response.choices) {
                 n.response.choices.forEach(c => n.children.push(c));
@@ -463,16 +509,12 @@ function getUnifiedOptions(currentNode) {
     if (document.getElementById('transpoToggle').checked) {
         const game = new Chess();
         let ptr = currentOpening.tree;
-        
-        const cleanRoot = ptr.move.replace(/^[0-9]+\.+/, '').trim();
-        if (cleanRoot) game.move(cleanRoot);
+        const rootMove = ptr.move.replace(/^[0-9]+\.+/, '').trim();
+        if (rootMove) game.move(rootMove);
         
         for (let id of currentPath) {
             ptr = ptr.children.find(c => c.id === id);
-            if (ptr) {
-                const cleanMove = ptr.move.replace(/^[0-9]+\.+/, '').trim();
-                game.move(cleanMove);
-            }
+            if (ptr) game.move(ptr.move.replace(/^[0-9]+\.+/, '').trim());
         }
         
         const history = game.history();
@@ -557,9 +599,18 @@ function renderTrainer() {
     container.innerHTML = options.map(opt => {
         if (opt.source === 'local') {
             return `<div class="option-btn ${getColorClass(opt.type)}" onclick="handleLocalMove('${opt.id}')">
-                <div class="main"><h4>${opt.move}</h4><p>${opt.status||''} ${opt.type||''}</p></div><span>➜</span></div>`;
+                <div class="main">
+                    <h4>${opt.move}</h4>
+                    <div class="tags">
+                        ${opt.status ? `<span class="tag-pill status">${opt.status}</span>` : ''}
+                        ${opt.type ? `<span class="tag-pill type">${opt.type}</span>` : ''}
+                    </div>
+                </div>
+                <span>➜</span>
+            </div>`;
         } else {
-            return `<div class="option-btn remote" onclick="jumpToOpening('${opt.targetKey}')">
+            const color = getColorClass(opt.type); 
+            return `<div class="option-btn remote ${color}" onclick="jumpToOpening('${opt.targetKey}')">
                 <div class="main"><h4>${opt.move} <span class="badge">${opt.targetName}</span></h4><p>via ${opt.via} • Tap to jump</p></div><span>↗</span></div>`;
         }
     }).join('');
@@ -573,13 +624,14 @@ function updateTheme() {
 }
 
 // =====================================================
-// BUILDER (V5.1 Redesign - Fixed)
+// BUILDER (V5.3 - Polished + Validated)
 // =====================================================
 function showNewOpeningModal() {
-    // RESET ALL BUILDER STATE
     builderTree = null;
     builderPath = [];
     editingKey = null;
+    
+    // CLEAR INPUTS
     document.getElementById('modalName').value = '';
     document.getElementById('modalGroup').value = '';
     document.getElementById('modalMove').value = '';
@@ -588,44 +640,49 @@ function showNewOpeningModal() {
 }
 
 function initializeNewOpening() {
-    const name = document.getElementById('modalName').value || "Untitled";
-    const group = document.getElementById('modalGroup').value || "Uncategorized";
-    const color = document.getElementById('modalColor').value;
-    const moveRaw = document.getElementById('modalMove').value || "e4";
+    try {
+        const name = document.getElementById('modalName').value || "Untitled";
+        const group = document.getElementById('modalGroup').value || "Uncategorized";
+        const color = document.getElementById('modalColor').value;
+        const moveRaw = document.getElementById('modalMove').value || "e4";
+        
+        // --- V5.3 VALIDATION ---
+        const game = new Chess();
+        const validMove = game.move(moveRaw);
+        
+        if (validMove === null) {
+            alert("Invalid starting move! Please check notation (e.g. use 'Nf3' not 'Knight f3').");
+            return;
+        }
 
-    // 1. VALIDATE ROOT MOVE
-    const game = new Chess();
-    const validMove = game.move(moveRaw);
-    
-    if (validMove === null) {
-        alert("Invalid starting move! Please check notation (e.g. use 'Nf3' not 'Knight f3').");
-        return;
+        const formattedMove = "1. " + validMove.san;
+        
+        builderTree = {
+            id: 'root',
+            move: formattedMove,
+            player: 'white',
+            explanation: 'Starting move.',
+            children: []
+        };
+        
+        builderColor = color;
+        document.getElementById('builderName').value = name;
+        document.getElementById('builderGroup').value = group;
+        const colorInput = document.getElementById('builderColor');
+        if (colorInput) colorInput.value = color;
+        
+        document.getElementById('builderDesc').value = '';
+        
+        // CLEAR BUILDER INPUTS
+        document.getElementById('newMoveInput').value = '';
+        document.getElementById('newExpl').value = '';
+        
+        document.getElementById('newOpeningModal').style.display = 'none';
+        showScreen('builderScreen');
+        renderBuilder();
+    } catch (e) {
+        alert("Error initializing: " + e.message);
     }
-
-    // 2. FORMAT ROOT MOVE (Use SAN from engine for cleanliness)
-    const formattedMove = "1. " + validMove.san; 
-
-    builderTree = {
-        id: 'root',
-        move: formattedMove,
-        player: 'white', // Root is always white
-        explanation: 'Starting move.',
-        children: []
-    };
-    
-    builderColor = color;
-    document.getElementById('builderName').value = name;
-    document.getElementById('builderGroup').value = group;
-    
-    // 3. SET THE HIDDEN INPUT (Fixes the crash)
-    const colorInput = document.getElementById('builderColor');
-    if (colorInput) colorInput.value = color;
-    
-    document.getElementById('builderDesc').value = '';
-    
-    document.getElementById('newOpeningModal').style.display = 'none';
-    showScreen('builderScreen');
-    renderBuilder();
 }
 
 function editOpening(key) {
@@ -633,76 +690,83 @@ function editOpening(key) {
     const op = OPENINGS[key];
     builderTree = JSON.parse(JSON.stringify(op.tree));
     builderColor = op.color;
-    
     document.getElementById('builderName').value = op.name;
     document.getElementById('builderGroup').value = op.group || '';
     
-    // FIXED: Populate the hidden input
     const colorInput = document.getElementById('builderColor');
     if (colorInput) colorInput.value = op.color;
     
     document.getElementById('builderDesc').value = op.description || '';
+    
+    // CLEAR BUILDER INPUTS ON ENTRY
+    document.getElementById('newMoveInput').value = '';
+    document.getElementById('newExpl').value = '';
+    
     builderPath = [];
     showScreen('builderScreen');
     renderBuilder();
 }
 
 function renderBuilder() {
-    if (!builderTree) return; // Safety check
+    try {
+        if (!builderTree) return;
 
-    let node = builderTree;
-    
-    // ROBUST: Fallback if move is missing, though unlikely
-    const rootLabel = builderTree.move || "Start";
-    
-    let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`;
-    
-    // Breadcrumbs
-    let tempNode = builderTree;
-    for (let i = 0; i < builderPath.length; i++) {
-        const id = builderPath[i];
-        if (!tempNode.children) break; 
+        let node = builderTree;
+        // V5.3 ROBUST: Fallback if move is missing
+        const rootLabel = builderTree.move || "Start";
+        let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`;
         
-        const child = tempNode.children.find(c => c.id === id);
-        if (child) {
-            tempNode = child;
-            historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`;
+        let tempNode = builderTree;
+        for (let i = 0; i < builderPath.length; i++) {
+            const id = builderPath[i];
+            const child = tempNode.children.find(c => c.id === id);
+            if (child) {
+                tempNode = child;
+                historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`;
+            }
         }
+        node = tempNode;
+        
+        document.getElementById('builderHistory').innerHTML = historyHtml;
+        
+        const ply = builderPath.length + 1;
+        const nextMoveColor = (ply % 2 !== 0) ? 'black' : 'white';
+        const isOpponent = (builderColor === 'white' && nextMoveColor === 'white') || 
+                           (builderColor === 'black' && nextMoveColor === 'black');
+        const turnLabel = nextMoveColor === 'white' ? "White to Move" : "Black to Move";
+        
+        document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card';
+        document.getElementById('builderCurrentNode').innerHTML = `
+            <div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div>
+            <h2>${node.move}</h2>
+            <p>${node.explanation || 'No explanation'}</p>
+            <div style="margin-top:5px;">
+                <span class="version-tag">${node.status || '-'}</span>
+                <span class="version-tag">${node.type || '-'}</span>
+            </div>
+            ${renderEditExplanation(node)}
+        `;
+        
+        const list = document.getElementById('builderResponses');
+        list.innerHTML = '';
+        if (node.children) {
+            node.children.forEach(c => {
+                list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`;
+            });
+        }
+        
+        const formTitle = document.getElementById('addFormTitle');
+        if (formTitle) formTitle.innerText = `Add Move (${turnLabel})`;
+        
+        const deleteBtn = document.getElementById('btnDeleteBranch');
+        if (deleteBtn) {
+            deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch";
+        }
+        
+        setupEnter();
+    } catch(e) {
+        alert("Render Error: " + e.message);
     }
-    node = tempNode;
-    
-    document.getElementById('builderHistory').innerHTML = historyHtml;
-    
-    // Determine whose turn it is next based on who played the current node
-    const turnLabel = node.player === 'white' ? "Black to Move" : "White to Move";
-    
-    document.getElementById('builderCurrentNode').innerHTML = `
-        <div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div>
-        <h2>${node.move}</h2>
-        <p>${node.explanation || 'No explanation'}</p>
-        <div style="margin-top:5px;">
-            <span class="version-tag">${node.status || '-'}</span>
-            <span class="version-tag">${node.type || '-'}</span>
-        </div>
-        ${renderEditExplanation(node)}
-    `;
-    
-    const list = document.getElementById('builderResponses');
-    list.innerHTML = '';
-    if (node.children) {
-        node.children.forEach(c => {
-            list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`;
-        });
-    }
-    
-    document.getElementById('addFormTitle').innerText = turnLabel;
-    
-    const deleteBtn = document.getElementById('btnDeleteBranch');
-    if (deleteBtn) {
-        deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch";
-    }
-    
-    setupEnter();
 }
 
 function jumpToBuilderStep(index) {
@@ -711,6 +775,7 @@ function jumpToBuilderStep(index) {
     renderBuilder();
 }
 
+// V5.3 ROBUST ADD FUNCTION
 function addBuilderMove() {
     try {
         const inputEl = document.getElementById('newMoveInput');
@@ -720,11 +785,8 @@ function addBuilderMove() {
         // --- STEP 1: REPLAY GAME TO VALIDATE ---
         const game = new Chess();
         
-        // ROBUST: Use Regex to remove leading numbers/dots (e.g. "1. e4", "23... Nf6")
-        // ^ means start of string, [0-9]+ means any numbers, \.+ means one or more dots
+        // Robust cleaning of the Root move using Regex
         const cleanMoveRegex = /^[0-9]+\.+/; 
-
-        // Clean Root
         let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim();
         
         const rootResult = game.move(rootClean);
@@ -737,8 +799,6 @@ function addBuilderMove() {
         let node = builderTree;
         for (let id of builderPath) {
             node = node.children.find(c => c.id === id);
-            
-            // Clean previous moves
             let cleanMove = node.move.replace(cleanMoveRegex, '').trim();
             game.move(cleanMove);
         }
@@ -751,28 +811,21 @@ function addBuilderMove() {
             return;
         }
         
-        // --- STEP 3: CALCULATE NOTATION (The "Engine" Way) ---
-        // We parse the FEN string to get the EXACT move number from the engine.
-        // FEN structure: "rnbqkbnr/.../RNBQKBNR b KQkq e3 0 1" -> The LAST number is Full Move Num.
+        // --- STEP 3: CALCULATE NOTATION (Engine Way) ---
         const fen = game.fen(); 
         const fenParts = fen.split(' ');
-        const currentMoveNum = parseInt(fenParts[5]); // The move number for the *upcoming* turn
-        const turn = game.turn(); // 'w' or 'b' (Side to move NEXT)
+        const currentMoveNum = parseInt(fenParts[5]); 
+        const turn = game.turn(); 
         
         let notation = "";
         let player = "";
 
-        // Logic: The engine has already advanced. 
-        // If it's now Black's turn ('b'), White just made move X. 
-        // If it's now White's turn ('w'), Black just made move X.
-        
         if (turn === 'b') {
-            // White just moved. The move number in FEN is for the current turn (1).
+            // White just moved
             notation = `${currentMoveNum}. ${moveObj.san}`;
             player = 'white';
         } else {
-            // Black just moved. The move number in FEN has incremented to the NEXT move (2).
-            // So we must subtract 1 to label Black's move correctly.
+            // Black just moved (Engine incremented move num, so we subtract 1)
             notation = `${currentMoveNum - 1}... ${moveObj.san}`;
             player = 'black';
         }
@@ -818,7 +871,6 @@ function deleteBuilderNode() {
     renderBuilder();
 }
 
-// ... [Keep standard helpers: deleteChild, saveExplanation, renderEditExplanation] ...
 function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
 function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
 function renderEditExplanation(node) { return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; }
@@ -835,7 +887,6 @@ function saveOpening() {
     const name = document.getElementById('builderName').value || "Untitled";
     const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now());
     
-    // Ensure color is read from the hidden input if not in state
     const color = document.getElementById('builderColor').value || 'white';
     
     OPENINGS[key] = { 
@@ -843,6 +894,7 @@ function saveOpening() {
         name: name, 
         group: document.getElementById('builderGroup').value || "Uncategorized", 
         color: color, 
+        description: document.getElementById('builderDesc').value,
         tree: builderTree, 
         startingMoves: "Custom" 
     };
@@ -873,6 +925,41 @@ function renderMenu() {
 }
 function toggleFolder(id) { const el = document.getElementById(id); if (el) el.classList.toggle('open'); }
 function deleteOpening(key) { if (confirm(`Delete "${OPENINGS[key].name}"?`)) { delete OPENINGS[key]; saveStorage(); renderMenu(); } }
+
+function switchTab(t) {
+    document.getElementById('tabBuild').classList.toggle('active', t === 'build');
+    document.getElementById('tabJson').classList.toggle('active', t === 'json');
+    document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none';
+    document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none';
+    if (t === 'json') {
+        if (builderTree && builderTree.children) {
+           document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2);
+        } else {
+           document.getElementById('jsonIn').value = "";
+        }
+    }
+}
+function importBuilderJson() {
+    try {
+        const json = JSON.parse(document.getElementById('jsonIn').value);
+        if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure");
+        builderTree = json.tree;
+        builderColor = json.color;
+        document.getElementById('builderName').value = json.name;
+        document.getElementById('builderGroup').value = json.group || "";
+        document.getElementById('builderColor').value = json.color;
+        document.getElementById('builderDesc').value = json.description || "";
+        alert("JSON loaded. Click 'Save' to finish.");
+        switchTab('build');
+        renderBuilder();
+    } catch(e) { alert("Error: " + e.message); }
+}
+function copyBuilderJson() {
+    const txt = document.getElementById('jsonIn');
+    txt.select();
+    navigator.clipboard.writeText(txt.value);
+    alert("Copied!");
+}
 
 init();
 </script>
