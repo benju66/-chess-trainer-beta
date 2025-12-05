@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V5.6</title>
+    <title>Chess Trainer V5.7</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -90,8 +90,9 @@
         .explanation { color: #cbd5e1; line-height: 1.5; font-size: 0.95rem; margin-top: 10px; }
         
         .options-header { display: flex; justify-content: space-between; align-items: center; margin: 24px 0 12px 0; color: #94a3b8; font-size: 0.9rem; font-weight: 600; }
-        .toggle-container { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
-        .toggle-checkbox { accent-color: #8b5cf6; width: 16px; height: 16px; }
+        .toggle-group { display: flex; gap: 15px; }
+        .toggle-container { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer; }
+        .toggle-checkbox { accent-color: #8b5cf6; width: 16px; height: 16px; cursor: pointer; }
 
         /* BUTTONS */
         .option-btn {
@@ -175,7 +176,7 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V5.6</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V5.7</span></h1>
                 <p>Unified Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
@@ -197,7 +198,7 @@
             </div>
             
             <div id="jsonImportBox" style="display:none; margin-top:10px;">
-                <textarea id="importJsonText" class="json-area" placeholder="Paste opening JSON here..." style="min-height: 150px; margin-bottom: 8px;"></textarea>
+                <textarea id="importJsonText" class="json-area" placeholder="Paste ONE opening JSON here..." style="min-height: 150px; margin-bottom: 8px;"></textarea>
                 <button class="nav-btn" style="width:100%" onclick="importFromMenuText()">Import Opening</button>
             </div>
 
@@ -250,10 +251,16 @@
 
             <div class="options-header">
                 <span>CANDIDATE MOVES</span>
-                <label class="toggle-container">
-                    <input type="checkbox" id="transpoToggle" class="toggle-checkbox" checked onchange="renderTrainer()">
-                    Show Transpositions
-                </label>
+                <div class="toggle-group">
+                    <label class="toggle-container">
+                        <input type="checkbox" id="coachToggle" class="toggle-checkbox" checked onchange="renderTrainer()">
+                        Coach Mode
+                    </label>
+                    <label class="toggle-container">
+                        <input type="checkbox" id="transpoToggle" class="toggle-checkbox" checked onchange="renderTrainer()">
+                        Transpositions
+                    </label>
+                </div>
             </div>
             <div id="trainerOptions"></div>
         </div>
@@ -381,96 +388,13 @@ function validateTree(node) {
 }
 
 // =====================================================
-// DATA & CONFIG (PRE-LOADED DEMO)
+// STATE
 // =====================================================
-const DEFAULT_OPENINGS = {
-    white_italian: {
-        version: "4.0", name: "Italian Game Master", color: "white", group: "White Repertoire",
-        description: "A complete repertoire covering the Giuoco Piano, Two Knights, and Evans Gambit.",
-        startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
-        tree: { id: "root", move: "1. e4", player: "white", explanation: "We start by controlling the center and opening lines for the bishop and queen.", status: "Mainline", type: "Positional/Strategic", children: [
-            { id: "n1", move: "1... e5", player: "black", explanation: "Black challenges the center immediately.", status: "Mainline", type: "Positional/Strategic", children: [
-                { id: "n2", move: "2. Nf3", player: "white", explanation: "Developing the knight to a natural square and attacking e5.", status: "Mainline", type: "Dynamic", children: [
-                    { id: "n3", move: "2... Nc6", player: "black", explanation: "Standard development defending the e-pawn.", status: "Mainline", type: "Positional/Strategic", children: [
-                        { id: "n4", move: "3. Bc4", player: "white", explanation: "The Italian Game! We target the weak f7 square and prepare to castle.", status: "Mainline", type: "Positional/Strategic", children: [
-                            { id: "n5", move: "3... Bc5", player: "black", explanation: "The Giuoco Piano ('Quiet Game'). Black develops logically.", status: "Mainline", type: "Positional/Strategic", children: [
-                                { id: "n6", move: "4. c3", player: "white", explanation: "Preparing to build a big center with d4.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n7", move: "4... Nf6", player: "black", explanation: "Attacking our e4 pawn.", status: "Mainline", type: "Dynamic", children: [
-                                        { id: "n8", move: "5. d3", player: "white", explanation: "The 'Giuoco Pianissimo' (Very Quiet Game). We support the center solidly rather than rushing d4.", status: "Mainline", type: "Positional/Strategic", children: [] },
-                                        { id: "n9", move: "5. d4", player: "white", explanation: "Striking immediately in the center! This leads to sharper positions.", status: "Sideline", type: "Dynamic", children: [] }
-                                    ]}
-                                ]},
-                                { id: "n10", move: "4. b4", player: "white", explanation: "The Evans Gambit! We sacrifice a pawn to deflect the bishop and gain rapid development.", status: "Novelty", type: "Dynamic", children: [
-                                    { id: "n11", move: "4... Bxb4", player: "black", explanation: "They accept the gambit.", status: "Mainline", type: "Tactical", children: [
-                                        { id: "n12", move: "5. c3", player: "white", explanation: "Gaining time on the bishop and preparing d4.", status: "Mainline", type: "Forcing", children: [] }
-                                    ]}
-                                ]}
-                            ]},
-                            { id: "n13", move: "3... Nf6", player: "black", explanation: "The Two Knights Defense. A more aggressive counter-attack.", status: "Mainline", type: "Dynamic", children: [
-                                { id: "n14", move: "4. Ng5", player: "white", explanation: "The Fried Liver Attack setup! We immediately target f7.", status: "Mainline", type: "Tactical", children: [
-                                    { id: "n15", move: "4... d5", player: "black", explanation: "The only good move to stop the threat.", status: "Mainline", type: "Forcing", children: [
-                                        { id: "n16", move: "5. exd5", player: "white", explanation: "Opening lines.", status: "Mainline", type: "Forcing", children: [
-                                            { id: "n17", move: "5... Na5", player: "black", explanation: "The Polerio Defense. Attacking the bishop.", status: "Mainline", type: "Dynamic", children: [] },
-                                            { id: "n18", move: "5... Nxd5", player: "black", explanation: "A mistake! This allows the Fried Liver Sacrifice.", status: "Blunder", type: "Tactical", children: [
-                                                { id: "n19", move: "6. Nxf7", player: "white", explanation: "Sacrificing the knight to draw the King out!", status: "Mainline", type: "Tactical", children: [] }
-                                            ]}
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n20", move: "4. d3", player: "white", explanation: "A quiet alternative, avoiding the tactical chaos of Ng5.", status: "Sideline", type: "Quiet", children: [] }
-                            ]}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]}
-    },
-    black_italian: {
-        version: "4.0", name: "Black vs Italian Game", color: "black", group: "Black Repertoire",
-        description: "Complete Black repertoire against 3. Bc4. Includes the solid Giuoco Piano (3... Bc5) and the sharp Two Knights (3... Nf6).",
-        startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
-        tree: { id: "root", move: "1. e4", player: "white", explanation: "White starts with the King's Pawn.", status: "Mainline", type: "Positional/Strategic", children: [
-            { id: "n1", move: "1... e5", player: "black", explanation: "We mirror White to control the center.", status: "Mainline", type: "Positional/Strategic", children: [
-                { id: "n2", move: "2. Nf3", player: "white", explanation: "White attacks e5.", status: "Mainline", type: "Positional/Strategic", children: [
-                    { id: "n3", move: "2... Nc6", player: "black", explanation: "We develop and defend e5.", status: "Mainline", type: "Positional/Strategic", children: [
-                        { id: "n4", move: "3. Bc4", player: "white", explanation: "The Italian Game. White eyes f7.", status: "Mainline", type: "Positional/Strategic", children: [
-                            { id: "n5", move: "3... Nf6", player: "black", explanation: "OPTION A: The Two Knights Defense. This is the more aggressive, counter-attacking choice. We ignore the f7 threat to attack e4 immediately.", status: "Mainline", type: "Dynamic", children: [
-                                { id: "n6", move: "4. Ng5", player: "white", explanation: "The Knight Attack. White accepts the challenge and attacks f7 immediately.", status: "Mainline", type: "Tactical", children: [
-                                    { id: "n7", move: "4... d5", player: "black", explanation: "The only move! We must block the bishop's vision of f7.", status: "Mainline", type: "Forcing", children: [
-                                        { id: "n8", move: "5. exd5", player: "white", explanation: "White captures.", status: "Mainline", type: "Forcing", children: [
-                                            { id: "n9", move: "5... Na5", player: "black", explanation: "The Polerio Defense. We DO NOT recapture on d5 (which allows the Fried Liver). Instead, we attack the bishop to gain time.", status: "Mainline", type: "Dynamic", children: [] }
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n10", move: "4. d3", player: "white", explanation: "Giuoco Pianissimo ('Very Quiet Game'). White declines the chaos.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n11", move: "4... h6", player: "black", explanation: "Prophylaxis. We prevent Ng5/Bg5 forever before continuing development.", status: "Mainline", type: "Defensive/Prophylactic", children: [] }
-                                ]}
-                            ]},
-                            { id: "n12", move: "3... Bc5", player: "black", explanation: "OPTION B: The Giuoco Piano. The classical choice. We develop the bishop to an active square and maintain symmetry.", status: "Mainline", type: "Positional/Strategic", children: [
-                                { id: "n13", move: "4. c3", player: "white", explanation: "White prepares d4 to build a big center.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n14", move: "4... Nf6", player: "black", explanation: "We attack e4. This forces White to make a decision about their center.", status: "Mainline", type: "Dynamic", children: [
-                                        { id: "n15", move: "5. d4", player: "white", explanation: "White strikes in the center.", status: "Mainline", type: "Dynamic", children: [
-                                            { id: "n16", move: "5... exd4", player: "black", explanation: "We must trade. Maintaining the tension here is dangerous.", status: "Mainline", type: "Forcing", children: [] }
-                                        ]},
-                                        { id: "n17", move: "5. d3", player: "white", explanation: "White switches to a slower setup.", status: "Mainline", type: "Positional/Strategic", children: [
-                                            { id: "n18", move: "5... d6", player: "black", explanation: "Solidifying our center pawn.", status: "Mainline", type: "Positional/Strategic", children: [] }
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n19", move: "4. b4", player: "white", explanation: "The Evans Gambit. White offers a pawn for rapid development.", status: "Sideline", type: "Tactical", children: [
-                                    { id: "n20", move: "4... Bxb4", player: "black", explanation: "We accept the challenge. The best way to refute a gambit is often to accept it and defend carefully.", status: "Mainline", type: "Tactical", children: [] }
-                                ]}
-                            ]}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]}
-    }
-};
-
-const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
-const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
+let OPENINGS = {};
+let currentOpening = null, currentOpeningKey = null, originalOpeningKey = null;
+let currentPath = [], historyStack = [];
+let builderTree = null, builderPath = [], editingKey = null, builderColor = 'white';
+let transpositionMap = {};
 
 const TYPE_DEFINITIONS = [
     { t: 'Positional/Strategic', d: 'Long-term improvements, better piece placement, controlling key squares.' },
@@ -482,25 +406,13 @@ const TYPE_DEFINITIONS = [
 ];
 
 // =====================================================
-// STATE
-// =====================================================
-let OPENINGS = {};
-let currentOpening = null, currentOpeningKey = null, originalOpeningKey = null;
-let currentPath = [], historyStack = [];
-let builderTree = null, builderPath = [], editingKey = null, builderColor = 'white';
-let transpositionMap = {};
-
-// =====================================================
 // INIT & STORAGE
 // =====================================================
 function init() {
     const stored = localStorage.getItem('customOp5');
     if (stored) {
         OPENINGS = JSON.parse(stored);
-    } else {
-        OPENINGS = JSON.parse(JSON.stringify(DEFAULT_OPENINGS));
     }
-    
     document.getElementById('refContent').innerHTML = TYPE_DEFINITIONS.map(x => 
         `<div class="ref-item"><div class="ref-term">${x.t}</div><div class="ref-def">${x.d}</div></div>`
     ).join('');
@@ -556,7 +468,6 @@ function rebuildTranspositionMap() {
 
 function migrateOpening(op) {
     if (op.version === "4.0") return op;
-    
     function walk(n) {
         if (!n) return;
         if (!n.children) n.children = [];
@@ -567,14 +478,6 @@ function migrateOpening(op) {
             else if (s.includes('sol')||s.includes('pos')) n.type='Positional/Strategic';
             else if (s.includes('safe')) n.type='Defensive/Prophylactic';
             else n.type='Dynamic';
-        }
-        if (n.response) {
-            if (n.response.isChoice && n.response.choices) {
-                n.response.choices.forEach(c => n.children.push(c));
-            } else {
-                n.children.push(n.response);
-            }
-            delete n.response;
         }
         n.children.forEach(walk);
     }
@@ -612,7 +515,7 @@ function getUnifiedOptions(currentNode) {
                     id: 'remote_' + match.key,
                     move: next.move, type: next.type, status: next.status,
                     source: 'remote', targetKey: match.key, targetName: match.name,
-                    via: lastMove
+                    via: lastMove, explanation: next.explanation 
                 });
             });
         });
@@ -662,7 +565,11 @@ function renderTrainer() {
     }
     
     document.getElementById('currentMoveText').textContent = node.move;
-    document.getElementById('currentExplanation').textContent = node.explanation || "No notes.";
+    
+    // COACH MODE LOGIC FOR CURRENT CARD
+    const showCoach = document.getElementById('coachToggle').checked;
+    const expl = node.explanation || "No notes.";
+    document.getElementById('currentExplanation').textContent = showCoach ? expl : (expl === "No notes." ? expl : "Explanation hidden (Coach Mode)");
     
     const histEl = document.getElementById('moveHistory');
     histEl.innerHTML = movesText.map(m => `<span class="move-tag ${m.includes('...')?'black':'white'}">${m}</span>`).join('');
@@ -678,23 +585,35 @@ function renderTrainer() {
     
     container.innerHTML = options.map(opt => {
         const branchName = opt.explanation || "";
+        const color = getColorClass(opt.type);
 
         if (opt.source === 'local') {
-            return `<div class="option-btn ${getColorClass(opt.type)}" onclick="handleLocalMove('${opt.id}')">
+            return `<div class="option-btn ${color}" onclick="handleLocalMove('${opt.id}')">
                 <div class="main">
                     <h4>${opt.move}</h4>
-                    ${branchName ? `<p class="branch-desc">${branchName}</p>` : ''}
+                    ${showCoach && branchName ? `<p class="branch-desc">${branchName}</p>` : ''}
+                    ${showCoach ? `
                     <div class="tags">
                         ${opt.status ? `<span class="tag-pill status">${opt.status}</span>` : ''}
                         ${opt.type ? `<span class="tag-pill type">${opt.type}</span>` : ''}
-                    </div>
+                    </div>` : ''}
                 </div>
                 <span>➜</span>
             </div>`;
         } else {
-            const color = getColorClass(opt.type); 
             return `<div class="option-btn remote ${color}" onclick="jumpToOpening('${opt.targetKey}')">
-                <div class="main"><h4>${opt.move} <span class="badge">${opt.targetName}</span></h4><p>via ${opt.via} • Tap to jump</p></div><span>↗</span></div>`;
+                <div class="main">
+                    <h4>${opt.move} <span class="badge">${opt.targetName}</span></h4>
+                    ${showCoach && branchName ? `<p class="branch-desc">${branchName}</p>` : ''}
+                    ${showCoach ? `
+                    <div class="tags">
+                        <span class="tag-pill type" style="opacity:0.7">VIA ${opt.via}</span>
+                        ${opt.status ? `<span class="tag-pill status">${opt.status}</span>` : ''}
+                        ${opt.type ? `<span class="tag-pill type">${opt.type}</span>` : ''}
+                    </div>` : ''}
+                </div>
+                <span>↗</span>
+            </div>`;
         }
     }).join('');
 }
@@ -707,351 +626,8 @@ function updateTheme() {
 }
 
 // =====================================================
-// BUILDER (V5.4 - Bulletproof)
+// BUILDER & MENU
 // =====================================================
-function showNewOpeningModal() {
-    builderTree = null;
-    builderPath = [];
-    editingKey = null;
-    
-    document.getElementById('modalName').value = '';
-    document.getElementById('modalGroup').value = '';
-    document.getElementById('modalMove').value = '';
-    
-    document.getElementById('newOpeningModal').style.display = 'flex';
-}
-
-function initializeNewOpening() {
-    try {
-        const name = document.getElementById('modalName').value || "Untitled";
-        const group = document.getElementById('modalGroup').value || "Uncategorized";
-        const color = document.getElementById('modalColor').value;
-        const moveRaw = document.getElementById('modalMove').value || "e4";
-        
-        const game = new Chess();
-        const validMove = game.move(moveRaw);
-        
-        if (validMove === null) {
-            alert("Invalid starting move! Please check notation (e.g. use 'Nf3' not 'Knight f3').");
-            return;
-        }
-
-        const formattedMove = "1. " + validMove.san;
-        
-        builderTree = {
-            id: 'root',
-            move: formattedMove,
-            player: 'white',
-            explanation: 'Starting move.',
-            children: []
-        };
-        
-        builderColor = color;
-        document.getElementById('builderName').value = name;
-        document.getElementById('builderGroup').value = group;
-        const colorInput = document.getElementById('builderColor');
-        if (colorInput) colorInput.value = color;
-        
-        document.getElementById('builderDesc').value = '';
-        
-        document.getElementById('newMoveInput').value = '';
-        document.getElementById('newExpl').value = '';
-        
-        document.getElementById('newOpeningModal').style.display = 'none';
-        showScreen('builderScreen');
-        renderBuilder();
-    } catch (e) {
-        alert("Error initializing: " + e.message);
-    }
-}
-
-function editOpening(key) {
-    editingKey = key;
-    const op = OPENINGS[key];
-    builderTree = JSON.parse(JSON.stringify(op.tree));
-    builderColor = op.color;
-    document.getElementById('builderName').value = op.name;
-    document.getElementById('builderGroup').value = op.group || '';
-    
-    const colorInput = document.getElementById('builderColor');
-    if (colorInput) colorInput.value = op.color;
-    
-    document.getElementById('builderDesc').value = op.description || '';
-    document.getElementById('newMoveInput').value = '';
-    document.getElementById('newExpl').value = '';
-    
-    builderPath = [];
-    showScreen('builderScreen');
-    renderBuilder();
-}
-
-function renderBuilder() {
-    try {
-        if (!builderTree) return;
-
-        let node = builderTree;
-        const rootLabel = builderTree.move || "Start";
-        let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`;
-        
-        let tempNode = builderTree;
-        for (let i = 0; i < builderPath.length; i++) {
-            const id = builderPath[i];
-            const child = tempNode.children.find(c => c.id === id);
-            if (child) {
-                tempNode = child;
-                historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`;
-            }
-        }
-        node = tempNode;
-        
-        document.getElementById('builderHistory').innerHTML = historyHtml;
-        
-        const ply = builderPath.length + 1;
-        const nextMoveColor = (ply % 2 !== 0) ? 'black' : 'white';
-        const isOpponent = (builderColor === 'white' && nextMoveColor === 'white') || 
-                           (builderColor === 'black' && nextMoveColor === 'black');
-        const turnLabel = nextMoveColor === 'white' ? "White to Move" : "Black to Move";
-        
-        document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card';
-        document.getElementById('builderCurrentNode').innerHTML = `
-            <div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div>
-            <h2>${node.move}</h2>
-            <p>${node.explanation || 'No explanation'}</p>
-            <div style="margin-top:5px;">
-                <span class="version-tag">${node.status || '-'}</span>
-                <span class="version-tag">${node.type || '-'}</span>
-            </div>
-            ${renderEditExplanation(node)}
-        `;
-        
-        const list = document.getElementById('builderResponses');
-        list.innerHTML = '';
-        if (node.children) {
-            node.children.forEach(c => {
-                list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`;
-            });
-        }
-        
-        const formTitle = document.getElementById('addFormTitle');
-        if (formTitle) formTitle.innerText = `Add Move (${turnLabel})`;
-        
-        const deleteBtn = document.getElementById('btnDeleteBranch');
-        if (deleteBtn) {
-            deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch";
-        }
-        
-        setupEnter();
-    } catch(e) {
-        alert("Render Error: " + e.message);
-    }
-}
-
-function jumpToBuilderStep(index) {
-    if (index === -1) builderPath = [];
-    else builderPath = builderPath.slice(0, index + 1);
-    renderBuilder();
-}
-
-function addBuilderMove() {
-    try {
-        const inputEl = document.getElementById('newMoveInput');
-        const moveRaw = inputEl.value.trim();
-        if (!moveRaw) return;
-        
-        const game = new Chess();
-        const cleanMoveRegex = /^[0-9]+\.+/; 
-        
-        if (!builderTree.move) throw new Error("Root move is missing.");
-        
-        let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim();
-        const rootResult = game.move(rootClean);
-        if (!rootResult) {
-            alert("Error: Root move is invalid internal state.");
-            return;
-        }
-        
-        let node = builderTree;
-        for (let id of builderPath) {
-            node = node.children.find(c => c.id === id);
-            if (!node || !node.move) throw new Error("Tree corruption: Missing node move.");
-            let cleanMove = node.move.replace(cleanMoveRegex, '').trim();
-            game.move(cleanMove);
-        }
-        
-        const moveObj = game.move(moveRaw);
-        if (moveObj === null) {
-            alert(`Illegal move: ${moveRaw}\n\nMake sure it's valid in the current position.`);
-            return;
-        }
-        
-        const fen = game.fen(); 
-        const fenParts = fen.split(' ');
-        const currentMoveNum = parseInt(fenParts[5]); 
-        const turn = game.turn(); 
-        
-        let notation = "";
-        let player = "";
-
-        if (turn === 'b') {
-            notation = `${currentMoveNum}. ${moveObj.san}`;
-            player = 'white';
-        } else {
-            notation = `${currentMoveNum - 1}... ${moveObj.san}`;
-            player = 'black';
-        }
-        
-        if(!node.children) node.children = [];
-        
-        const newId = 'n' + Date.now();
-        
-        node.children.push({ 
-            id: newId, 
-            move: notation, 
-            player: player,
-            status: document.getElementById('newStatus').value, 
-            type: document.getElementById('newType').value, 
-            explanation: document.getElementById('newExpl').value, 
-            children: [] 
-        });
-        
-        inputEl.value = '';
-        document.getElementById('newExpl').value = ''; 
-        document.getElementById('newStatus').selectedIndex = 0; 
-        
-        builderPath.push(newId);
-        renderBuilder();
-    } catch (err) {
-        alert("Unexpected error: " + err.message);
-        console.error(err);
-    }
-}
-
-function deleteBuilderNode() {
-    if (builderPath.length === 0) {
-        if (confirm("Reset entire opening?")) showNewOpeningModal();
-        return;
-    }
-    if (!confirm('Delete current branch?')) return;
-    const currentId = builderPath.pop();
-    let node = builderTree;
-    for (let id of builderPath) node = node.children.find(c => c.id === id);
-    node.children = node.children.filter(c => c.id !== currentId);
-    renderBuilder();
-}
-
-function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
-function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
-function renderEditExplanation(node) { return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; }
-function getColorClass(type) { if (!type) return 'blue'; const t = type.toLowerCase(); if (t.includes('tact')||t.includes('forc')) return 'red'; if (t.includes('dynam')) return 'purple'; if (t.includes('defen')) return 'green'; return 'blue'; }
-function toggleDetails() { const d=document.getElementById('builderDetails'); d.style.display=d.style.display==='none'?'block':'none'; }
-function toggleRefModal() { document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; }
-function setupEnter() { setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); }
-function navigateToChild(id) { builderPath.push(id); renderBuilder(); }
-function builderBack() { builderPath.pop(); renderBuilder(); }
-function goBack() { showScreen('menuScreen'); }
-function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
-
-function saveOpening() {
-    const name = document.getElementById('builderName').value || "Untitled";
-    const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now());
-    
-    const color = document.getElementById('builderColor').value || 'white';
-    
-    OPENINGS[key] = { 
-        version: "4.0", 
-        name: name, 
-        group: document.getElementById('builderGroup').value || "Uncategorized", 
-        color: color, 
-        description: document.getElementById('builderDesc').value,
-        tree: builderTree, 
-        startingMoves: "Custom" 
-    };
-    saveStorage(); exitBuilder();
-}
-
-function downloadCurrentJSON() { const data = editingKey ? OPENINGS[editingKey] : buildOpeningObj(); const json = JSON.stringify(data, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'opening.json'; a.click(); }
-function buildOpeningObj() { return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; }
-
-function backupLibrary() { const json = JSON.stringify(OPENINGS, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chess_library_backup.json'; a.click(); }
-function restoreLibrary(input) { const file = input.files[0]; if (!file) return; if (!confirm("Overwrite library?")) return; const reader = new FileReader(); reader.onload = (e) => { try { OPENINGS = JSON.parse(e.target.result); saveStorage(); alert("Restored!"); renderMenu(); } catch (err) { alert("Invalid Backup"); } }; reader.readAsText(file); }
-
-function handleFileUpload(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const json = JSON.parse(e.target.result); if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); const migrated = migrateOpening(json); const key = 'import_' + Date.now(); OPENINGS[key] = migrated; saveStorage(); alert('Imported!'); renderMenu(); } catch (err) { alert('Invalid JSON: '+err.message); } }; reader.readAsText(file); }
-async function importFromUrl() { try { const res = await fetch(document.getElementById('importUrl').value); const json = await res.json(); const migrated = migrateOpening(json); OPENINGS['import_' + Date.now()] = migrated; saveStorage(); alert('Imported!'); document.getElementById('urlImportBox').style.display='none'; renderMenu(); } catch (e) { alert('Error loading URL'); } }
-function toggleUrlImport() { 
-    document.getElementById('jsonImportBox').style.display = 'none'; // Close JSON if open
-    const el = document.getElementById('urlImportBox'); 
-    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
-}
-function toggleJsonImport() { 
-    document.getElementById('urlImportBox').style.display = 'none'; // Close URL if open
-    const el = document.getElementById('jsonImportBox'); 
-    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
-}
-
-function importFromMenuText() {
-    try {
-        let raw = document.getElementById('importJsonText').value;
-        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-        
-        if (!raw) return;
-
-        const json = JSON.parse(raw);
-        if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure");
-        
-        const migrated = migrateOpening(json);
-        const key = 'import_' + Date.now();
-        OPENINGS[key] = migrated;
-        
-        saveStorage();
-        alert('Imported Successfully!');
-        
-        document.getElementById('importJsonText').value = '';
-        document.getElementById('jsonImportBox').style.display = 'none';
-        renderMenu();
-    } catch (e) {
-        alert('Import Error: ' + e.message);
-    }
-}
-
-function switchTab(t) {
-    document.getElementById('tabBuild').classList.toggle('active', t === 'build');
-    document.getElementById('tabJson').classList.toggle('active', t === 'json');
-    document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none';
-    document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none';
-    if (t === 'json') {
-        if (builderTree && builderTree.children) {
-           document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2);
-        } else {
-           document.getElementById('jsonIn').value = "";
-        }
-    }
-}
-function importBuilderJson() {
-    try {
-        let raw = document.getElementById('jsonIn').value;
-        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-        
-        const json = JSON.parse(raw);
-        if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure");
-        builderTree = json.tree;
-        builderColor = json.color;
-        document.getElementById('builderName').value = json.name;
-        document.getElementById('builderGroup').value = json.group || "";
-        document.getElementById('builderColor').value = json.color;
-        document.getElementById('builderDesc').value = json.description || "";
-        alert("JSON loaded successfully. Click 'Save' to finish.");
-        switchTab('build');
-        renderBuilder();
-    } catch(e) { alert("Error: " + e.message); }
-}
-function copyBuilderJson() {
-    const txt = document.getElementById('jsonIn');
-    txt.select();
-    navigator.clipboard.writeText(txt.value);
-    alert("Copied!");
-}
-
-// UI Functions (Restored)
 function showScreen(id) { 
     ['menuScreen', 'trainerScreen', 'builderScreen'].forEach(s => document.getElementById(s).style.display = 'none'); 
     document.getElementById(id).style.display = 'block'; 
@@ -1081,18 +657,69 @@ function renderMenu() {
     });
 }
 
-function toggleFolder(id) { 
-    const el = document.getElementById(id); 
-    if (el) el.classList.toggle('open'); 
+function toggleFolder(id) { const el = document.getElementById(id); if (el) el.classList.toggle('open'); }
+function deleteOpening(key) { if (confirm(`Delete "${OPENINGS[key].name}"?`)) { delete OPENINGS[key]; saveStorage(); renderMenu(); } }
+
+function importFromMenuText() {
+    try {
+        let raw = document.getElementById('importJsonText').value;
+        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+        if (!raw) return;
+
+        const json = JSON.parse(raw);
+        
+        // Safety Check for User Error (Pasting full backup here)
+        if (!json.tree && !json.startingMoves && Object.keys(json).length > 0 && typeof Object.values(json)[0] === 'object') {
+             throw new Error("This looks like a Backup file (multiple openings). Please use the 'Restore' button instead of 'Paste JSON'.");
+        }
+
+        if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure");
+        const migrated = migrateOpening(json);
+        const key = 'import_' + Date.now();
+        OPENINGS[key] = migrated;
+        
+        saveStorage();
+        alert('Imported Successfully!');
+        document.getElementById('importJsonText').value = '';
+        document.getElementById('jsonImportBox').style.display = 'none';
+        renderMenu();
+    } catch (e) {
+        alert('Import Error: ' + e.message);
+    }
 }
 
-function deleteOpening(key) { 
-    if (confirm(`Delete "${OPENINGS[key].name}"?`)) { 
-        delete OPENINGS[key]; 
-        saveStorage(); 
-        renderMenu(); 
-    } 
-}
+// BUILDER FUNCTIONS
+function showNewOpeningModal() { builderTree = null; builderPath = []; editingKey = null; document.getElementById('modalName').value = ''; document.getElementById('modalGroup').value = ''; document.getElementById('modalMove').value = ''; document.getElementById('newOpeningModal').style.display = 'flex'; }
+function initializeNewOpening() { try { const name = document.getElementById('modalName').value || "Untitled"; const group = document.getElementById('modalGroup').value || "Uncategorized"; const color = document.getElementById('modalColor').value; const moveRaw = document.getElementById('modalMove').value || "e4"; const game = new Chess(); const validMove = game.move(moveRaw); if (validMove === null) { alert("Invalid starting move!"); return; } const formattedMove = "1. " + validMove.san; builderTree = { id: 'root', move: formattedMove, player: 'white', explanation: 'Starting move.', children: [] }; builderColor = color; document.getElementById('builderName').value = name; document.getElementById('builderGroup').value = group; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = color; document.getElementById('builderDesc').value = ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newOpeningModal').style.display = 'none'; showScreen('builderScreen'); renderBuilder(); } catch (e) { alert("Error: " + e.message); } }
+function editOpening(key) { editingKey = key; const op = OPENINGS[key]; builderTree = JSON.parse(JSON.stringify(op.tree)); builderColor = op.color; document.getElementById('builderName').value = op.name; document.getElementById('builderGroup').value = op.group || ''; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = op.color; document.getElementById('builderDesc').value = op.description || ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; builderPath = []; showScreen('builderScreen'); renderBuilder(); }
+function renderBuilder() { try { if (!builderTree) return; let node = builderTree; const rootLabel = builderTree.move || "Start"; let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`; let tempNode = builderTree; for (let i = 0; i < builderPath.length; i++) { const id = builderPath[i]; const child = tempNode.children.find(c => c.id === id); if (child) { tempNode = child; historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`; } } node = tempNode; document.getElementById('builderHistory').innerHTML = historyHtml; const ply = builderPath.length + 1; const nextMoveColor = (ply % 2 !== 0) ? 'black' : 'white'; const isOpponent = (builderColor === 'white' && nextMoveColor === 'white') || (builderColor === 'black' && nextMoveColor === 'black'); const turnLabel = nextMoveColor === 'white' ? "White to Move" : "Black to Move"; document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card'; document.getElementById('builderCurrentNode').innerHTML = `<div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div><h2>${node.move}</h2><p>${node.explanation || 'No explanation'}</p><div style="margin-top:5px;"><span class="version-tag">${node.status || '-'}</span><span class="version-tag">${node.type || '-'}</span></div>${renderEditExplanation(node)}`; const list = document.getElementById('builderResponses'); list.innerHTML = ''; if (node.children) { node.children.forEach(c => { list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`; }); } const formTitle = document.getElementById('addFormTitle'); if (formTitle) formTitle.innerText = `Add Move (${turnLabel})`; const deleteBtn = document.getElementById('btnDeleteBranch'); if (deleteBtn) { deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch"; } setupEnter(); } catch(e) { alert("Render Error: " + e.message); } }
+function jumpToBuilderStep(index) { if (index === -1) builderPath = []; else builderPath = builderPath.slice(0, index + 1); renderBuilder(); }
+function addBuilderMove() { try { const inputEl = document.getElementById('newMoveInput'); const moveRaw = inputEl.value.trim(); if (!moveRaw) return; const game = new Chess(); const cleanMoveRegex = /^[0-9]+\.+/; if (!builderTree.move) throw new Error("Root move is missing."); let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim(); const rootResult = game.move(rootClean); if (!rootResult) { alert("Error: Root move is invalid."); return; } let node = builderTree; for (let id of builderPath) { node = node.children.find(c => c.id === id); let cleanMove = node.move.replace(cleanMoveRegex, '').trim(); game.move(cleanMove); } const moveObj = game.move(moveRaw); if (moveObj === null) { alert(`Illegal move: ${moveRaw}`); return; } const fen = game.fen(); const fenParts = fen.split(' '); const currentMoveNum = parseInt(fenParts[5]); const turn = game.turn(); let notation = ""; let player = ""; if (turn === 'b') { notation = `${currentMoveNum}. ${moveObj.san}`; player = 'white'; } else { notation = `${currentMoveNum - 1}... ${moveObj.san}`; player = 'black'; } if(!node.children) node.children = []; const newId = 'n' + Date.now(); node.children.push({ id: newId, move: notation, player: player, status: document.getElementById('newStatus').value, type: document.getElementById('newType').value, explanation: document.getElementById('newExpl').value, children: [] }); inputEl.value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newStatus').selectedIndex = 0; builderPath.push(newId); renderBuilder(); } catch (err) { alert("Error: " + err.message); } }
+function deleteBuilderNode() { if (builderPath.length === 0) { if (confirm("Reset entire opening?")) showNewOpeningModal(); return; } if (!confirm('Delete current branch?')) return; const currentId = builderPath.pop(); let node = builderTree; for (let id of builderPath) node = node.children.find(c => c.id === id); node.children = node.children.filter(c => c.id !== currentId); renderBuilder(); }
+function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
+function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
+function renderEditExplanation(node) { return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; }
+function getColorClass(type) { if (!type) return 'blue'; const t = type.toLowerCase(); if (t.includes('tact')||t.includes('forc')) return 'red'; if (t.includes('dynam')) return 'purple'; if (t.includes('defen')) return 'green'; return 'blue'; }
+function toggleDetails() { const d=document.getElementById('builderDetails'); d.style.display=d.style.display==='none'?'block':'none'; }
+function toggleRefModal() { document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; }
+function setupEnter() { setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); }
+function navigateToChild(id) { builderPath.push(id); renderBuilder(); }
+function builderBack() { builderPath.pop(); renderBuilder(); }
+function goBack() { showScreen('menuScreen'); }
+function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
+
+function saveOpening() { const name = document.getElementById('builderName').value || "Untitled"; const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now()); const color = document.getElementById('builderColor').value || 'white'; OPENINGS[key] = { version: "4.0", name: name, group: document.getElementById('builderGroup').value || "Uncategorized", color: color, description: document.getElementById('builderDesc').value, tree: builderTree, startingMoves: "Custom" }; saveStorage(); exitBuilder(); }
+function downloadCurrentJSON() { const data = editingKey ? OPENINGS[editingKey] : buildOpeningObj(); const json = JSON.stringify(data, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'opening.json'; a.click(); }
+function buildOpeningObj() { return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; }
+function backupLibrary() { const json = JSON.stringify(OPENINGS, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chess_library_backup.json'; a.click(); }
+function restoreLibrary(input) { const file = input.files[0]; if (!file) return; if (!confirm("Overwrite library?")) return; const reader = new FileReader(); reader.onload = (e) => { try { OPENINGS = JSON.parse(e.target.result); saveStorage(); alert("Restored!"); renderMenu(); } catch (err) { alert("Invalid Backup"); } }; reader.readAsText(file); }
+function handleFileUpload(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const json = JSON.parse(e.target.result); if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); const migrated = migrateOpening(json); const key = 'import_' + Date.now(); OPENINGS[key] = migrated; saveStorage(); alert('Imported!'); renderMenu(); } catch (err) { alert('Invalid JSON: '+err.message); } }; reader.readAsText(file); }
+async function importFromUrl() { try { const res = await fetch(document.getElementById('importUrl').value); const json = await res.json(); const migrated = migrateOpening(json); OPENINGS['import_' + Date.now()] = migrated; saveStorage(); alert('Imported!'); document.getElementById('urlImportBox').style.display='none'; renderMenu(); } catch (e) { alert('Error loading URL'); } }
+function toggleUrlImport() { document.getElementById('jsonImportBox').style.display = 'none'; const el = document.getElementById('urlImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+function toggleJsonImport() { document.getElementById('urlImportBox').style.display = 'none'; const el = document.getElementById('jsonImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+function switchTab(t) { document.getElementById('tabBuild').classList.toggle('active', t === 'build'); document.getElementById('tabJson').classList.toggle('active', t === 'json'); document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none'; document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none'; if (t === 'json') { if (builderTree && builderTree.children) { document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2); } else { document.getElementById('jsonIn').value = ""; } } }
+function importBuilderJson() { try { let raw = document.getElementById('jsonIn').value; raw = raw.replace(/```json/g, '').replace(/```/g, '').trim(); const json = JSON.parse(raw); if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure"); builderTree = json.tree; builderColor = json.color; document.getElementById('builderName').value = json.name; document.getElementById('builderGroup').value = json.group || ""; document.getElementById('builderColor').value = json.color; document.getElementById('builderDesc').value = json.description || ""; alert("JSON loaded successfully. Click 'Save' to finish."); switchTab('build'); renderBuilder(); } catch(e) { alert("Error: " + e.message); } }
+function copyBuilderJson() { const txt = document.getElementById('jsonIn'); txt.select(); navigator.clipboard.writeText(txt.value); alert("Copied!"); }
 
 init();
 </script>
