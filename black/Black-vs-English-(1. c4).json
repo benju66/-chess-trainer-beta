@@ -1,0 +1,145 @@
+{
+  "version": "4.0",
+  "name": "Black vs English (1. c4)",
+  "group": "Black Repertoire",
+  "color": "black",
+  "description": "The 'Anglo-Slav'. We treat 1. c4 like a Queen's Gambit. By playing c6 and d5, we transpose into the solid Slav Defense structures we already know.",
+  "startingMoves": "1. c4 c6",
+  "tree": {
+    "id": "root",
+    "move": "1. c4",
+    "player": "white",
+    "explanation": "The English Opening. White fights for d5 from the flank.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "n1",
+        "move": "1... c6",
+        "player": "black",
+        "explanation": "The 'Universal' response. We prepare d5 immediately. This forces the game into Slav or Caro-Kann territory.",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "n2",
+            "move": "2. Nc3",
+            "player": "white",
+            "explanation": "White develops.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "n3",
+                "move": "2... d5",
+                "player": "black",
+                "explanation": "We claim the center. Now we are in a familiar Slav Defense structure.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "n4",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "Solid play.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n5",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "Development.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "n6",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "Standard English setup.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n7",
+                                "move": "4... Bg4",
+                                "player": "black",
+                                "explanation": "Active Bishop! Just like in our Slav repertoire, we get the bishop OUT before playing e6.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "n8",
+                    "move": "3. cxd5",
+                    "player": "white",
+                    "explanation": "White exchanges.",
+                    "status": "Sideline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n9",
+                        "move": "3... cxd5",
+                        "player": "black",
+                        "explanation": "We recapture. Now it is exactly like the 'Exchange Slav' from our 1. d4 repertoire. Very safe.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "n10",
+            "move": "2. g3",
+            "player": "white",
+            "explanation": "The Reti Setup. White fianchettoes.",
+            "status": "Sideline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "n11",
+                "move": "2... d5",
+                "player": "black",
+                "explanation": "We take the center anyway.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "n12",
+                    "move": "3. Bg2",
+                    "player": "white",
+                    "explanation": "White controls the long diagonal.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n13",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "Solid development.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
