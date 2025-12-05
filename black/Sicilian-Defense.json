@@ -1,0 +1,243 @@
+{
+  "version": "4.0",
+  "name": "Classical Sicilian Defense",
+  "group": "Black Repertoire",
+  "color": "black",
+  "description": "The Classical Sicilian (1...c5 2...d6 5...Nc6) is a sound, active defense. It avoids the early madness of the Najdorf while putting immediate pressure on the center.",
+  "startingMoves": "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 Nc6",
+  "tree": {
+    "id": "root",
+    "move": "1. e4",
+    "player": "white",
+    "explanation": "White occupies the center.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "n1",
+        "move": "1... c5",
+        "player": "black",
+        "explanation": "The Sicilian Defense. We fight for d4 from the side.",
+        "status": "Mainline",
+        "type": "Dynamic",
+        "children": [
+          {
+            "id": "n2",
+            "move": "2. Nf3",
+            "player": "white",
+            "explanation": "White prepares d4.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "n3",
+                "move": "2... d6",
+                "player": "black",
+                "explanation": "We control e5 and prepare to develop. Playing 2...d6 avoids the Rossolimo (which happens after 2...Nc6 3.Bb5).",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "n4",
+                    "move": "3. d4",
+                    "player": "white",
+                    "explanation": "The Open Sicilian. White opens the center.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n5",
+                        "move": "3... cxd4",
+                        "player": "black",
+                        "explanation": "We trade our flank pawn for the central pawn.",
+                        "status": "Mainline",
+                        "type": "Forcing",
+                        "children": [
+                          {
+                            "id": "n6",
+                            "move": "4. Nxd4",
+                            "player": "white",
+                            "explanation": "White recaptures.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n7",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "We attack e4 immediately to force White to block their c-pawn with the Knight.",
+                                "status": "Mainline",
+                                "type": "Forcing",
+                                "children": [
+                                  {
+                                    "id": "n8",
+                                    "move": "5. Nc3",
+                                    "player": "white",
+                                    "explanation": "White defends e4.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "n9",
+                                        "move": "5... Nc6",
+                                        "player": "black",
+                                        "explanation": "The Classical Variation! Unlike the Najdorf (5...a6) or Dragon (5...g6), we simply bring our Knight out. We pressure d4 and control the center.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "n10",
+                                            "move": "6. Bg5",
+                                            "player": "white",
+                                            "explanation": "The Richter-Rauzer Attack. This is the most critical test. White intends to double our pawns on f6 and castle Queenside for a sharp attack.",
+                                            "status": "Mainline",
+                                            "type": "Dynamic",
+                                            "children": [
+                                              {
+                                                "id": "n11",
+                                                "move": "6... e6",
+                                                "player": "black",
+                                                "explanation": "We prevent the doubled pawns structurally. Now if Bxf6, we can recapture with the Queen or Bishop later.",
+                                                "status": "Mainline",
+                                                "type": "Defensive/Prophylactic",
+                                                "children": [
+                                                  {
+                                                    "id": "n12",
+                                                    "move": "7. Qd2",
+                                                    "player": "white",
+                                                    "explanation": "White prepares to castle long (0-0-0).",
+                                                    "status": "Mainline",
+                                                    "type": "Dynamic",
+                                                    "children": [
+                                                      {
+                                                        "id": "n13",
+                                                        "move": "7... a6",
+                                                        "player": "black",
+                                                        "explanation": "Prophylaxis. We stop Nb5 and prepare ...b5 to launch our own attack on the Queenside.",
+                                                        "status": "Mainline",
+                                                        "type": "Dynamic",
+                                                        "children": [
+                                                          {
+                                                            "id": "n14",
+                                                            "move": "8. O-O-O",
+                                                            "player": "white",
+                                                            "explanation": "White castles. The positions are sharp: White attacks our King, we attack theirs.",
+                                                            "status": "Mainline",
+                                                            "type": "Dynamic",
+                                                            "children": [
+                                                              {
+                                                                "id": "n15",
+                                                                "move": "8... h6",
+                                                                "player": "black",
+                                                                "explanation": "Forcing the Bishop to decide. We clarify the position before committing.",
+                                                                "status": "Mainline",
+                                                                "type": "Positional/Strategic",
+                                                                "children": []
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "id": "n16",
+                                            "move": "6. Bc4",
+                                            "player": "white",
+                                            "explanation": "The Sozin Attack. Fisher's favorite. White eyes f7 aggressively.",
+                                            "status": "Mainline",
+                                            "type": "Dynamic",
+                                            "children": [
+                                              {
+                                                "id": "n17",
+                                                "move": "6... Qb6",
+                                                "player": "black",
+                                                "explanation": "The Benko variation. We immediately attack the Knight on d4, forcing White to move it or defend it awkwardly.",
+                                                "status": "Mainline",
+                                                "type": "Forcing",
+                                                "children": []
+                                              },
+                                              {
+                                                "id": "n18",
+                                                "move": "6... e6",
+                                                "player": "black",
+                                                "explanation": "Solid. We blunt the Bishop's diagonal.",
+                                                "status": "Sideline",
+                                                "type": "Defensive/Prophylactic",
+                                                "children": []
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "id": "n19",
+                                            "move": "6. Be2",
+                                            "player": "white",
+                                            "explanation": "A quiet, positional move. White wants a long strategic game.",
+                                            "status": "Sideline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "n20",
+                                                "move": "6... e5",
+                                                "player": "black",
+                                                "explanation": "The Boleslavsky Wall. We kick the Knight back. This creates a hole on d5, but we get huge activity and control over the game.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "n21",
+                                                    "move": "7. Nf3",
+                                                    "player": "white",
+                                                    "explanation": "The Knight retreats.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "n22",
+                                                        "move": "7... h6",
+                                                        "player": "black",
+                                                        "explanation": "Stopping Bg5 or Ng5. We are safe and solid.",
+                                                        "status": "Mainline",
+                                                        "type": "Defensive/Prophylactic",
+                                                        "children": []
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "n23",
+                "move": "2... Nc6",
+                "player": "black",
+                "explanation": "Alternative move order. It usually transposes, but allows White to play 3. Bb5 (The Rossolimo).",
+                "status": "Sideline",
+                "type": "Positional/Strategic",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

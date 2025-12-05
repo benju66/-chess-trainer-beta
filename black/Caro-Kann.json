@@ -1,0 +1,332 @@
+{
+  "version": "4.0",
+  "name": "The Solid Caro-Kann",
+  "group": "Black Repertoire",
+  "color": "black",
+  "description": "A rock-solid repertoire based on 1...c6. Solves the 'Bad Bishop' problem by developing it outside the pawn chain before playing ...e6.",
+  "startingMoves": "1. e4 c6 2. d4 d5",
+  "tree": {
+    "id": "root",
+    "move": "1. e4",
+    "player": "white",
+    "explanation": "White claims the center.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "n1",
+        "move": "1... c6",
+        "player": "black",
+        "explanation": "The Caro-Kann Defense. We support d5 without blocking our light-square Bishop (unlike the French Defense 1...e6).",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "n2",
+            "move": "2. d4",
+            "player": "white",
+            "explanation": "White seizes the full center.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "n3",
+                "move": "2... d5",
+                "player": "black",
+                "explanation": "We challenge White's control immediately. White is forced to make a decision about the e4 pawn.",
+                "status": "Mainline",
+                "type": "Forcing",
+                "children": [
+                  {
+                    "id": "n4",
+                    "move": "3. e5",
+                    "player": "white",
+                    "explanation": "The Advance Variation. The most testing line. White gains space and locks the center.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n5",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "The point of the Caro-Kann! We get the Bishop OUTSIDE the pawn chain before we close the door with e6.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "n6",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "The Short Variation. White develops simply and aims for Kingside control.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n7",
+                                "move": "4... e6",
+                                "player": "black",
+                                "explanation": "Now we secure the center. Our pyramid (c6-d5-e6) is incredibly strong.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "n8",
+                                    "move": "5. Be2",
+                                    "player": "white",
+                                    "explanation": "White prepares to castle.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "n9",
+                                        "move": "5... c5",
+                                        "player": "black",
+                                        "explanation": "We strike back! We cannot let White enjoy their space advantage forever. We attack the d4 base.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "n10",
+                            "move": "4. h4",
+                            "player": "white",
+                            "explanation": "The Tal Variation. An aggressive attempt to trap our Bishop with g4/h5.",
+                            "status": "Mainline",
+                            "type": "Tactical",
+                            "children": [
+                              {
+                                "id": "n11",
+                                "move": "4... h5",
+                                "player": "black",
+                                "explanation": "Essential! We stop the pawn storm and secure a square for the Bishop on h7.",
+                                "status": "Mainline",
+                                "type": "Defensive/Prophylactic",
+                                "children": []
+                              },
+                              {
+                                "id": "n12",
+                                "move": "4... h6",
+                                "player": "black",
+                                "explanation": "A mistake. This allows 5. g4 Bh7 6. e6! sacrificing a pawn to ruin our structure.",
+                                "status": "Blunder",
+                                "type": "Tactical",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "n13",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "The Classical Variation. White defends the pawn while developing.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n14",
+                        "move": "3... dxe4",
+                        "player": "black",
+                        "explanation": "We trade. We concede space for the moment, but we have no weaknesses.",
+                        "status": "Mainline",
+                        "type": "Forcing",
+                        "children": [
+                          {
+                            "id": "n15",
+                            "move": "4. Nxe4",
+                            "player": "white",
+                            "explanation": "White recaptures and centralizes the Knight.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n16",
+                                "move": "4... Bf5",
+                                "player": "black",
+                                "explanation": "The Classical Mainline. We challenge the Knight immediately. We are willing to trade pieces to simplify the game.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "n17",
+                                    "move": "5. Ng3",
+                                    "player": "white",
+                                    "explanation": "The Knight retreats but hits our Bishop.",
+                                    "status": "Mainline",
+                                    "type": "Forcing",
+                                    "children": [
+                                      {
+                                        "id": "n18",
+                                        "move": "5... Bg6",
+                                        "player": "black",
+                                        "explanation": "The Bishop slides back to safety, eyeing the c2-h7 diagonal.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "n19",
+                                            "move": "6. h4",
+                                            "player": "white",
+                                            "explanation": "White threatens h5 to trap the Bishop.",
+                                            "status": "Mainline",
+                                            "type": "Tactical",
+                                            "children": [
+                                              {
+                                                "id": "n20",
+                                                "move": "6... h6",
+                                                "player": "black",
+                                                "explanation": "Creating an escape hatch ('luft') for the Bishop on h7.",
+                                                "status": "Mainline",
+                                                "type": "Defensive/Prophylactic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "n21",
+                    "move": "3. exd5",
+                    "player": "white",
+                    "explanation": "The Exchange Variation. This often leads to quieter games, but White can try the Panov Attack.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n22",
+                        "move": "3... cxd5",
+                        "player": "black",
+                        "explanation": "Recapturing towards the center.",
+                        "status": "Mainline",
+                        "type": "Forcing",
+                        "children": [
+                          {
+                            "id": "n23",
+                            "move": "4. Bd3",
+                            "player": "white",
+                            "explanation": "Preventing us from developing our Bishop to f5 easily.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n24",
+                                "move": "4... Nc6",
+                                "player": "black",
+                                "explanation": "Putting pressure on d4 immediately.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "n25",
+                                    "move": "5. c3",
+                                    "player": "white",
+                                    "explanation": "Solidifying the center.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "n26",
+                                        "move": "5... Nf6",
+                                        "player": "black",
+                                        "explanation": "Natural development.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "n27",
+                                            "move": "6. Bf4",
+                                            "player": "white",
+                                            "explanation": "White takes control of the diagonal first.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "n28",
+                                                "move": "6... Bg4",
+                                                "player": "black",
+                                                "explanation": "Active play! We pin the knight or force a piece trade. We should not play passively with e6 yet.",
+                                                "status": "Mainline",
+                                                "type": "Dynamic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "n29",
+                    "move": "3. f3",
+                    "player": "white",
+                    "explanation": "The Fantasy Variation. White tries to keep the big center with pawns.",
+                    "status": "Sideline",
+                    "type": "Tactical",
+                    "children": [
+                      {
+                        "id": "n30",
+                        "move": "3... dxe4",
+                        "player": "black",
+                        "explanation": "We accept the trade to open lines against the potentially weak King.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "n31",
+                            "move": "4. fxe4",
+                            "player": "white",
+                            "explanation": "White recaptures.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n32",
+                                "move": "4... e5",
+                                "player": "black",
+                                "explanation": "A thematic strike! If 5. dxe5 Qh4+ wins the game. We attack the center immediately.",
+                                "status": "Mainline",
+                                "type": "Tactical",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
