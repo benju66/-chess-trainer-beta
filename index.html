@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V4.8</title>
+    <title>Chess Trainer V4.9</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -32,13 +32,12 @@
 
         .container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; }
         
-        /* HEADER WITH TOOLS */
+        /* HEADER */
         .header { text-align: center; padding: 20px 0; position: relative; }
         .header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--header-color); }
         .header-tools { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
         .tool-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .tool-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
-        
         .version-tag { background: #f43f5e; color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
 
         /* FOLDERS */
@@ -63,24 +62,29 @@
         .card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
         .icon-btn { background: rgba(100, 116, 139, 0.3); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
 
-        /* NAVIGATION */
+        /* NAVIGATION & UI ELEMENTS */
         .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .nav-btn { background: rgba(255,255,255,0.1); border: none; color: #e2e8f0; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
         .return-btn {
             background: rgba(139, 92, 246, 0.2); border: 1px solid #8b5cf6; color: #c4b5fd;
             display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
         }
-
-        /* TRAINER */
+        .screen { display: none; }
+        
+        /* HISTORY & MOVES */
         .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; }
         .move-tag { padding: 4px 8px; border-radius: 4px; font-family: monospace; margin-right: 6px; display: inline-block; }
         .move-tag.white { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
         .move-tag.black { color: #e2e8f0; background: rgba(255, 255, 255, 0.1); }
 
         .current-move-card { background: #334155; border-radius: 20px; padding: 24px; margin-bottom: 16px; text-align: center; }
-        .current-move h2 { font-size: 2rem; font-family: monospace; margin: 10px 0; }
-        .explanation { color: #cbd5e1; line-height: 1.5; font-size: 0.95rem; }
+        .current-move-card.opponent { border: 1px solid #475569; }
+        .move-label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; letter-spacing: 1px; }
+        .current-move h2 { font-size: 2rem; font-family: monospace; margin: 10px 0; color: #e2e8f0; }
+        .explanation { color: #cbd5e1; line-height: 1.5; font-size: 0.95rem; margin-top: 10px; }
+        .tag-row { margin-top: 8px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
 
+        /* OPTIONS LIST */
         .options-header { display: flex; justify-content: space-between; align-items: center; margin: 24px 0 12px 0; color: #94a3b8; font-size: 0.9rem; font-weight: 600; }
         .toggle-container { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
         .toggle-checkbox { accent-color: #8b5cf6; width: 16px; height: 16px; }
@@ -89,6 +93,7 @@
             width: 100%; display: flex; justify-content: space-between; align-items: center;
             padding: 16px; margin-bottom: 10px; border-radius: 12px; cursor: pointer;
             background: rgba(51, 65, 85, 0.5); border: 1px solid #475569; color: #e2e8f0; text-align: left;
+            position: relative;
         }
         .option-btn:hover { background: rgba(71, 85, 105, 0.6); }
         .option-btn h4 { font-family: monospace; font-size: 1.1rem; margin-bottom: 4px; }
@@ -100,13 +105,13 @@
         .option-btn.green { border-left: 4px solid #22c55e; }
         .option-btn.purple { border-left: 4px solid #a855f7; }
         
-        /* Remote Buttons (Ghost) */
+        /* Remote Buttons */
         .option-btn.remote { background: transparent; border: 1px dashed #8b5cf6; opacity: 0.9; }
         .option-btn.remote h4 { color: #c4b5fd; }
         .option-btn.remote .badge { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; }
 
-        /* BUILDER */
-        .add-form { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px dashed #475569; }
+        /* FORMS */
+        .add-form { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px dashed #475569; margin-bottom: 16px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; }
         .form-group input, .form-group select, textarea {
@@ -117,49 +122,27 @@
         .details-toggle-btn { background: none; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; padding: 0; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 4px; }
         .details-drawer { display: none; margin-bottom: 16px; border-top: 1px solid #334155; padding-top: 16px; }
         .details-drawer.visible { display: block; }
+        .delete-item-btn { background: rgba(239, 68, 68, 0.2); border: none; color: #f87171; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; margin-left: 10px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; } 
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+        .end-card { text-align: center; padding: 40px 20px; } 
+        .end-card h3 { font-size: 1.3rem; margin-bottom: 8px; } 
+        .end-card p { color: #94a3b8; }
 
-        /* BUILDER POSITIONS */
-        .position-card { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
-        .position-card.opponent { background: rgba(100, 116, 139, 0.1); border-color: rgba(100, 116, 139, 0.3); }
-        .position-label { font-size: 0.75rem; text-transform: uppercase; color: #fbbf24; margin-bottom: 8px; }
-        .position-card.opponent .position-label { color: #94a3b8; }
-        .position-move { font-family: monospace; font-size: 1.4rem; font-weight: 700; color: #e2e8f0; }
-        .position-expl { font-size: 0.9rem; color: #cbd5e1; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; }
-
-        /* CHOICE CARD */
-        .choice-card { background: rgba(51, 65, 85, 0.3); border: 2px solid; border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; }
-        .choice-card:hover { transform: scale(1.02); }
-        .choice-card.red { border-color: rgba(239, 68, 68, 0.5); } .choice-card.red:hover { background: rgba(239, 68, 68, 0.1); } .choice-card.red h4 { color: #f87171; }
-        .choice-card.blue { border-color: rgba(59, 130, 246, 0.5); } .choice-card.blue:hover { background: rgba(59, 130, 246, 0.1); } .choice-card.blue h4 { color: #60a5fa; }
-        .choice-card.purple { border-color: rgba(168, 85, 247, 0.5); } .choice-card.purple:hover { background: rgba(168, 85, 247, 0.1); } .choice-card.purple h4 { color: #c084fc; }
-        .choice-card.green { border-color: rgba(34, 197, 94, 0.5); } .choice-card.green:hover { background: rgba(34, 197, 94, 0.1); } .choice-card.green h4 { color: #4ade80; }
-        .choice-card h4 { font-family: monospace; font-size: 1.125rem; margin-bottom: 4px; } .choice-card .name { font-weight: 600; font-size: 0.875rem; margin-bottom: 4px; } .choice-card .style { font-size: 0.75rem; color: #94a3b8; }
-        
         /* MODAL */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; display:none; justify-content:center; align-items:center; padding:20px; }
         .modal-content { background:#1e293b; padding:24px; border-radius:16px; width:100%; max-width:400px; max-height:80vh; overflow-y:auto; }
         .ref-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #334155; }
         .ref-term { color: #fbbf24; font-weight: 700; margin-bottom: 4px; }
         .ref-def { color: #cbd5e1; font-size: 0.9rem; }
-
-        .response-list { margin-bottom: 16px; } 
-        .response-item { background: rgba(51, 65, 85, 0.5); border: 1px solid #475569; border-radius: 14px; padding: 18px 20px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; min-height: 64px; } 
-        .response-item .move { font-family: monospace; font-size: 1.15rem; font-weight: 600; color: #cbd5e1; flex: 1; } 
-        .response-item .arrow { color: #64748b; font-size: 1.3rem; }
-        .delete-item-btn { background: rgba(239, 68, 68, 0.2); border: none; color: #f87171; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; margin-right: 8px; flex-shrink: 0; } .choice-card .delete-item-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; font-size: 1rem; }
-
-        .path-display { background: #1e293b; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 0.85rem; color: #64748b; overflow-x: auto; white-space: nowrap; } .path-display .current { color: #fbbf24; font-weight: 600; }
-        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; } .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; } .tab { flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3); border: 1px solid #334155; border-radius: 12px; color: #94a3b8; font-weight: 600; cursor: pointer; text-align: center; } .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
-        .json-area { width: 100%; min-height: 180px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 14px; color: #e2e8f0; font-family: monospace; font-size: 0.8rem; resize: vertical; }
-        .template-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd; } .template-info summary { cursor: pointer; font-weight: 600; margin-bottom: 8px; } .template-info ul { margin: 8px 0 0 16px; color: #94a3b8; } .template-info code { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; color: #fbbf24; }
+        .info-icon { cursor: pointer; color: #60a5fa; font-size: 1rem; margin-left: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V4.8</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V4.9</span></h1>
                 <p>Unified Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup All</button>
@@ -177,7 +160,6 @@
                 <input type="text" id="importUrl" placeholder="Paste raw JSON URL..." style="width:100%; padding:12px; border-radius:8px; margin-bottom:8px;">
                 <button class="nav-btn" style="width:100%" onclick="importFromUrl()">Fetch</button>
             </div>
-            
             <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(this)">
             <input type="file" id="restoreInput" style="display:none" onchange="restoreLibrary(this)">
         </div>
@@ -191,7 +173,7 @@
             <div class="move-history" id="moveHistory"></div>
             
             <div class="current-move-card">
-                <div class="move-label" style="color:#94a3b8; font-size:0.9rem; margin-bottom:8px;">CURRENT MOVE</div>
+                <div class="move-label">CURRENT MOVE</div>
                 <h2 id="currentMoveText">Start</h2>
                 <p class="explanation" id="currentExplanation">Tap a move below to begin.</p>
             </div>
@@ -231,6 +213,10 @@
                         <option value="white">White</option>
                         <option value="black">Black</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="builderDesc" rows="2" placeholder="Brief summary..."></textarea>
                 </div>
             </div>
 
@@ -302,28 +288,6 @@ const DEFAULT_OPENINGS = {
                 ]}
             ]}
         ]}
-    },
-    london_system: {
-        version: "4.0",
-        name: "London System", color: "white", description: "Solid d4 setup with early Bf4", startingMoves: "1. d4 d5 2. Bf4",
-        group: "White Repertoire",
-        tree: { id: 'root', move: '1. d4', player: 'white', explanation: 'Queen\'s Pawn.', children: [
-            { id: 'd5', move: '1... d5', player: 'black', label: 'Main Line', children: [
-                { id: 'Bf4', move: '2. Bf4', player: 'white', explanation: 'The London! Develop bishop before e3.', children: [] }
-            ]}
-        ]}
-    },
-    sicilian_najdorf: {
-        version: "4.0",
-        name: "Sicilian Najdorf", color: "black", description: "Fighting defense to 1.e4", startingMoves: "1. e4 c5 2. Nf3 d6",
-        group: "Black Repertoire",
-        tree: { id: 'root', move: '1. e4', player: 'white', explanation: 'White opens with King\'s pawn.', children: [
-            { id: 'c5', move: '1... c5', player: 'black', label: 'Sicilian!', explanation: 'Fight for the center.', children: [
-                { id: 'Nf3', move: '2. Nf3', player: 'white', label: 'Open Sicilian', children: [
-                    { id: 'd6', move: '2... d6', player: 'black', explanation: 'Preparing the Najdorf.', children: [] }
-                ]}
-            ]}
-        ]}
     }
 };
 
@@ -373,7 +337,7 @@ function saveStorage() {
 }
 
 // =====================================================
-// TRANSPOSITION BRAIN (UPDATED V4.8)
+// LOGIC: TRANSPOSITION & MIGRATION
 // =====================================================
 function rebuildTranspositionMap() {
     if (typeof Chess === 'undefined') return;
@@ -391,12 +355,11 @@ function rebuildTranspositionMap() {
             const fen = game.fen();
             if (!transpositionMap[fen]) transpositionMap[fen] = [];
             
-            // Store Color for Filtering
             if (!transpositionMap[fen].find(x => x.key === key)) {
                 transpositionMap[fen].push({
                     key: key, 
                     name: op.name,
-                    color: op.color, // V4.8: Store color
+                    color: op.color, // Store color for filtering
                     group: op.group || "Uncategorized",
                     nextMoves: node.children ? node.children.map(c => ({
                         move: c.move, type: c.type, status: c.status
@@ -411,27 +374,76 @@ function rebuildTranspositionMap() {
     });
 }
 
+function validateTree(node) {
+    if (!node) return false;
+    // Root might be empty in builder start, but imported trees should have structure
+    if (node.children) {
+        if (!Array.isArray(node.children)) return false;
+        for (let child of node.children) {
+            if (!validateTree(child)) return false;
+        }
+    }
+    // Check for V3 remnants
+    if (node.response || node.choices) return false;
+    return true;
+}
+
+function migrateOpening(op) {
+    if (op.version === "4.0") return op;
+    console.log("Migrating " + op.name + " to V4.0...");
+
+    function walk(n) {
+        if (!n) return;
+        if (!n.children) n.children = [];
+        if (n.label && !n.status) n.status = n.label;
+        if (n.style && !n.type) {
+            const s = n.style.toLowerCase();
+            if (s.includes('agg')||s.includes('tact')) n.type='Tactical';
+            else if (s.includes('sol')||s.includes('pos')) n.type='Positional/Strategic';
+            else if (s.includes('safe')) n.type='Defensive/Prophylactic';
+            else n.type='Dynamic';
+        }
+        if (n.response) {
+            if (n.response.isChoice && n.response.choices) {
+                n.response.choices.forEach(c => n.children.push(c));
+            } else {
+                n.children.push(n.response);
+            }
+            delete n.response;
+        }
+        n.children.forEach(walk);
+    }
+    walk(op.tree);
+    op.version = "4.0";
+    return op;
+}
+
 function getUnifiedOptions(currentNode) {
     let options = (currentNode.children || []).map(c => ({ ...c, source: 'local' }));
     
-    if (document.getElementById('transpoToggle').checked) {
+    if (document.getElementById('transpoToggle').checked && currentOpening) {
         const game = new Chess();
         let ptr = currentOpening.tree;
-        game.move(ptr.move.replace(/^\d+\.+/, '').trim());
+        // Replay path
+        const rootMove = ptr.move.replace(/^\d+\.+/, '').trim();
+        if (rootMove) game.move(rootMove);
+        
         for (let id of currentPath) {
             ptr = ptr.children.find(c => c.id === id);
             if (ptr) game.move(ptr.move.replace(/^\d+\.+/, '').trim());
         }
         
-        // Get Last Move for "Via" text
+        // Get Last Move for "Via"
         const history = game.history();
         const lastMove = history.length > 0 ? history[history.length - 1] : "Start";
         
+        // FIX: Define userColor from current opening context
+        const userColor = currentOpening.color;
+
         const matches = transpositionMap[game.fen()] || [];
         matches.forEach(match => {
-            // Filter: Don't show self, don't show wrong color
             if (match.key === currentOpeningKey) return;
-            if (match.color !== userColor) return; // V4.8 Color Filter
+            if (match.color !== userColor) return; // FIX: Strict Color Filter
             
             match.nextMoves.forEach(next => {
                 if (options.find(o => o.move === next.move)) return;
@@ -439,7 +451,7 @@ function getUnifiedOptions(currentNode) {
                     id: 'remote_' + match.key,
                     move: next.move, type: next.type, status: next.status,
                     source: 'remote', targetKey: match.key, targetName: match.name,
-                    via: lastMove // V4.8 Context
+                    via: lastMove
                 });
             });
         });
@@ -493,7 +505,6 @@ function renderTrainer() {
     
     const histEl = document.getElementById('moveHistory');
     histEl.innerHTML = movesText.map(m => `<span class="move-tag ${m.includes('...')?'black':'white'}">${m}</span>`).join('');
-    // Auto Scroll
     histEl.scrollLeft = histEl.scrollWidth;
     
     const options = getUnifiedOptions(node);
@@ -509,14 +520,8 @@ function renderTrainer() {
             return `<div class="option-btn ${getColorClass(opt.type)}" onclick="handleLocalMove('${opt.id}')">
                 <div class="main"><h4>${opt.move}</h4><p>${opt.status||''} ${opt.type||''}</p></div><span>➜</span></div>`;
         } else {
-            // V4.8: Restored "Via" and Short Label
             return `<div class="option-btn remote" onclick="jumpToOpening('${opt.targetKey}')">
-                <div class="main">
-                    <h4>${opt.move} <span class="badge">${opt.targetName}</span></h4>
-                    <p>via ${opt.via} • Tap to jump</p>
-                </div>
-                <span>↗</span>
-            </div>`;
+                <div class="main"><h4>${opt.move} <span class="badge">${opt.targetName}</span></h4><p>via ${opt.via} • Tap to jump</p></div><span>↗</span></div>`;
         }
     }).join('');
 }
@@ -529,37 +534,158 @@ function updateTheme() {
 }
 
 // =====================================================
-// BUILDER & MENU (STANDARD)
+// BUILDER
 // =====================================================
-function showBuilder() { builderTree = { id: 'root', move: 'Start', children: [] }; builderPath = []; editingKey = null; showScreen('builderScreen'); renderBuilder(); }
-function editOpening(key) { editingKey = key; const op = OPENINGS[key]; builderTree = JSON.parse(JSON.stringify(op.tree)); builderColor = op.color; document.getElementById('builderName').value = op.name; document.getElementById('builderGroup').value = op.group || ''; document.getElementById('builderColor').value = op.color; builderPath = []; showScreen('builderScreen'); renderBuilder(); }
+function showBuilder() {
+    builderTree = null; // Set to null to trigger "Add First Move" UI
+    builderPath = []; editingKey = null;
+    document.getElementById('builderName').value = '';
+    document.getElementById('builderGroup').value = '';
+    document.getElementById('builderDesc').value = '';
+    showScreen('builderScreen');
+    renderBuilder();
+}
+
+function editOpening(key) {
+    editingKey = key;
+    const op = OPENINGS[key];
+    builderTree = JSON.parse(JSON.stringify(op.tree));
+    builderColor = op.color;
+    document.getElementById('builderName').value = op.name;
+    document.getElementById('builderGroup').value = op.group || '';
+    document.getElementById('builderColor').value = op.color;
+    document.getElementById('builderDesc').value = op.description || '';
+    builderPath = [];
+    showScreen('builderScreen');
+    renderBuilder();
+}
 
 function renderBuilder() {
+    // If no tree, show start screen
+    if (!builderTree) {
+        const isWhite = builderColor === 'white';
+        document.getElementById('builderContent').innerHTML = `
+            <div class="empty-state"><div class="icon">♟️</div><p>Start by adding the first move.</p></div>
+            <div class="add-form">
+                <h4 id="addFormTitle">First Move (${isWhite ? 'White' : 'Black'})</h4>
+                <div class="form-group"><input type="text" id="newMoveInput" placeholder="e.g. e4"></div>
+                <div class="form-group"><textarea id="newExpl" rows="2" placeholder="Explanation"></textarea></div>
+                <button class="nav-btn" style="background:#3b82f6" onclick="addFirstMove()">Add Start Move</button>
+            </div>`;
+        return;
+    }
+
     let node = builderTree;
     let historyHtml = '';
-    for (let id of builderPath) { const child = node.children.find(c => c.id === id); if (child) { node = child; historyHtml += `<span class="move-tag white">${child.move}</span> `; } }
+    
+    for (let id of builderPath) {
+        const child = node.children.find(c => c.id === id);
+        if (child) { node = child; historyHtml += `<span class="move-tag white">${child.move}</span> `; }
+    }
+    
     document.getElementById('builderHistory').innerHTML = historyHtml || 'Root';
-    const isOpponent = (builderColor === 'white' && (builderPath.length % 2 !== 0)) || (builderColor === 'black' && (builderPath.length % 2 === 0));
-    document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card';
-    document.getElementById('builderCurrentNode').innerHTML = `<div class="move-label">${isOpponent?"Opponent":"You"}</div><h2>${node.move}</h2><p>${node.explanation||''}</p>`;
+    
+    // Determine current player based on depth (ply)
+    // builderPath length = 0 (root move), 1 (response), etc.
+    // If builderColor is white: Root (0) is White, 1 is Black.
+    // If builderColor is black: Root (0) is White (Opponent), 1 is Black (You).
+    const ply = builderPath.length; 
+    // Logic: If root is White's move. 
+    // Node at builderPath end is the LAST move played.
+    // So if builderPath is empty, node is Root (White). Next is Black.
+    // If builderPath has 1 item, node is Black. Next is White.
+    
+    const lastMoveColor = (ply % 2 === 0) ? 'white' : 'black';
+    const nextMoveColor = (lastMoveColor === 'white') ? 'black' : 'white';
+    
+    const isOpponent = nextMoveColor !== builderColor;
+    
+    document.getElementById('builderContent').innerHTML = `
+        <div class="move-history" id="builderHistoryDisplay">${historyHtml || node.move}</div>
+        <div id="builderCurrentNode" class="current-move-card ${node.player !== builderColor ? 'opponent' : ''}">
+            <div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div>
+            <h2>${node.move}</h2>
+            <p>${node.explanation || 'No explanation'}</p>
+            <div style="margin-top:5px;">
+                <span class="version-tag">${node.status || '-'}</span>
+                <span class="version-tag">${node.type || '-'}</span>
+            </div>
+            ${renderEditExplanation(node)}
+        </div>
+        
+        <div class="add-form" style="margin-top:20px;">
+            <h4 id="addFormTitle">Add ${nextMoveColor === 'white' ? "White" : "Black"}'s Move</h4>
+            <div class="form-group"><input type="text" id="newMoveInput" placeholder="Move (e.g. Nf3)"></div>
+            <button class="nav-btn" style="font-size:0.8rem; margin-bottom:10px;" onclick="toggleDetails()">▼ Add Details</button>
+            <div id="builderDetails" style="display:none;">
+                <div class="form-group"><label>Status</label><select id="newStatus">${STATUS_OPTIONS.map(o=>`<option>${o}</option>`)}</select></div>
+                <div class="form-group"><label>Type</label><select id="newType">${TYPE_OPTIONS.map(o=>`<option>${o}</option>`)}</select></div>
+                <div class="form-group"><label>Explanation</label><textarea id="newExpl" rows="3"></textarea></div>
+            </div>
+            <button class="nav-btn" style="background:#3b82f6" onclick="addBuilderMove()">Add Move</button>
+            <button class="nav-btn" style="background:#ef4444; margin-top:10px;" onclick="deleteBuilderNode()">Delete Branch</button>
+        </div>
+        
+        <div style="margin-top:20px;">
+            <p class="section-title">Existing Responses:</p>
+            <div id="builderResponses"></div>
+        </div>
+    `;
     
     const list = document.getElementById('builderResponses');
-    list.innerHTML = '';
     if (node.children) {
         node.children.forEach(c => {
             list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`;
         });
     }
-    document.getElementById('addFormTitle').innerText = `Add ${isOpponent?"You":"Opponent"}'s Move`;
     setupEnter();
 }
 
+function addFirstMove() {
+    const move = document.getElementById('newMoveInput').value.trim();
+    if (!move) return;
+    // Root is always White's first move in this schema (1. e4 or 1. d4)
+    builderTree = { 
+        id: 'root', 
+        move: '1. ' + move, 
+        player: 'white', 
+        explanation: document.getElementById('newExpl')?.value || '', 
+        children: [] 
+    };
+    renderBuilder();
+}
+
 function addBuilderMove() {
-    const move = document.getElementById('newMoveInput').value; if(!move)return;
-    let node = builderTree; for(let id of builderPath) node = node.children.find(c => c.id === id);
+    const moveRaw = document.getElementById('newMoveInput').value.trim();
+    if (!moveRaw) return;
+    
+    // Calculate Notation
+    // Current path length + 1 (root) is the Ply of the NEW move.
+    // Ply 0 = 1. e4. Ply 1 = 1... e5. Ply 2 = 2. Nf3.
+    const currentPly = builderPath.length + 1; 
+    const moveNum = Math.floor(currentPly / 2) + 1;
+    const isBlack = currentPly % 2 !== 0;
+    
+    const notation = isBlack ? `${moveNum}... ${moveRaw}` : `${moveNum}. ${moveRaw}`;
+    const player = isBlack ? 'black' : 'white';
+    
+    let node = builderTree;
+    for(let id of builderPath) node = node.children.find(c => c.id === id);
     if(!node.children) node.children=[];
-    node.children.push({ id:'n'+Date.now(), move:move, status:document.getElementById('newStatus').value, type:document.getElementById('newType').value, explanation:document.getElementById('newExpl').value, children:[] });
-    document.getElementById('newMoveInput').value = ''; renderBuilder();
+    
+    const newId = 'n'+Date.now();
+    node.children.push({ 
+        id: newId, 
+        move: notation, 
+        player: player,
+        status: document.getElementById('newStatus').value, 
+        type: document.getElementById('newType').value, 
+        explanation: document.getElementById('newExpl').value, 
+        children: [] 
+    });
+    
+    document.getElementById('newMoveInput').value = '';
+    renderBuilder();
 }
 
 function deleteBuilderNode() { if(!builderPath.length || !confirm('Delete branch?'))return; const id=builderPath.pop(); let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
@@ -567,37 +693,7 @@ function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree
 function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
 
 // =====================================================
-// BACKUP & RESTORE (V4.8 NEW)
-// =====================================================
-function backupLibrary() {
-    const json = JSON.stringify(OPENINGS, null, 2);
-    const blob = new Blob([json], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'chess_library_backup_' + new Date().toISOString().slice(0,10) + '.json';
-    a.click();
-}
-
-function restoreLibrary(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (!confirm("Warning: This will OVERWRITE your current library. Continue?")) return;
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            OPENINGS = data;
-            saveStorage();
-            alert("Library Restored Successfully!");
-            renderMenu();
-        } catch (err) { alert("Invalid Backup File"); }
-    };
-    reader.readAsText(file);
-}
-
-// =====================================================
-// HELPERS & IO
+// UTILS & IO
 // =====================================================
 function getColorClass(type) { if (!type) return 'blue'; const t = type.toLowerCase(); if (t.includes('tact')||t.includes('forc')) return 'red'; if (t.includes('dynam')) return 'purple'; if (t.includes('defen')) return 'green'; return 'blue'; }
 function toggleDetails() { const d=document.getElementById('builderDetails'); d.style.display=d.style.display==='none'?'block':'none'; }
@@ -611,34 +707,59 @@ function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
 function saveOpening() {
     const name = document.getElementById('builderName').value || "Untitled";
     const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now());
-    OPENINGS[key] = { version: "4.0", name: name, group: document.getElementById('builderGroup').value || "Uncategorized", color: document.getElementById('builderColor').value, tree: builderTree, startingMoves: "Custom" };
+    OPENINGS[key] = { 
+        version: "4.0", 
+        name: name, 
+        group: document.getElementById('builderGroup').value || "Uncategorized", 
+        color: document.getElementById('builderColor').value, 
+        description: document.getElementById('builderDesc').value,
+        tree: builderTree, 
+        startingMoves: "Custom" 
+    };
     saveStorage(); exitBuilder();
 }
 
-function downloadCurrentJSON() { const json = JSON.stringify(OPENINGS[editingKey], null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'opening.json'; a.click(); }
+function downloadCurrentJSON() { 
+    const data = editingKey ? OPENINGS[editingKey] : buildOpeningObj();
+    const json = JSON.stringify(data, null, 2); 
+    const blob = new Blob([json], {type: 'application/json'}); 
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'opening.json'; a.click(); 
+}
+function buildOpeningObj() { return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; }
 
-function migrateOpening(op) {
-    if (op.version === "4.0") return op;
-    function walk(n) {
-        if (!n) return;
-        if (!n.children) n.children = [];
-        if (n.label && !n.status) n.status = n.label;
-        if (n.style && !n.type) { const s = n.style.toLowerCase(); if (s.includes('agg')||s.includes('tact')) n.type='Tactical'; else if (s.includes('sol')||s.includes('pos')) n.type='Positional/Strategic'; else if (s.includes('safe')) n.type='Defensive/Prophylactic'; else n.type='Dynamic'; }
-        if (n.response) { if (n.response.isChoice && n.response.choices) n.response.choices.forEach(c => n.children.push(c)); else n.children.push(n.response); delete n.response; }
-        n.children.forEach(walk);
-    }
-    walk(op.tree); op.version = "4.0"; return op;
+function backupLibrary() {
+    const json = JSON.stringify(OPENINGS, null, 2);
+    const blob = new Blob([json], {type: 'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chess_library_backup.json'; a.click();
+}
+
+function restoreLibrary(input) {
+    const file = input.files[0]; if (!file) return;
+    if (!confirm("Overwrite library?")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => { 
+        try { OPENINGS = JSON.parse(e.target.result); saveStorage(); alert("Restored!"); renderMenu(); } 
+        catch (err) { alert("Invalid Backup"); } 
+    };
+    reader.readAsText(file);
 }
 
 function handleFileUpload(input) {
     const file = input.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => { try { const json = JSON.parse(e.target.result); const migrated = migrateOpening(json); const key = 'import_' + Date.now(); OPENINGS[key] = migrated; saveStorage(); alert('Imported!'); renderMenu(); } catch (err) { alert('Invalid JSON'); } };
+    reader.onload = (e) => { 
+        try { 
+            const json = JSON.parse(e.target.result); 
+            if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure");
+            const migrated = migrateOpening(json); 
+            OPENINGS['import_' + Date.now()] = migrated; 
+            saveStorage(); 
+            alert('Imported!'); 
+            renderMenu(); 
+        } catch (err) { alert('Invalid JSON: '+err.message); } 
+    };
     reader.readAsText(file);
 }
-
-async function importFromUrl() { try { const res = await fetch(document.getElementById('importUrl').value); const json = await res.json(); const migrated = migrateOpening(json); OPENINGS['import_' + Date.now()] = migrated; saveStorage(); alert('Imported!'); document.getElementById('urlImportBox').style.display='none'; renderMenu(); } catch (e) { alert('Error loading URL'); } }
-function toggleUrlImport() { const el = document.getElementById('urlImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
 
 // UI Functions
 function showScreen(id) { ['menuScreen', 'trainerScreen', 'builderScreen'].forEach(s => document.getElementById(s).style.display = 'none'); document.getElementById(id).style.display = 'block'; window.scrollTo(0, 0); }
@@ -654,6 +775,7 @@ function renderMenu() {
 }
 function toggleFolder(id) { const el = document.getElementById(id); if (el) el.classList.toggle('open'); }
 function deleteOpening(key) { if (confirm(`Delete "${OPENINGS[key].name}"?`)) { delete OPENINGS[key]; saveStorage(); renderMenu(); } }
+function toggleUrlImport() { const el = document.getElementById('urlImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
 
 init();
 </script>
