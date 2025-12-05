@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V5.8</title>
+    <title>Chess Trainer V6.0</title>
+    <link rel="stylesheet" href="https://unpkg.com/cm-chessboard@4/assets/styles/cm-chessboard.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -63,7 +64,7 @@
         .card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
         .icon-btn { background: rgba(100, 116, 139, 0.3); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
 
-        /* NAVIGATION */
+        /* NAVIGATION (Preserved V5.8 Grid Layout) */
         .nav-bar { display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; margin-bottom: 16px; }
         .nav-title { text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--accent-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .nav-btn { background: rgba(255,255,255,0.1); border: none; color: #e2e8f0; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
@@ -78,17 +79,30 @@
         .tab { flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3); border: 1px solid #334155; border-radius: 12px; color: #94a3b8; font-weight: 600; cursor: pointer; text-align: center; }
         .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
 
-        /* TRAINER UI */
+        /* =========================================
+           V6.0 VISUAL BOARD STYLES
+           ========================================= */
+        .board-container {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto 16px auto;
+            border-radius: 4px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+        }
+
         .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; }
         .move-tag { padding: 4px 8px; border-radius: 4px; font-family: monospace; margin-right: 6px; display: inline-block; }
         .move-tag.white { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
         .move-tag.black { color: #e2e8f0; background: rgba(255, 255, 255, 0.1); }
 
-        .current-move-card { background: #334155; border-radius: 20px; padding: 24px; margin-bottom: 16px; text-align: center; }
-        .current-move-card.opponent { border: 1px solid #475569; }
-        .move-label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; letter-spacing: 1px; }
-        .current-move h2 { font-size: 2rem; font-family: monospace; margin: 10px 0; color: #e2e8f0; }
-        .explanation { color: #cbd5e1; line-height: 1.5; font-size: 0.95rem; margin-top: 10px; }
+        /* V6 Compact Card */
+        .current-move-card { background: #334155; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; border: 1px solid #475569; }
+        .current-move-card.opponent { border-color: #94a3b8; }
+        .move-label { font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 1px; }
+        .current-move h2 { font-size: 1.4rem; font-family: monospace; margin: 4px 0; color: #e2e8f0; }
+        .explanation { color: #cbd5e1; line-height: 1.4; font-size: 0.9rem; margin-top: 6px; }
         
         .options-header { display: flex; justify-content: space-between; align-items: center; margin: 24px 0 12px 0; color: #94a3b8; font-size: 0.9rem; font-weight: 600; }
         .toggle-group { display: flex; gap: 15px; }
@@ -105,6 +119,10 @@
         .option-btn:hover { background: rgba(71, 85, 105, 0.6); }
         .option-btn .main { flex: 1; }
         .option-btn h4 { font-family: monospace; font-size: 1.1rem; margin-bottom: 4px; }
+        
+        /* Highlight Mainline (V6) */
+        .option-btn.mainline-highlight { border: 1px solid #fbbf24; background: rgba(251, 191, 36, 0.05); }
+        .option-btn.mainline-highlight h4 { color: #fbbf24; }
         
         /* EXPANDABLE DESCRIPTIONS */
         .option-btn .branch-desc {
@@ -186,8 +204,8 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V5.8</span></h1>
-                <p>Unified Repertoire Manager</p>
+                <h1>♟️ Opening Trainer <span class="version-tag">V6.0</span></h1>
+                <p>Visual Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
                     <button class="tool-btn" onclick="document.getElementById('restoreInput').click()">📥 Restore</button>
@@ -252,10 +270,10 @@
                 <div id="returnContainer"></div>
             </div>
             
-            <div class="move-history" id="moveHistory"></div>
+            <div id="trainerBoard" class="board-container"></div>
             
-            <div class="current-move-card">
-                <div class="move-label" style="color:#94a3b8; font-size:0.9rem; margin-bottom:8px;">CURRENT MOVE</div>
+            <div class="current-move-card" id="trainerMoveCard">
+                <div class="move-label" id="trainerMoveLabel">CURRENT MOVE</div>
                 <h2 id="currentMoveText">Start</h2>
                 <p class="explanation" id="currentExplanation">Tap a move below to begin.</p>
             </div>
@@ -288,69 +306,70 @@
             </div>
             
             <div id="buildTab">
-                <div class="add-form">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <h3>Metadata</h3>
-                    </div>
+                <div class="move-history" id="builderHistory"></div>
+                
+                <div id="builderBoard" class="board-container"></div>
+                
+                <div id="builderCurrentNode" class="current-move-card"></div>
+                
+                <div class="add-form" style="margin-top:20px;">
+                    <h4 id="addFormTitle">Add Move</h4>
                     <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" id="builderName">
+                        <input type="text" id="newMoveInput" placeholder="Move (e.g. Nf3)">
                     </div>
-                    <div class="form-group">
-                        <label>Folder / Group</label>
-                        <input type="text" id="builderGroup" placeholder="e.g. White Repertoire">
+                    <button class="nav-btn" style="width:100%; font-size:0.8rem; margin-bottom:10px;" onclick="toggleDetails()">▼ Add Details (Coach Mode)</button>
+                    <div id="builderDetails" style="display:none;">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="newStatus">
+                                <option>Mainline</option><option>Sideline</option><option>Novelty</option><option>Blunder</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label>
+                            <select id="newType">
+                                <option>Positional/Strategic</option><option>Tactical</option><option>Dynamic</option><option>Defensive/Prophylactic</option><option>Forcing</option><option>Quiet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Explanation</label>
+                            <textarea id="newExpl" rows="3"></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>You Play As</label>
-                        <select id="builderColor">
-                            <option value="white">White</option>
-                            <option value="black">Black</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="builderDesc" rows="2" placeholder="Brief summary..."></textarea>
+                    <button class="nav-btn" style="width:100%; background:#3b82f6" onclick="addBuilderMove()">Add Move</button>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="nav-btn" style="flex:1; background:#64748b;" onclick="builderBack()">↑ Up (Back)</button>
+                        <button id="btnDeleteBranch" class="nav-btn" style="flex:1; background:#ef4444;" onclick="deleteBuilderNode()">Delete</button>
                     </div>
                 </div>
-
-                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #334155;">
-                    <div class="move-history" id="builderHistory" style="flex-wrap: wrap; height: auto; white-space: normal;"></div>
-                    <div id="builderCurrentNode" class="current-move-card"></div>
-                    
-                    <div class="add-form" style="margin-top:20px;">
-                        <h4 id="addFormTitle">Add Move</h4>
+                
+                <div style="margin-top:20px;">
+                    <p class="section-title">Existing Responses:</p>
+                    <div id="builderResponses"></div>
+                </div>
+                
+                <div class="add-form" style="margin-top:24px; opacity:0.8;">
+                     <div class="details-toggle-btn" onclick="document.getElementById('metaDrawer').classList.toggle('visible')">▶ Edit Opening Metadata</div>
+                     <div id="metaDrawer" class="details-drawer">
                         <div class="form-group">
-                            <input type="text" id="newMoveInput" placeholder="Move (e.g. Nf3)">
+                            <label>Name</label>
+                            <input type="text" id="builderName">
                         </div>
-                        <button class="nav-btn" style="width:100%; font-size:0.8rem; margin-bottom:10px;" onclick="toggleDetails()">▼ Add Details (Coach Mode)</button>
-                        <div id="builderDetails" style="display:none;">
-                            <div class="form-group">
-                                <label>Status</label>
-                                <select id="newStatus">
-                                    <option>Mainline</option><option>Sideline</option><option>Novelty</option><option>Blunder</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label>
-                                <select id="newType">
-                                    <option>Positional/Strategic</option><option>Tactical</option><option>Dynamic</option><option>Defensive/Prophylactic</option><option>Forcing</option><option>Quiet</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Explanation</label>
-                                <textarea id="newExpl" rows="3"></textarea>
-                            </div>
+                        <div class="form-group">
+                            <label>Folder / Group</label>
+                            <input type="text" id="builderGroup">
                         </div>
-                        <button class="nav-btn" style="width:100%; background:#3b82f6" onclick="addBuilderMove()">Add Move</button>
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <button class="nav-btn" style="flex:1; background:#64748b;" onclick="builderBack()">↑ Up (Back)</button>
-                            <button id="btnDeleteBranch" class="nav-btn" style="flex:1; background:#ef4444;" onclick="deleteBuilderNode()">Delete</button>
+                        <div class="form-group">
+                            <label>You Play As</label>
+                            <select id="builderColor">
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                            </select>
                         </div>
-                    </div>
-                    
-                    <div style="margin-top:20px;">
-                        <p class="section-title">Existing Responses:</p>
-                        <div id="builderResponses"></div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="builderDesc" rows="2"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -358,10 +377,6 @@
             <div id="jsonTab" style="display:none">
                 <div class="builder-section">
                     <h3>Raw JSON</h3>
-                    <details class="template-info">
-                        <summary>📋 V4 Schema</summary>
-                        <p style="font-size:0.8rem; color:#94a3b8">Paste valid JSON here to overwrite the current opening.</p>
-                    </details>
                     <textarea class="json-area" id="jsonIn" placeholder="Paste opening JSON here..."></textarea>
                     <div style="display:flex; gap:10px; margin-top:10px;">
                         <button class="nav-btn" style="background:#3b82f6" onclick="importBuilderJson()">Import & Overwrite</button>
@@ -417,9 +432,6 @@ const DEFAULT_OPENINGS = {
         ]}
     }
 };
-
-const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
-const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
 
 const TYPE_DEFINITIONS = [
     { t: 'Positional/Strategic', d: 'Long-term improvements, better piece placement, controlling key squares.' },
@@ -562,7 +574,7 @@ function getUnifiedOptions(currentNode) {
 }
 
 // =====================================================
-// TRAINER
+// TRAINER LOGIC
 // =====================================================
 function startTraining(key) {
     currentOpening = OPENINGS[key];
@@ -570,8 +582,17 @@ function startTraining(key) {
     originalOpeningKey = key;
     historyStack = []; currentPath = [];
     showScreen('trainerScreen');
-    updateTheme();
-    renderTrainer();
+    
+    // V6: Init Visual Board (Interactive = false)
+    if(window.initVisualBoard) {
+        window.initVisualBoard('trainerBoard', false).then(() => {
+             updateTheme();
+             renderTrainer();
+        });
+    } else {
+        updateTheme();
+        renderTrainer();
+    }
 }
 
 function jumpToOpening(targetKey) {
@@ -595,29 +616,62 @@ function returnToPrevious() {
 
 function renderTrainer() {
     let node = currentOpening.tree;
-    let movesText = [node.move];
-    
-    // UPDATE HEADER TITLE
+    // V6: Calculate FEN
+    const game = new Chess();
+    const rootMove = node.move.replace(/^[0-9]+\.+/, '').trim();
+    if(rootMove) game.move(rootMove);
+
+    // Update Header Title (V5.8 Feature)
     document.getElementById('trainerHeaderTitle').innerText = currentOpening.name;
     
     for (let id of currentPath) {
         const child = node.children?.find(c => c.id === id);
-        if (child) { node = child; movesText.push(child.move); }
+        if (child) { 
+            node = child; 
+            game.move(child.move.replace(/^[0-9]+\.+/, '').trim()); 
+        }
     }
     
-    document.getElementById('currentMoveText').textContent = node.move;
+    // V6: Update Board
+    if(window.updateBoardPosition) {
+        window.updateBoardPosition(game.fen(), currentOpening.color);
+    }
+
+    // Determine Turn
+    const isPlayerTurn = (game.turn() === 'w' && currentOpening.color === 'white') || 
+                         (game.turn() === 'b' && currentOpening.color === 'black');
     
-    // COACH MODE LOGIC FOR CURRENT CARD
+    // Update Text Card
+    const cardEl = document.getElementById('trainerMoveCard');
+    const labelEl = document.getElementById('trainerMoveLabel');
+    const textEl = document.getElementById('currentMoveText');
+    const explEl = document.getElementById('currentExplanation');
+    
+    cardEl.className = isPlayerTurn ? 'current-move-card' : 'current-move-card opponent';
+    labelEl.textContent = isPlayerTurn ? "YOUR MOVE" : "OPPONENT'S MOVE";
+    textEl.textContent = node.move;
+    
+    // COACH MODE
     const showCoach = document.getElementById('coachToggle').checked;
     const expl = node.explanation || "No notes.";
-    document.getElementById('currentExplanation').textContent = showCoach ? expl : (expl === "No notes." ? expl : "Explanation hidden (Coach Mode)");
-    
-    const histEl = document.getElementById('moveHistory');
-    histEl.innerHTML = movesText.map(m => `<span class="move-tag ${m.includes('...')?'black':'white'}">${m}</span>`).join('');
-    histEl.scrollLeft = histEl.scrollWidth;
+    explEl.textContent = showCoach ? expl : (expl === "No notes." ? expl : "Explanation hidden (Coach Mode)");
     
     const options = getUnifiedOptions(node);
     const container = document.getElementById('trainerOptions');
+    
+    // V6: Draw Arrows
+    if(showCoach && window.drawCoachArrows) {
+        const arrows = options.map(opt => {
+            const temp = new Chess(game.fen());
+            const clean = opt.move.replace(/^[0-9]+\.+/, '').trim();
+            if(!clean) return null;
+            const m = temp.move(clean);
+            return m ? { from: m.from, to: m.to, type: opt.type } : null;
+        }).filter(x => x);
+        window.drawCoachArrows(arrows);
+    } else if (window.clearArrows) {
+        window.clearArrows();
+    }
     
     if (options.length === 0) {
         container.innerHTML = `<div class="end-card"><h3>End of Line</h3><p>No moves defined.</p></div>`;
@@ -627,10 +681,14 @@ function renderTrainer() {
     container.innerHTML = options.map(opt => {
         const branchName = opt.explanation || "";
         const color = getColorClass(opt.type);
+        // V5.8 Feature: Expandable Text
         const descriptionHtml = (showCoach && branchName) ? renderExpandableText(branchName) : '';
+        // V6 Feature: Highlight Mainline
+        const isMain = isPlayerTurn && opt.status === 'Mainline';
+        const highlightClass = isMain ? 'mainline-highlight' : '';
 
         if (opt.source === 'local') {
-            return `<div class="option-btn ${color}" onclick="handleLocalMove('${opt.id}')">
+            return `<div class="option-btn ${color} ${highlightClass}" onclick="handleLocalMove('${opt.id}')">
                 <div class="main">
                     <h4>${opt.move}</h4>
                     ${descriptionHtml}
@@ -660,9 +718,9 @@ function renderTrainer() {
     }).join('');
 }
 
+// V5.8 Feature: Expandable Text Helpers
 function renderExpandableText(text) {
     if (!text) return '';
-    // Approximate length check (2 lines roughly 100-120 chars on mobile)
     const isLong = text.length > 85; 
     const id = 'desc_' + Math.random().toString(36).substr(2, 9);
     
@@ -747,17 +805,13 @@ function importFromMenuText() {
         if (!raw) return;
 
         const json = JSON.parse(raw);
-        
-        // Safety Check for User Error (Pasting full backup here)
         if (!json.tree && !json.startingMoves && Object.keys(json).length > 0 && typeof Object.values(json)[0] === 'object') {
-             throw new Error("This looks like a Backup file (multiple openings). Please use the 'Restore' button instead of 'Paste JSON'.");
+             throw new Error("This looks like a Backup file. Use 'Restore' instead.");
         }
-
         if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure");
         const migrated = migrateOpening(json);
         const key = 'import_' + Date.now();
         OPENINGS[key] = migrated;
-        
         saveStorage();
         alert('Imported Successfully!');
         document.getElementById('importJsonText').value = '';
@@ -771,79 +825,15 @@ function importFromMenuText() {
 // =====================================================
 // BUILDER LOGIC
 // =====================================================
-function showNewOpeningModal() { 
-    builderTree = null; 
-    builderPath = []; 
-    editingKey = null; 
-    document.getElementById('modalName').value = ''; 
-    document.getElementById('modalGroup').value = ''; 
-    document.getElementById('modalMove').value = ''; 
-    document.getElementById('newOpeningModal').style.display = 'flex'; 
-}
-
-function initializeNewOpening() { 
-    try { 
-        const name = document.getElementById('modalName').value || "Untitled"; 
-        const group = document.getElementById('modalGroup').value || "Uncategorized"; 
-        const color = document.getElementById('modalColor').value; 
-        const moveRaw = document.getElementById('modalMove').value || "e4"; 
-        
-        const game = new Chess(); 
-        const validMove = game.move(moveRaw); 
-        
-        if (validMove === null) { 
-            alert("Invalid starting move!"); 
-            return; 
-        } 
-        
-        const formattedMove = "1. " + validMove.san; 
-        
-        builderTree = { 
-            id: 'root', 
-            move: formattedMove, 
-            player: 'white', 
-            explanation: 'Starting move.', 
-            children: [] 
-        }; 
-        
-        builderColor = color; 
-        document.getElementById('builderName').value = name; 
-        document.getElementById('builderGroup').value = group; 
-        
-        const colorInput = document.getElementById('builderColor'); 
-        if (colorInput) colorInput.value = color; 
-        
-        document.getElementById('builderDesc').value = ''; 
-        document.getElementById('newMoveInput').value = ''; 
-        document.getElementById('newExpl').value = ''; 
-        document.getElementById('newOpeningModal').style.display = 'none'; 
-        
-        showScreen('builderScreen'); 
-        renderBuilder(); 
-    } catch (e) { 
-        alert("Error: " + e.message); 
-    } 
-}
-
-function editOpening(key) { 
-    editingKey = key; 
-    const op = OPENINGS[key]; 
-    builderTree = JSON.parse(JSON.stringify(op.tree)); 
-    builderColor = op.color; 
-    
-    document.getElementById('builderName').value = op.name; 
-    document.getElementById('builderGroup').value = op.group || ''; 
-    
-    const colorInput = document.getElementById('builderColor'); 
-    if (colorInput) colorInput.value = op.color; 
-    
-    document.getElementById('builderDesc').value = op.description || ''; 
-    document.getElementById('newMoveInput').value = ''; 
-    document.getElementById('newExpl').value = ''; 
-    builderPath = []; 
-    
-    showScreen('builderScreen'); 
-    renderBuilder(); 
+function showNewOpeningModal() { builderTree = null; builderPath = []; editingKey = null; document.getElementById('modalName').value = ''; document.getElementById('modalGroup').value = ''; document.getElementById('modalMove').value = ''; document.getElementById('newOpeningModal').style.display = 'flex'; }
+function initializeNewOpening() { try { const name = document.getElementById('modalName').value || "Untitled"; const group = document.getElementById('modalGroup').value || "Uncategorized"; const color = document.getElementById('modalColor').value; const moveRaw = document.getElementById('modalMove').value || "e4"; const game = new Chess(); const validMove = game.move(moveRaw); if (validMove === null) { alert("Invalid starting move!"); return; } const formattedMove = "1. " + validMove.san; builderTree = { id: 'root', move: formattedMove, player: 'white', explanation: 'Starting move.', children: [] }; builderColor = color; document.getElementById('builderName').value = name; document.getElementById('builderGroup').value = group; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = color; document.getElementById('builderDesc').value = ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newOpeningModal').style.display = 'none'; showScreen('builderScreen'); renderBuilder(); } catch (e) { alert("Error: " + e.message); } }
+function editOpening(key) { editingKey = key; const op = OPENINGS[key]; builderTree = JSON.parse(JSON.stringify(op.tree)); builderColor = op.color; document.getElementById('builderName').value = op.name; document.getElementById('builderGroup').value = op.group || ''; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = op.color; document.getElementById('builderDesc').value = op.description || ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; builderPath = []; showScreen('builderScreen'); 
+    // V6: Init interactive board
+    if(window.initVisualBoard) {
+        window.initVisualBoard('builderBoard', true).then(() => renderBuilder());
+    } else {
+        renderBuilder();
+    }
 }
 
 function renderBuilder() { 
@@ -851,19 +841,27 @@ function renderBuilder() {
         if (!builderTree) return; 
         
         let node = builderTree; 
-        const rootLabel = builderTree.move || "Start"; 
-        let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`; 
-        
+        const game = new Chess();
+        const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
+        game.move(rootMove);
+
+        let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${builderTree.move}</div>`; 
         let tempNode = builderTree; 
         for (let i = 0; i < builderPath.length; i++) { 
             const id = builderPath[i]; 
             const child = tempNode.children.find(c => c.id === id); 
             if (child) { 
                 tempNode = child; 
+                game.move(child.move.replace(/^[0-9]+\.+/, '').trim());
                 historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`; 
             } 
         } 
         node = tempNode; 
+        
+        // V6: Update Board
+        if(window.updateBoardPosition) {
+            window.updateBoardPosition(game.fen(), builderColor);
+        }
         
         document.getElementById('builderHistory').innerHTML = historyHtml; 
         
@@ -898,332 +896,134 @@ function renderBuilder() {
         
         const formTitle = document.getElementById('addFormTitle'); 
         if (formTitle) formTitle.innerText = `Add Move (${turnLabel})`; 
-        
         const deleteBtn = document.getElementById('btnDeleteBranch'); 
-        if (deleteBtn) { 
-            deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch"; 
-        } 
-        
+        if (deleteBtn) { deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch"; } 
         setupEnter(); 
-    } catch(e) { 
-        alert("Render Error: " + e.message); 
-    } 
+    } catch(e) { alert("Render Error: " + e.message); } 
 }
 
-function jumpToBuilderStep(index) { 
-    if (index === -1) builderPath = []; 
-    else builderPath = builderPath.slice(0, index + 1); 
-    renderBuilder(); 
-}
+function jumpToBuilderStep(index) { if (index === -1) builderPath = []; else builderPath = builderPath.slice(0, index + 1); renderBuilder(); }
+function addBuilderMove() { try { const inputEl = document.getElementById('newMoveInput'); const moveRaw = inputEl.value.trim(); if (!moveRaw) return; const game = new Chess(); const cleanMoveRegex = /^[0-9]+\.+/; if (!builderTree.move) throw new Error("Root move is missing."); let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim(); const rootResult = game.move(rootClean); if (!rootResult) { alert("Error: Root move is invalid."); return; } let node = builderTree; for (let id of builderPath) { node = node.children.find(c => c.id === id); let cleanMove = node.move.replace(cleanMoveRegex, '').trim(); game.move(cleanMove); } const moveObj = game.move(moveRaw); if (moveObj === null) { alert(`Illegal move: ${moveRaw}`); return; } const fen = game.fen(); const fenParts = fen.split(' '); const currentMoveNum = parseInt(fenParts[5]); const turn = game.turn(); let notation = ""; let player = ""; if (turn === 'b') { notation = `${currentMoveNum}. ${moveObj.san}`; player = 'white'; } else { notation = `${currentMoveNum - 1}... ${moveObj.san}`; player = 'black'; } if(!node.children) node.children = []; const newId = 'n' + Date.now(); node.children.push({ id: newId, move: notation, player: player, status: document.getElementById('newStatus').value, type: document.getElementById('newType').value, explanation: document.getElementById('newExpl').value, children: [] }); inputEl.value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newStatus').selectedIndex = 0; builderPath.push(newId); renderBuilder(); } catch (err) { alert("Error: " + err.message); } }
+function deleteBuilderNode() { if (builderPath.length === 0) { if (confirm("Reset entire opening?")) showNewOpeningModal(); return; } if (!confirm('Delete current branch?')) return; const currentId = builderPath.pop(); let node = builderTree; for (let id of builderPath) node = node.children.find(c => c.id === id); node.children = node.children.filter(c => c.id !== currentId); renderBuilder(); }
+function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
+function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
+function renderEditExplanation(node) { return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; }
+function getColorClass(type) { if (!type) return 'blue'; const t = type.toLowerCase(); if (t.includes('tact')||t.includes('forc')) return 'red'; if (t.includes('dynam')) return 'purple'; if (t.includes('defen')) return 'green'; return 'blue'; }
+function toggleDetails() { const d=document.getElementById('builderDetails'); d.style.display=d.style.display==='none'?'block':'none'; }
+function toggleRefModal() { document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; }
+function setupEnter() { setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); }
+function navigateToChild(id) { builderPath.push(id); renderBuilder(); }
+function builderBack() { builderPath.pop(); renderBuilder(); }
+function goBack() { showScreen('menuScreen'); }
+function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
 
-function addBuilderMove() { 
-    try { 
-        const inputEl = document.getElementById('newMoveInput'); 
-        const moveRaw = inputEl.value.trim(); 
-        if (!moveRaw) return; 
-        
-        const game = new Chess(); 
-        const cleanMoveRegex = /^[0-9]+\.+/; 
-        
-        if (!builderTree.move) throw new Error("Root move is missing."); 
-        
-        let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim(); 
-        const rootResult = game.move(rootClean); 
-        if (!rootResult) { 
-            alert("Error: Root move is invalid."); 
-            return; 
-        } 
-        
-        let node = builderTree; 
-        for (let id of builderPath) { 
-            node = node.children.find(c => c.id === id); 
-            let cleanMove = node.move.replace(cleanMoveRegex, '').trim(); 
-            game.move(cleanMove); 
-        } 
-        
-        const moveObj = game.move(moveRaw); 
-        if (moveObj === null) { 
-            alert(`Illegal move: ${moveRaw}`); 
-            return; 
-        } 
-        
-        const fen = game.fen(); 
-        const fenParts = fen.split(' '); 
-        const currentMoveNum = parseInt(fenParts[5]); 
-        const turn = game.turn(); 
-        
-        let notation = ""; 
-        let player = ""; 
-        
-        if (turn === 'b') { 
-            notation = `${currentMoveNum}. ${moveObj.san}`; 
-            player = 'white'; 
-        } else { 
-            notation = `${currentMoveNum - 1}... ${moveObj.san}`; 
-            player = 'black'; 
-        } 
-        
-        if(!node.children) node.children = []; 
-        
-        const newId = 'n' + Date.now(); 
-        node.children.push({ 
-            id: newId, 
-            move: notation, 
-            player: player, 
-            status: document.getElementById('newStatus').value, 
-            type: document.getElementById('newType').value, 
-            explanation: document.getElementById('newExpl').value, 
-            children: [] 
-        }); 
-        
-        inputEl.value = ''; 
-        document.getElementById('newExpl').value = ''; 
-        document.getElementById('newStatus').selectedIndex = 0; 
-        
-        builderPath.push(newId); 
-        renderBuilder(); 
-    } catch (err) { 
-        alert("Error: " + err.message); 
-    } 
-}
-
-function deleteBuilderNode() { 
-    if (builderPath.length === 0) { 
-        if (confirm("Reset entire opening?")) showNewOpeningModal(); 
-        return; 
-    } 
-    if (!confirm('Delete current branch?')) return; 
-    
-    const currentId = builderPath.pop(); 
-    let node = builderTree; 
-    for (let id of builderPath) node = node.children.find(c => c.id === id); 
-    
-    node.children = node.children.filter(c => c.id !== currentId); 
-    renderBuilder(); 
-}
-
-function deleteChild(id) { 
-    if(!confirm('Delete move?')) return; 
-    let n=builderTree; 
-    for(let pid of builderPath) n=n.children.find(c=>c.id===pid); 
-    n.children=n.children.filter(c=>c.id!==id); 
-    renderBuilder(); 
-}
-
-function saveExplanation() { 
-    const val=document.getElementById('editExpl').value; 
-    let n=builderTree; 
-    for(let id of builderPath) n=n.children.find(c=>c.id===id); 
-    n.explanation=val; 
-    renderBuilder(); 
-}
-
-function renderEditExplanation(node) { 
-    return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;">
-        <textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea>
-        <button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button>
-    </div>`; 
-}
-
-function getColorClass(type) { 
-    if (!type) return 'blue'; 
-    const t = type.toLowerCase(); 
-    if (t.includes('tact')||t.includes('forc')) return 'red'; 
-    if (t.includes('dynam')) return 'purple'; 
-    if (t.includes('defen')) return 'green'; 
-    return 'blue'; 
-}
-
-function toggleDetails() { 
-    const d=document.getElementById('builderDetails'); 
-    d.style.display=d.style.display==='none'?'block':'none'; 
-}
-
-function toggleRefModal() { 
-    document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; 
-}
-
-function setupEnter() { 
-    setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); 
-}
-
-function navigateToChild(id) { 
-    builderPath.push(id); 
-    renderBuilder(); 
-}
-
-function builderBack() { 
-    builderPath.pop(); 
-    renderBuilder(); 
-}
-
-function goBack() { 
-    showScreen('menuScreen'); 
-}
-
-function exitBuilder() { 
-    showScreen('menuScreen'); 
-    renderMenu(); 
-}
-
-function saveOpening() { 
-    const name = document.getElementById('builderName').value || "Untitled"; 
-    const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now()); 
-    const color = document.getElementById('builderColor').value || 'white'; 
-    
-    OPENINGS[key] = { 
-        version: "4.0", 
-        name: name, 
-        group: document.getElementById('builderGroup').value || "Uncategorized", 
-        color: color, 
-        description: document.getElementById('builderDesc').value, 
-        tree: builderTree, 
-        startingMoves: "Custom" 
-    }; 
-    saveStorage(); 
-    exitBuilder(); 
-}
-
-function downloadCurrentJSON() { 
-    const data = editingKey ? OPENINGS[editingKey] : buildOpeningObj(); 
-    const json = JSON.stringify(data, null, 2); 
-    const blob = new Blob([json], {type: 'application/json'}); 
-    const a = document.createElement('a'); 
-    a.href = URL.createObjectURL(blob); 
-    a.download = 'opening.json'; 
-    a.click(); 
-}
-
-function buildOpeningObj() { 
-    return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; 
-}
-
-function backupLibrary() { 
-    const json = JSON.stringify(OPENINGS, null, 2); 
-    const blob = new Blob([json], {type: 'application/json'}); 
-    const a = document.createElement('a'); 
-    a.href = URL.createObjectURL(blob); 
-    a.download = 'chess_library_backup.json'; 
-    a.click(); 
-}
-
-function restoreLibrary(input) { 
-    const file = input.files[0]; 
-    if (!file) return; 
-    if (!confirm("Overwrite library?")) return; 
-    
-    const reader = new FileReader(); 
-    reader.onload = (e) => { 
-        try { 
-            OPENINGS = JSON.parse(e.target.result); 
-            saveStorage(); 
-            alert("Restored!"); 
-            renderMenu(); 
-        } catch (err) { 
-            alert("Invalid Backup"); 
-        } 
-    }; 
-    reader.readAsText(file); 
-}
-
-function handleFileUpload(input) { 
-    const file = input.files[0]; 
-    if (!file) return; 
-    
-    const reader = new FileReader(); 
-    reader.onload = (e) => { 
-        try { 
-            const json = JSON.parse(e.target.result); 
-            if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); 
-            
-            const migrated = migrateOpening(json); 
-            const key = 'import_' + Date.now(); 
-            OPENINGS[key] = migrated; 
-            
-            saveStorage(); 
-            alert('Imported!'); 
-            renderMenu(); 
-        } catch (err) { 
-            alert('Invalid JSON: '+err.message); 
-        } 
-    }; 
-    reader.readAsText(file); 
-}
-
-async function importFromUrl() { 
-    try { 
-        const res = await fetch(document.getElementById('importUrl').value); 
-        const json = await res.json(); 
-        const migrated = migrateOpening(json); 
-        OPENINGS['import_' + Date.now()] = migrated; 
-        
-        saveStorage(); 
-        alert('Imported!'); 
-        document.getElementById('urlImportBox').style.display='none'; 
-        renderMenu(); 
-    } catch (e) { 
-        alert('Error loading URL'); 
-    } 
-}
-
-function toggleUrlImport() { 
-    document.getElementById('jsonImportBox').style.display = 'none'; 
-    const el = document.getElementById('urlImportBox'); 
-    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
-}
-
-function toggleJsonImport() { 
-    document.getElementById('urlImportBox').style.display = 'none'; 
-    const el = document.getElementById('jsonImportBox'); 
-    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
-}
-
-function switchTab(t) { 
-    document.getElementById('tabBuild').classList.toggle('active', t === 'build'); 
-    document.getElementById('tabJson').classList.toggle('active', t === 'json'); 
-    document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none'; 
-    document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none'; 
-    
-    if (t === 'json') { 
-        if (builderTree && builderTree.children) { 
-            document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2); 
-        } else { 
-            document.getElementById('jsonIn').value = ""; 
-        } 
-    } 
-}
-
-function importBuilderJson() { 
-    try { 
-        let raw = document.getElementById('jsonIn').value; 
-        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim(); 
-        
-        const json = JSON.parse(raw); 
-        if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure"); 
-        
-        builderTree = json.tree; 
-        builderColor = json.color; 
-        document.getElementById('builderName').value = json.name; 
-        document.getElementById('builderGroup').value = json.group || ""; 
-        document.getElementById('builderColor').value = json.color; 
-        document.getElementById('builderDesc').value = json.description || ""; 
-        
-        alert("JSON loaded successfully. Click 'Save' to finish."); 
-        switchTab('build'); 
-        renderBuilder(); 
-    } catch(e) { 
-        alert("Error: " + e.message); 
-    } 
-}
-
-function copyBuilderJson() { 
-    const txt = document.getElementById('jsonIn'); 
-    txt.select(); 
-    navigator.clipboard.writeText(txt.value); 
-    alert("Copied!"); 
-}
+function saveOpening() { const name = document.getElementById('builderName').value || "Untitled"; const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now()); const color = document.getElementById('builderColor').value || 'white'; OPENINGS[key] = { version: "4.0", name: name, group: document.getElementById('builderGroup').value || "Uncategorized", color: color, description: document.getElementById('builderDesc').value, tree: builderTree, startingMoves: "Custom" }; saveStorage(); exitBuilder(); }
+function buildOpeningObj() { return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; }
+function backupLibrary() { const json = JSON.stringify(OPENINGS, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chess_library_backup.json'; a.click(); }
+function restoreLibrary(input) { const file = input.files[0]; if (!file) return; if (!confirm("Overwrite library?")) return; const reader = new FileReader(); reader.onload = (e) => { try { OPENINGS = JSON.parse(e.target.result); saveStorage(); alert("Restored!"); renderMenu(); } catch (err) { alert("Invalid Backup"); } }; reader.readAsText(file); }
+function handleFileUpload(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const json = JSON.parse(e.target.result); if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); const migrated = migrateOpening(json); const key = 'import_' + Date.now(); OPENINGS[key] = migrated; saveStorage(); alert('Imported!'); renderMenu(); } catch (err) { alert('Invalid JSON: '+err.message); } }; reader.readAsText(file); }
+async function importFromUrl() { try { const res = await fetch(document.getElementById('importUrl').value); const json = await res.json(); const migrated = migrateOpening(json); OPENINGS['import_' + Date.now()] = migrated; saveStorage(); alert('Imported!'); document.getElementById('urlImportBox').style.display='none'; renderMenu(); } catch (e) { alert('Error loading URL'); } }
+function toggleUrlImport() { document.getElementById('jsonImportBox').style.display = 'none'; const el = document.getElementById('urlImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+function toggleJsonImport() { document.getElementById('urlImportBox').style.display = 'none'; const el = document.getElementById('jsonImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+function switchTab(t) { document.getElementById('tabBuild').classList.toggle('active', t === 'build'); document.getElementById('tabJson').classList.toggle('active', t === 'json'); document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none'; document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none'; if (t === 'json') { if (builderTree && builderTree.children) { document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2); } else { document.getElementById('jsonIn').value = ""; } } }
+function importBuilderJson() { try { let raw = document.getElementById('jsonIn').value; raw = raw.replace(/```json/g, '').replace(/```/g, '').trim(); const json = JSON.parse(raw); if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure"); builderTree = json.tree; builderColor = json.color; document.getElementById('builderName').value = json.name; document.getElementById('builderGroup').value = json.group || ""; document.getElementById('builderColor').value = json.color; document.getElementById('builderDesc').value = json.description || ""; alert("JSON loaded successfully. Click 'Save' to finish."); switchTab('build'); renderBuilder(); } catch(e) { alert("Error: " + e.message); } }
+function copyBuilderJson() { const txt = document.getElementById('jsonIn'); txt.select(); navigator.clipboard.writeText(txt.value); alert("Copied!"); }
 
 init();
+</script>
+
+<script type="module">
+    import { Chessboard, COLOR, MARKER_TYPE, INPUT_EVENT_TYPE } 
+    from "https://unpkg.com/cm-chessboard@4/src/cm-chessboard/Chessboard.js"
+
+    // 1. Global State
+    window.visualBoard = null;
+
+    // 2. Initialize Function
+    window.initVisualBoard = async function(elementId, interactive = false) {
+        if (window.visualBoard) {
+            window.visualBoard.destroy();
+        }
+        
+        window.visualBoard = await new Chessboard(document.getElementById(elementId), {
+            position: "start",
+            assetsUrl: "https://unpkg.com/cm-chessboard@4/assets/",
+            style: {
+                cssClass: "default",
+                showCoordinates: true, 
+            },
+            responsive: true,
+            sprite: { url: "https://unpkg.com/cm-chessboard@4/assets/images/chessboard-sprite.svg" }
+        });
+
+        if (interactive) {
+            window.visualBoard.enableMoveInput((event) => {
+                switch (event.type) {
+                    case INPUT_EVENT_TYPE.moveInputFinished:
+                        if (event.legalMove) {
+                            if(window.handleBoardInput) window.handleBoardInput(event.moveFrom, event.moveTo);
+                            return true; 
+                        }
+                        return false; 
+                }
+            });
+        }
+    }
+
+    // 3. Update Position Helper
+    window.updateBoardPosition = function(fen, orientation = 'white') {
+        if(window.visualBoard) {
+            if(window.visualBoard.getPosition() !== fen) {
+                window.visualBoard.setPosition(fen, true);
+            }
+            window.visualBoard.setOrientation(orientation === 'white' ? COLOR.white : COLOR.black);
+        }
+    }
+    
+    // 4. Coach Arrow Helper
+    window.drawCoachArrows = function(moves) {
+        if(!window.visualBoard) return;
+        window.visualBoard.removeMarkers(MARKER_TYPE.arrow);
+        
+        moves.forEach(m => {
+            window.visualBoard.addMarker(MARKER_TYPE.arrow, {from: m.from, to: m.to});
+        });
+    }
+
+    window.clearArrows = function() {
+        if(window.visualBoard) window.visualBoard.removeMarkers(MARKER_TYPE.arrow);
+    }
+    
+    // 5. Input Handler for Builder
+    window.handleBoardInput = function(from, to) {
+        const event = new CustomEvent('boardMove', { detail: { from, to } });
+        document.dispatchEvent(event);
+    }
+</script>
+
+<script>
+// LISTENER FOR BOARD INPUT (BUILDER ONLY)
+document.addEventListener('boardMove', (e) => {
+    const { from, to } = e.detail;
+    const game = new Chess();
+    if (!builderTree) return;
+    const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
+    game.move(rootMove);
+    let node = builderTree;
+    for (let id of builderPath) {
+        node = node.children.find(c => c.id === id);
+        game.move(node.move.replace(/^[0-9]+\.+/, '').trim());
+    }
+    try {
+        const move = game.move({ from, to, promotion: 'q' });
+        if (move) {
+            document.getElementById('newMoveInput').value = move.san;
+            addBuilderMove();
+        }
+    } catch(err) {
+        console.log("Invalid Board Move");
+    }
+});
 </script>
 </body>
 </html>
