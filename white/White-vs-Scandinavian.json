@@ -1,0 +1,145 @@
+{
+  "version": "4.0",
+  "name": "White vs Scandinavian",
+  "group": "White Repertoire",
+  "color": "white",
+  "description": "Simple, effective play against 1... d5. We capture, kick the Queen with Nc3, and build a strong center while Black wastes time moving their Queen.",
+  "startingMoves": "1. e4 d5",
+  "tree": {
+    "id": "root",
+    "move": "1. e4",
+    "player": "white",
+    "explanation": "We control the center.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "n1",
+        "move": "1... d5",
+        "player": "black",
+        "explanation": "The Scandinavian Defense. Black challenges us immediately.",
+        "status": "Mainline",
+        "type": "Forcing",
+        "children": [
+          {
+            "id": "n2",
+            "move": "2. exd5",
+            "player": "white",
+            "explanation": "ALWAYS capture. If we advance (e5), Black develops easily with c5. We take to open the lines.",
+            "status": "Mainline",
+            "type": "Forcing",
+            "children": [
+              {
+                "id": "n3",
+                "move": "2... Qxd5",
+                "player": "black",
+                "explanation": "Black brings the Queen out early. This is the main downside of the Scandi—we can attack it.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "n4",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "We develop AND attack. We gain a 'tempo' (free time) because the Queen must move again.",
+                    "status": "Mainline",
+                    "type": "Dynamic",
+                    "children": [
+                      {
+                        "id": "n5",
+                        "move": "3... Qa5",
+                        "player": "black",
+                        "explanation": "The Classical Retreat. The Queen stays active but safe... for now.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "n6",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "We seize the center. We have a Knight out and a pawn in the center; Black has nothing.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n7",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "Developing.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "n8",
+                                    "move": "5. Nf3",
+                                    "player": "white",
+                                    "explanation": "Natural development.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "n9",
+                                        "move": "5... c6",
+                                        "player": "black",
+                                        "explanation": "Black prepares a retreat square for the Queen on c7.",
+                                        "status": "Mainline",
+                                        "type": "Defensive/Prophylactic",
+                                        "children": [
+                                          {
+                                            "id": "n10",
+                                            "move": "6. Bd2",
+                                            "player": "white",
+                                            "explanation": "A clever move! We unmask the Queen's file. If Black is careless, we can move the Knight and Discover Attack the Queen.",
+                                            "status": "Mainline",
+                                            "type": "Tactical",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "n11",
+                        "move": "3... Qd8",
+                        "player": "black",
+                        "explanation": "The 'Banker' variation. The Queen runs all the way home. It is solid but passive.",
+                        "status": "Sideline",
+                        "type": "Defensive/Prophylactic",
+                        "children": [
+                          {
+                            "id": "n12",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "We take the center for free.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "n13",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "The Modern/Portuguese variation. They delay recapture to avoid Nc3. We just play 3. d4 and keep the pawn for as long as possible.",
+                "status": "Sideline",
+                "type": "Dynamic",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
