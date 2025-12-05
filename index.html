@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V5.5 (Quick Import)</title>
+    <title>Chess Trainer V5.6</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -175,7 +175,7 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V5.5</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V5.6</span></h1>
                 <p>Unified Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
@@ -1049,6 +1049,49 @@ function copyBuilderJson() {
     txt.select();
     navigator.clipboard.writeText(txt.value);
     alert("Copied!");
+}
+
+// UI Functions (Restored)
+function showScreen(id) { 
+    ['menuScreen', 'trainerScreen', 'builderScreen'].forEach(s => document.getElementById(s).style.display = 'none'); 
+    document.getElementById(id).style.display = 'block'; 
+    window.scrollTo(0, 0); 
+}
+
+function renderMenu() {
+    const container = document.getElementById('openingsContainer'); 
+    container.innerHTML = '';
+    const groups = {};
+    
+    Object.entries(OPENINGS).forEach(([key, op]) => { 
+        if (!op.version) op = migrateOpening(op); 
+        const g = op.group || "Uncategorized"; 
+        if (!groups[g]) groups[g] = []; 
+        groups[g].push({ key, ...op }); 
+    });
+    
+    if (Object.keys(groups).length === 0) { 
+        container.innerHTML = `<div class="empty-state"><div class="icon">♟️</div><p>No openings found.</p></div>`; 
+        return; 
+    }
+    
+    Object.entries(groups).forEach(([groupName, items]) => {
+        const folderId = 'folder_' + groupName.replace(/\s/g, '');
+        container.innerHTML += `<div class="folder-header" onclick="toggleFolder('${folderId}')"><span>📂 ${groupName}</span><span class="folder-count">${items.length}</span></div><div id="${folderId}" class="folder-content open">${items.map(item => `<div class="card" onclick="startTraining('${item.key}')"><div class="card-actions"><button class="icon-btn" onclick="event.stopPropagation(); editOpening('${item.key}')">✏️</button><button class="icon-btn" onclick="event.stopPropagation(); deleteOpening('${item.key}')">🗑</button></div><h3>${item.name} <span class="version-tag" style="background:${item.color==='white'?'#fbbf24':'#334155'}; color:${item.color==='white'?'#000':'#fff'}">${item.color.toUpperCase()}</span></h3><p>${item.description || ''}</p><div class="moves">${item.startingMoves || ''}</div></div>`).join('')}</div>`;
+    });
+}
+
+function toggleFolder(id) { 
+    const el = document.getElementById(id); 
+    if (el) el.classList.toggle('open'); 
+}
+
+function deleteOpening(key) { 
+    if (confirm(`Delete "${OPENINGS[key].name}"?`)) { 
+        delete OPENINGS[key]; 
+        saveStorage(); 
+        renderMenu(); 
+    } 
 }
 
 init();
