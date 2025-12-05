@@ -1,0 +1,291 @@
+{
+  "version": "4.0",
+  "name": "Queen's Gambit (White)",
+  "group": "White Repertoire",
+  "color": "white",
+  "description": "A powerful repertoire based on 1. d4. Features the Exchange Variation against the QGD to create the 'Carlsbad Structure' and a clear strategic plan (Minority Attack).",
+  "startingMoves": "1. d4 d5 2. c4",
+  "tree": {
+    "id": "root",
+    "move": "1. d4",
+    "player": "white",
+    "explanation": "We claim the center and open lines for the Bishop and Queen.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "n1",
+        "move": "1... d5",
+        "player": "black",
+        "explanation": "Black challenges the center.",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "n2",
+            "move": "2. c4",
+            "player": "white",
+            "explanation": "The Queen's Gambit. We offer a flank pawn to destroy Black's central control. This is not a real gambit because we can always get the pawn back.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "n3",
+                "move": "2... e6",
+                "player": "black",
+                "explanation": "The Queen's Gambit Declined (QGD). Black declines the pawn to maintain a strong center. This traps their light-square Bishop.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "n4",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "We develop the Knight to increase pressure on d5.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n5",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "Black brings the Knight out to defend the center.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "n6",
+                            "move": "4. cxd5",
+                            "player": "white",
+                            "explanation": "The Exchange Variation. We capture immediately. This clarifies the central situation and leads to a favorable pawn structure for us.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n7",
+                                "move": "4... exd5",
+                                "player": "black",
+                                "explanation": "Black recaptures. Notice the structure: Black has a pawn on c6/d5, we will have d4. This is the 'Carlsbad Structure'.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "n8",
+                                    "move": "5. Bg5",
+                                    "player": "white",
+                                    "explanation": "Active development. We pin the Knight. Our plan is simple: develop, castle, and then push b4-b5 (The Minority Attack) to weaken Black's queenside.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "n9",
+                                        "move": "5... c6",
+                                        "player": "black",
+                                        "explanation": "Black supports the center pawn.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "n10",
+                                            "move": "6. e3",
+                                            "player": "white",
+                                            "explanation": "We open the line for our light-squared Bishop. We are rock solid.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "n11",
+                                                "move": "6... Be7",
+                                                "player": "black",
+                                                "explanation": "Breaking the pin.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "n12",
+                                                    "move": "7. Bd3",
+                                                    "player": "white",
+                                                    "explanation": "The best square for the Bishop. It eyes the Kingside.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": []
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "n13",
+                                        "move": "5... Be7",
+                                        "player": "black",
+                                        "explanation": "Passive play. Black unpins immediately.",
+                                        "status": "Sideline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "n14",
+                                            "move": "6. e3",
+                                            "player": "white",
+                                            "explanation": "Standard setup.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "n15",
+                            "move": "4. Bg5",
+                            "player": "white",
+                            "explanation": "The Classical Variation. We maintain the tension in the center. This is good, but requires more theoretical knowledge.",
+                            "status": "Sideline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n16",
+                                "move": "4... Be7",
+                                "player": "black",
+                                "explanation": "Breaking the pin.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "n17",
+                                    "move": "5. e3",
+                                    "player": "white",
+                                    "explanation": "Solidifying.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "n18",
+                                        "move": "5... O-O",
+                                        "player": "black",
+                                        "explanation": "Black castles.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "n19",
+                                            "move": "6. Nf3",
+                                            "player": "white",
+                                            "explanation": "Developing the last minor piece.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "n20",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "The Tarrasch Defense. Black challenges us immediately. This often leads to Black having an Isolated Queen's Pawn (IQP).",
+                        "status": "Sideline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "n21",
+                            "move": "4. cxd5",
+                            "player": "white",
+                            "explanation": "We capture. Against the Tarrasch, we want to isolate their d-pawn.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "n22",
+                "move": "2... c6",
+                "player": "black",
+                "explanation": "The Slav Defense. A tough nut to crack. Black supports the center without blocking the light-square Bishop.",
+                "status": "Sideline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "n23",
+                    "move": "3. Nf3",
+                    "player": "white",
+                    "explanation": "We develop the Knight to stop ...e5.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n24",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "Symmetry.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "n25",
+                            "move": "4. Nc3",
+                            "player": "white",
+                            "explanation": "The Three Knights Variation. We put pressure on d5.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "n26",
+                "move": "2... dxc4",
+                "player": "black",
+                "explanation": "The Queen's Gambit Accepted (QGA). Black takes the pawn. We will regain it easily.",
+                "status": "Sideline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "n27",
+                    "move": "3. e4",
+                    "player": "white",
+                    "explanation": "Aggressive! Since the d-pawn is gone, we seize the WHOLE center.",
+                    "status": "Mainline",
+                    "type": "Dynamic",
+                    "children": []
+                  },
+                  {
+                    "id": "n28",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "The Solid Choice. We simply prepare Bxc4. Black cannot hold the pawn.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
