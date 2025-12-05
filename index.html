@@ -375,91 +375,7 @@ function validateTree(node) {
 // =====================================================
 // DATA & CONFIG
 // =====================================================
-const DEFAULT_OPENINGS = {
-    white_italian: {
-        version: "4.0", name: "Italian Game Master", color: "white", group: "White Repertoire",
-        description: "A complete repertoire covering the Giuoco Piano, Two Knights, and Evans Gambit.",
-        startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
-        tree: { id: "root", move: "1. e4", player: "white", explanation: "We start by controlling the center and opening lines for the bishop and queen.", status: "Mainline", type: "Positional/Strategic", children: [
-            { id: "n1", move: "1... e5", player: "black", explanation: "Black challenges the center immediately.", status: "Mainline", type: "Positional/Strategic", children: [
-                { id: "n2", move: "2. Nf3", player: "white", explanation: "Developing the knight to a natural square and attacking e5.", status: "Mainline", type: "Dynamic", children: [
-                    { id: "n3", move: "2... Nc6", player: "black", explanation: "Standard development defending the e-pawn.", status: "Mainline", type: "Positional/Strategic", children: [
-                        { id: "n4", move: "3. Bc4", player: "white", explanation: "The Italian Game! We target the weak f7 square and prepare to castle.", status: "Mainline", type: "Positional/Strategic", children: [
-                            { id: "n5", move: "3... Bc5", player: "black", explanation: "The Giuoco Piano ('Quiet Game'). Black develops logically.", status: "Mainline", type: "Positional/Strategic", children: [
-                                { id: "n6", move: "4. c3", player: "white", explanation: "Preparing to build a big center with d4.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n7", move: "4... Nf6", player: "black", explanation: "Attacking our e4 pawn.", status: "Mainline", type: "Dynamic", children: [
-                                        { id: "n8", move: "5. d3", player: "white", explanation: "The 'Giuoco Pianissimo' (Very Quiet Game). We support the center solidly rather than rushing d4.", status: "Mainline", type: "Positional/Strategic", children: [] },
-                                        { id: "n9", move: "5. d4", player: "white", explanation: "Striking immediately in the center! This leads to sharper positions.", status: "Sideline", type: "Dynamic", children: [] }
-                                    ]}
-                                ]},
-                                { id: "n10", move: "4. b4", player: "white", explanation: "The Evans Gambit! We sacrifice a pawn to deflect the bishop and gain rapid development.", status: "Novelty", type: "Dynamic", children: [
-                                    { id: "n11", move: "4... Bxb4", player: "black", explanation: "They accept the gambit.", status: "Mainline", type: "Tactical", children: [
-                                        { id: "n12", move: "5. c3", player: "white", explanation: "Gaining time on the bishop and preparing d4.", status: "Mainline", type: "Forcing", children: [] }
-                                    ]}
-                                ]}
-                            ]},
-                            { id: "n13", move: "3... Nf6", player: "black", explanation: "The Two Knights Defense. A more aggressive counter-attack.", status: "Mainline", type: "Dynamic", children: [
-                                { id: "n14", move: "4. Ng5", player: "white", explanation: "The Fried Liver Attack setup! We immediately target f7.", status: "Mainline", type: "Tactical", children: [
-                                    { id: "n15", move: "4... d5", player: "black", explanation: "The only good move to stop the threat.", status: "Mainline", type: "Forcing", children: [
-                                        { id: "n16", move: "5. exd5", player: "white", explanation: "Opening lines.", status: "Mainline", type: "Forcing", children: [
-                                            { id: "n17", move: "5... Na5", player: "black", explanation: "The Polerio Defense. Attacking the bishop.", status: "Mainline", type: "Dynamic", children: [] },
-                                            { id: "n18", move: "5... Nxd5", player: "black", explanation: "A mistake! This allows the Fried Liver Sacrifice.", status: "Blunder", type: "Tactical", children: [
-                                                { id: "n19", move: "6. Nxf7", player: "white", explanation: "Sacrificing the knight to draw the King out!", status: "Mainline", type: "Tactical", children: [] }
-                                            ]}
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n20", move: "4. d3", player: "white", explanation: "A quiet alternative, avoiding the tactical chaos of Ng5.", status: "Sideline", type: "Quiet", children: [] }
-                            ]}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]}
-    },
-    black_italian: {
-        version: "4.0", name: "Black vs Italian Game", color: "black", group: "Black Repertoire",
-        description: "Complete Black repertoire against 3. Bc4. Includes the solid Giuoco Piano (3... Bc5) and the sharp Two Knights (3... Nf6).",
-        startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
-        tree: { id: "root", move: "1. e4", player: "white", explanation: "White starts with the King's Pawn.", status: "Mainline", type: "Positional/Strategic", children: [
-            { id: "n1", move: "1... e5", player: "black", explanation: "We mirror White to control the center.", status: "Mainline", type: "Positional/Strategic", children: [
-                { id: "n2", move: "2. Nf3", player: "white", explanation: "White attacks e5.", status: "Mainline", type: "Positional/Strategic", children: [
-                    { id: "n3", move: "2... Nc6", player: "black", explanation: "We develop and defend e5.", status: "Mainline", type: "Positional/Strategic", children: [
-                        { id: "n4", move: "3. Bc4", player: "white", explanation: "The Italian Game. White eyes f7.", status: "Mainline", type: "Positional/Strategic", children: [
-                            { id: "n5", move: "3... Nf6", player: "black", explanation: "OPTION A: The Two Knights Defense. This is the more aggressive, counter-attacking choice. We ignore the f7 threat to attack e4 immediately.", status: "Mainline", type: "Dynamic", children: [
-                                { id: "n6", move: "4. Ng5", player: "white", explanation: "The Knight Attack. White accepts the challenge and attacks f7 immediately.", status: "Mainline", type: "Tactical", children: [
-                                    { id: "n7", move: "4... d5", player: "black", explanation: "The only move! We must block the bishop's vision of f7.", status: "Mainline", type: "Forcing", children: [
-                                        { id: "n8", move: "5. exd5", player: "white", explanation: "White captures.", status: "Mainline", type: "Forcing", children: [
-                                            { id: "n9", move: "5... Na5", player: "black", explanation: "The Polerio Defense. We DO NOT recapture on d5 (which allows the Fried Liver). Instead, we attack the bishop to gain time.", status: "Mainline", type: "Dynamic", children: [] }
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n10", move: "4. d3", player: "white", explanation: "Giuoco Pianissimo ('Very Quiet Game'). White declines the chaos.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n11", move: "4... h6", player: "black", explanation: "Prophylaxis. We prevent Ng5/Bg5 forever before continuing development.", status: "Mainline", type: "Defensive/Prophylactic", children: [] }
-                                ]}
-                            ]},
-                            { id: "n12", move: "3... Bc5", player: "black", explanation: "OPTION B: The Giuoco Piano. The classical choice. We develop the bishop to an active square and maintain symmetry.", status: "Mainline", type: "Positional/Strategic", children: [
-                                { id: "n13", move: "4. c3", player: "white", explanation: "White prepares d4 to build a big center.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n14", move: "4... Nf6", player: "black", explanation: "We attack e4. This forces White to make a decision about their center.", status: "Mainline", type: "Dynamic", children: [
-                                        { id: "n15", move: "5. d4", player: "white", explanation: "White strikes in the center.", status: "Mainline", type: "Dynamic", children: [
-                                            { id: "n16", move: "5... exd4", player: "black", explanation: "We must trade. Maintaining the tension here is dangerous.", status: "Mainline", type: "Forcing", children: [] }
-                                        ]},
-                                        { id: "n17", move: "5. d3", player: "white", explanation: "White switches to a slower setup.", status: "Mainline", type: "Positional/Strategic", children: [
-                                            { id: "n18", move: "5... d6", player: "black", explanation: "Solidifying our center pawn.", status: "Mainline", type: "Positional/Strategic", children: [] }
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n19", move: "4. b4", player: "white", explanation: "The Evans Gambit. White offers a pawn for rapid development.", status: "Sideline", type: "Tactical", children: [
-                                    { id: "n20", move: "4... Bxb4", player: "black", explanation: "We accept the challenge. The best way to refute a gambit is often to accept it and defend carefully.", status: "Mainline", type: "Tactical", children: [] }
-                                ]}
-                            ]}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]}
-    }
-};
+const DEFAULT_OPENINGS = {}; // Empty default to rely on imports
 
 const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
 const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
@@ -1023,5 +939,4 @@ function copyBuilderJson() {
 init();
 </script>
 </body>
-
 </html>
