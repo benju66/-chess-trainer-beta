@@ -646,9 +646,11 @@ function editOpening(key) {
 
 function renderBuilder() {
     let node = builderTree;
-    let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">Root</div>`;
     
-    // Breadcrumbs
+    // FIXED: Use the actual root move (e.g., "1. e4") instead of the word "Root"
+    let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${builderTree.move}</div>`;
+    
+    // Breadcrumbs Loop
     let tempNode = builderTree;
     for (let i = 0; i < builderPath.length; i++) {
         const id = builderPath[i];
@@ -664,6 +666,7 @@ function renderBuilder() {
     
     // Context Logic
     const ply = builderPath.length + 1;
+    // Logic: Root is White. Ply 1 (Response) is Black.
     const nextMoveColor = (ply % 2 !== 0) ? 'black' : 'white';
     
     const turnLabel = nextMoveColor === 'white' ? "White to Move" : "Black to Move";
@@ -689,7 +692,6 @@ function renderBuilder() {
     
     document.getElementById('addFormTitle').innerText = turnLabel;
     
-    // Delete Logic
     const deleteBtn = document.getElementById('btnDeleteBranch');
     if (deleteBtn) {
         deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch";
@@ -705,75 +707,92 @@ function jumpToBuilderStep(index) {
 }
 
 function addBuilderMove() {
-    const moveRaw = document.getElementById('newMoveInput').value.trim();
-    if (!moveRaw) return;
-    
-    // --- STEP 1: REPLAY GAME TO VALIDATE ---
-    const game = new Chess();
-    
-    // Clean root move (remove "1. ")
-    const rootClean = builderTree.move.replace(/^\d+\.+/, '').trim();
-    game.move(rootClean);
-    
-    // Replay current path
-    let node = builderTree;
-    for (let id of builderPath) {
-        node = node.children.find(c => c.id === id);
-        const cleanMove = node.move.replace(/^\d+\.+/, '').trim(); // Remove move numbers
-        game.move(cleanMove);
-    }
-    
-    // --- STEP 2: ATTEMPT NEW MOVE ---
-    const moveObj = game.move(moveRaw); // Returns null if illegal
-    
-    if (moveObj === null) {
-        alert(`Illegal move: ${moveRaw}\n\nMake sure it's valid in the current position.`);
-        return;
-    }
-    
-    // --- STEP 3: CALCULATE NOTATION ---
-    const turn = game.turn(); // 'w' or 'b' (Side to move NEXT)
-    const moveNum = game.moveNumber(); 
-    
-    const isWhiteMove = (turn === 'b'); // If it's B turn, W just moved
-    
-    // Format: "2. Nf3" or "2... Nc6"
-    const notation = isWhiteMove 
-        ? `${moveNum}. ${moveObj.san}` 
-        : `${moveNum}... ${moveObj.san}`;
+    try {
+        const inputEl = document.getElementById('newMoveInput');
+        const moveRaw = inputEl.value.trim();
+        if (!moveRaw) return;
         
-    const player = isWhiteMove ? 'white' : 'black';
-    
-    // --- STEP 4: ADD TO TREE ---
-    if(!node.children) node.children = [];
-    
-    const newId = 'n' + Date.now();
-    
-    // Capture values before resetting form
-    const statusVal = document.getElementById('newStatus').value;
-    const typeVal = document.getElementById('newType').value;
-    const explVal = document.getElementById('newExpl').value;
+        // --- STEP 1: REPLAY GAME TO VALIDATE ---
+        const game = new Chess();
+        
+        // Robust cleaning of the Root move (e.g., "1. e4" -> "e4")
+        let rootClean = builderTree.move;
+        if (rootClean.includes('.')) rootClean = rootClean.split('.').pop().trim();
+        
+        const rootResult = game.move(rootClean);
+        if (!rootResult) {
+            alert("Error: Root move is invalid internal state.");
+            return;
+        }
+        
+        // Replay current path
+        let node = builderTree;
+        for (let id of builderPath) {
+            node = node.children.find(c => c.id === id);
+            
+            // Clean previous moves (e.g., "1... e5" -> "e5")
+            let cleanMove = node.move;
+            if (cleanMove.includes('.')) cleanMove = cleanMove.split('.').pop().trim();
+            
+            game.move(cleanMove);
+        }
+        
+        // --- STEP 2: ATTEMPT NEW MOVE ---
+        const moveObj = game.move(moveRaw); // Returns null if illegal
+        
+        if (moveObj === null) {
+            alert(`Illegal move: ${moveRaw}\n\nMake sure it's valid in the current position.`);
+            return;
+        }
+        
+        // --- STEP 3: CALCULATE NOTATION ---
+        const turn = game.turn(); // 'w' or 'b' (Side to move NEXT)
+        const moveNum = game.moveNumber(); 
+        
+        // Logic: 
+        // If turn is now 'b', White just moved. The moveNum matches (e.g. 1). -> "1. e4"
+        // If turn is now 'w', Black just moved. The moveNum is for NEXT turn (e.g. 2). -> "1... e5"
+        
+        let notation = "";
+        let player = "";
 
-    node.children.push({ 
-        id: newId, 
-        move: notation, 
-        player: player,
-        status: statusVal, 
-        type: typeVal, 
-        explanation: explVal, 
-        children: [] 
-    });
-    
-    // --- STEP 5: RESET FORM & AUTO ADVANCE ---
-    document.getElementById('newMoveInput').value = '';
-    document.getElementById('newExpl').value = ''; // Clear explanation
-    document.getElementById('newStatus').selectedIndex = 0; // Reset status
-    
-    // Auto-navigate to the new child
-    builderPath.push(newId);
-    renderBuilder();
+        if (turn === 'b') {
+            // White just played
+            notation = `${moveNum}. ${moveObj.san}`;
+            player = 'white';
+        } else {
+            // Black just played
+            notation = `${moveNum - 1}... ${moveObj.san}`;
+            player = 'black';
+        }
+        
+        // --- STEP 4: ADD TO TREE ---
+        if(!node.children) node.children = [];
+        
+        const newId = 'n' + Date.now();
+        
+        node.children.push({ 
+            id: newId, 
+            move: notation, 
+            player: player,
+            status: document.getElementById('newStatus').value, 
+            type: document.getElementById('newType').value, 
+            explanation: document.getElementById('newExpl').value, 
+            children: [] 
+        });
+        
+        // --- STEP 5: RESET FORM & AUTO ADVANCE ---
+        inputEl.value = '';
+        document.getElementById('newExpl').value = ''; 
+        document.getElementById('newStatus').selectedIndex = 0; 
+        
+        builderPath.push(newId);
+        renderBuilder();
+    } catch (err) {
+        alert("Unexpected error: " + err.message);
+        console.error(err);
+    }
 }
-
 function deleteBuilderNode() {
     if (builderPath.length === 0) {
         if (confirm("Reset entire opening?")) showNewOpeningModal();
