@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V6.0</title>
+    <title>Chess Trainer V6.0 (Fixed)</title>
     <link rel="stylesheet" href="https://unpkg.com/cm-chessboard@4/assets/styles/cm-chessboard.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
@@ -64,7 +64,7 @@
         .card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
         .icon-btn { background: rgba(100, 116, 139, 0.3); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
 
-        /* NAVIGATION (Preserved V5.8 Grid Layout) */
+        /* NAVIGATION (Grid from V5.8) */
         .nav-bar { display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; margin-bottom: 16px; }
         .nav-title { text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--accent-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .nav-btn { background: rgba(255,255,255,0.1); border: none; color: #e2e8f0; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
@@ -111,7 +111,7 @@
 
         /* BUTTONS */
         .option-btn {
-            width: 100%; display: flex; justify-content: space-between; align-items: flex-start; /* Aligns items to top for expansion */
+            width: 100%; display: flex; justify-content: space-between; align-items: flex-start;
             padding: 16px; margin-bottom: 10px; border-radius: 12px; cursor: pointer;
             background: rgba(51, 65, 85, 0.5); border: 1px solid #475569; color: #e2e8f0; text-align: left;
             position: relative;
@@ -124,7 +124,7 @@
         .option-btn.mainline-highlight { border: 1px solid #fbbf24; background: rgba(251, 191, 36, 0.05); }
         .option-btn.mainline-highlight h4 { color: #fbbf24; }
         
-        /* EXPANDABLE DESCRIPTIONS */
+        /* Expandable Text (V5.8) */
         .option-btn .branch-desc {
             font-size: 0.85rem; color: #94a3b8; margin: 4px 0 6px 0; line-height: 1.4;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -574,7 +574,7 @@ function getUnifiedOptions(currentNode) {
 }
 
 // =====================================================
-// TRAINER LOGIC
+// TRAINER LOGIC (ROBUST)
 // =====================================================
 function startTraining(key) {
     currentOpening = OPENINGS[key];
@@ -583,12 +583,18 @@ function startTraining(key) {
     historyStack = []; currentPath = [];
     showScreen('trainerScreen');
     
-    // V6: Init Visual Board (Interactive = false)
+    // SAFETY: If board fails (CORS/Net), still render buttons
     if(window.initVisualBoard) {
-        window.initVisualBoard('trainerBoard', false).then(() => {
-             updateTheme();
-             renderTrainer();
-        });
+        window.initVisualBoard('trainerBoard', false)
+            .then(() => {
+                 updateTheme();
+                 renderTrainer();
+            })
+            .catch(err => {
+                console.log("Board failed to load, proceeding with text only mode.");
+                updateTheme();
+                renderTrainer();
+            });
     } else {
         updateTheme();
         renderTrainer();
@@ -616,12 +622,12 @@ function returnToPrevious() {
 
 function renderTrainer() {
     let node = currentOpening.tree;
-    // V6: Calculate FEN
+    // Calculate FEN
     const game = new Chess();
     const rootMove = node.move.replace(/^[0-9]+\.+/, '').trim();
     if(rootMove) game.move(rootMove);
 
-    // Update Header Title (V5.8 Feature)
+    // Update Header Title (V5.8)
     document.getElementById('trainerHeaderTitle').innerText = currentOpening.name;
     
     for (let id of currentPath) {
@@ -632,7 +638,7 @@ function renderTrainer() {
         }
     }
     
-    // V6: Update Board
+    // Update Board (Check if function exists first)
     if(window.updateBoardPosition) {
         window.updateBoardPosition(game.fen(), currentOpening.color);
     }
@@ -659,18 +665,22 @@ function renderTrainer() {
     const options = getUnifiedOptions(node);
     const container = document.getElementById('trainerOptions');
     
-    // V6: Draw Arrows
-    if(showCoach && window.drawCoachArrows) {
-        const arrows = options.map(opt => {
-            const temp = new Chess(game.fen());
-            const clean = opt.move.replace(/^[0-9]+\.+/, '').trim();
-            if(!clean) return null;
-            const m = temp.move(clean);
-            return m ? { from: m.from, to: m.to, type: opt.type } : null;
-        }).filter(x => x);
-        window.drawCoachArrows(arrows);
-    } else if (window.clearArrows) {
-        window.clearArrows();
+    // SAFETY: Coach Arrows - Wrap in try/catch to prevent UI crash if board is broken
+    try {
+        if(showCoach && window.drawCoachArrows) {
+            const arrows = options.map(opt => {
+                const temp = new Chess(game.fen());
+                const clean = opt.move.replace(/^[0-9]+\.+/, '').trim();
+                if(!clean) return null;
+                const m = temp.move(clean);
+                return m ? { from: m.from, to: m.to, type: opt.type } : null;
+            }).filter(x => x);
+            window.drawCoachArrows(arrows);
+        } else if (window.clearArrows) {
+            window.clearArrows();
+        }
+    } catch(err) {
+        console.log("Coach arrows failed to draw", err);
     }
     
     if (options.length === 0) {
@@ -681,9 +691,9 @@ function renderTrainer() {
     container.innerHTML = options.map(opt => {
         const branchName = opt.explanation || "";
         const color = getColorClass(opt.type);
-        // V5.8 Feature: Expandable Text
+        // V5.8: Expandable Text
         const descriptionHtml = (showCoach && branchName) ? renderExpandableText(branchName) : '';
-        // V6 Feature: Highlight Mainline
+        // V6: Highlight Mainline
         const isMain = isPlayerTurn && opt.status === 'Mainline';
         const highlightClass = isMain ? 'mainline-highlight' : '';
 
@@ -828,9 +838,11 @@ function importFromMenuText() {
 function showNewOpeningModal() { builderTree = null; builderPath = []; editingKey = null; document.getElementById('modalName').value = ''; document.getElementById('modalGroup').value = ''; document.getElementById('modalMove').value = ''; document.getElementById('newOpeningModal').style.display = 'flex'; }
 function initializeNewOpening() { try { const name = document.getElementById('modalName').value || "Untitled"; const group = document.getElementById('modalGroup').value || "Uncategorized"; const color = document.getElementById('modalColor').value; const moveRaw = document.getElementById('modalMove').value || "e4"; const game = new Chess(); const validMove = game.move(moveRaw); if (validMove === null) { alert("Invalid starting move!"); return; } const formattedMove = "1. " + validMove.san; builderTree = { id: 'root', move: formattedMove, player: 'white', explanation: 'Starting move.', children: [] }; builderColor = color; document.getElementById('builderName').value = name; document.getElementById('builderGroup').value = group; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = color; document.getElementById('builderDesc').value = ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newOpeningModal').style.display = 'none'; showScreen('builderScreen'); renderBuilder(); } catch (e) { alert("Error: " + e.message); } }
 function editOpening(key) { editingKey = key; const op = OPENINGS[key]; builderTree = JSON.parse(JSON.stringify(op.tree)); builderColor = op.color; document.getElementById('builderName').value = op.name; document.getElementById('builderGroup').value = op.group || ''; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = op.color; document.getElementById('builderDesc').value = op.description || ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; builderPath = []; showScreen('builderScreen'); 
-    // V6: Init interactive board
+    // V6: Init interactive board with safety check
     if(window.initVisualBoard) {
-        window.initVisualBoard('builderBoard', true).then(() => renderBuilder());
+        window.initVisualBoard('builderBoard', true)
+            .then(() => renderBuilder())
+            .catch(() => renderBuilder()); // Proceed even if board fails
     } else {
         renderBuilder();
     }
@@ -858,7 +870,7 @@ function renderBuilder() {
         } 
         node = tempNode; 
         
-        // V6: Update Board
+        // V6: Update Board with safety
         if(window.updateBoardPosition) {
             window.updateBoardPosition(game.fen(), builderColor);
         }
@@ -936,15 +948,14 @@ init();
     import { Chessboard, COLOR, MARKER_TYPE, INPUT_EVENT_TYPE } 
     from "https://unpkg.com/cm-chessboard@4/src/cm-chessboard/Chessboard.js"
 
-    // 1. Global State
     window.visualBoard = null;
 
-    // 2. Initialize Function
     window.initVisualBoard = async function(elementId, interactive = false) {
         if (window.visualBoard) {
             window.visualBoard.destroy();
         }
         
+        // V6 FIX: Explicit Sprite URL for safer CDN loading
         window.visualBoard = await new Chessboard(document.getElementById(elementId), {
             position: "start",
             assetsUrl: "https://unpkg.com/cm-chessboard@4/assets/",
@@ -970,7 +981,6 @@ init();
         }
     }
 
-    // 3. Update Position Helper
     window.updateBoardPosition = function(fen, orientation = 'white') {
         if(window.visualBoard) {
             if(window.visualBoard.getPosition() !== fen) {
@@ -980,7 +990,6 @@ init();
         }
     }
     
-    // 4. Coach Arrow Helper
     window.drawCoachArrows = function(moves) {
         if(!window.visualBoard) return;
         window.visualBoard.removeMarkers(MARKER_TYPE.arrow);
@@ -994,7 +1003,6 @@ init();
         if(window.visualBoard) window.visualBoard.removeMarkers(MARKER_TYPE.arrow);
     }
     
-    // 5. Input Handler for Builder
     window.handleBoardInput = function(from, to) {
         const event = new CustomEvent('boardMove', { detail: { from, to } });
         document.dispatchEvent(event);
@@ -1002,7 +1010,6 @@ init();
 </script>
 
 <script>
-// LISTENER FOR BOARD INPUT (BUILDER ONLY)
 document.addEventListener('boardMove', (e) => {
     const { from, to } = e.detail;
     const game = new Chess();
