@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V5.7</title>
+    <title>Chess Trainer V5.8</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -64,8 +64,9 @@
         .icon-btn { background: rgba(100, 116, 139, 0.3); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
 
         /* NAVIGATION */
-        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: #e2e8f0; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .nav-bar { display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; margin-bottom: 16px; }
+        .nav-title { text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--accent-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: #e2e8f0; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
         .return-btn {
             background: rgba(139, 92, 246, 0.2); border: 1px solid #8b5cf6; color: #c4b5fd;
             display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
@@ -96,20 +97,28 @@
 
         /* BUTTONS */
         .option-btn {
-            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            width: 100%; display: flex; justify-content: space-between; align-items: flex-start; /* Aligns items to top for expansion */
             padding: 16px; margin-bottom: 10px; border-radius: 12px; cursor: pointer;
             background: rgba(51, 65, 85, 0.5); border: 1px solid #475569; color: #e2e8f0; text-align: left;
             position: relative;
         }
         .option-btn:hover { background: rgba(71, 85, 105, 0.6); }
+        .option-btn .main { flex: 1; }
         .option-btn h4 { font-family: monospace; font-size: 1.1rem; margin-bottom: 4px; }
-        .option-btn p { font-size: 0.8rem; opacity: 0.8; }
         
-        /* Branch Descriptions */
+        /* EXPANDABLE DESCRIPTIONS */
         .option-btn .branch-desc {
             font-size: 0.85rem; color: #94a3b8; margin: 4px 0 6px 0; line-height: 1.4;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            transition: all 0.2s ease;
         }
+        .option-btn .branch-desc.expanded {
+            display: block; -webkit-line-clamp: unset; overflow: visible;
+        }
+        .expand-link {
+            color: #60a5fa; font-size: 0.75rem; font-weight: 600; text-decoration: none; margin-left: 6px; cursor: pointer;
+        }
+        .expand-link:hover { text-decoration: underline; }
         
         .option-btn .tags { display: flex; gap: 6px; margin-top: 4px; }
         .tag-pill { padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; text-transform: uppercase; font-weight: 700; }
@@ -130,6 +139,7 @@
         .option-btn.remote.purple { border-color: #a855f7; }
         .option-btn.remote h4 { color: #c4b5fd; }
         .option-btn.remote .badge { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; }
+        .arrow-icon { font-size: 1.2rem; padding-left: 10px; opacity: 0.5; align-self: center; }
 
         /* FORMS */
         .add-form { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px dashed #475569; margin-bottom: 16px; }
@@ -176,7 +186,7 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V5.7</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V5.8</span></h1>
                 <p>Unified Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
@@ -238,6 +248,7 @@
         <div id="trainerScreen" class="screen" style="display:none;">
             <div class="nav-bar">
                 <button id="trainerBackBtn" class="nav-btn" onclick="goBack()">← Menu</button>
+                <div id="trainerHeaderTitle" class="nav-title">Opening Name</div>
                 <div id="returnContainer"></div>
             </div>
             
@@ -388,13 +399,27 @@ function validateTree(node) {
 }
 
 // =====================================================
-// STATE
+// DEMO DATA (RESTORABLE)
 // =====================================================
-let OPENINGS = {};
-let currentOpening = null, currentOpeningKey = null, originalOpeningKey = null;
-let currentPath = [], historyStack = [];
-let builderTree = null, builderPath = [], editingKey = null, builderColor = 'white';
-let transpositionMap = {};
+const DEFAULT_OPENINGS = {
+    white_italian: {
+        version: "4.0", name: "Italian Game Master", color: "white", group: "White Repertoire",
+        description: "A complete repertoire covering the Giuoco Piano, Two Knights, and Evans Gambit.",
+        startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
+        tree: { id: "root", move: "1. e4", player: "white", explanation: "We start by controlling the center and opening lines for the bishop and queen.", status: "Mainline", type: "Positional/Strategic", children: [
+            { id: "n1", move: "1... e5", player: "black", explanation: "Black challenges the center immediately.", status: "Mainline", type: "Positional/Strategic", children: [
+                { id: "n2", move: "2. Nf3", player: "white", explanation: "Developing the knight to a natural square and attacking e5.", status: "Mainline", type: "Dynamic", children: [
+                    { id: "n3", move: "2... Nc6", player: "black", explanation: "Standard development defending the e-pawn.", status: "Mainline", type: "Positional/Strategic", children: [
+                        { id: "n4", move: "3. Bc4", player: "white", explanation: "The Italian Game! We target the weak f7 square and prepare to castle.", status: "Mainline", type: "Positional/Strategic", children: [] }
+                    ]}
+                ]}
+            ]}
+        ]}
+    }
+};
+
+const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
+const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
 
 const TYPE_DEFINITIONS = [
     { t: 'Positional/Strategic', d: 'Long-term improvements, better piece placement, controlling key squares.' },
@@ -406,13 +431,25 @@ const TYPE_DEFINITIONS = [
 ];
 
 // =====================================================
+// STATE
+// =====================================================
+let OPENINGS = {};
+let currentOpening = null, currentOpeningKey = null, originalOpeningKey = null;
+let currentPath = [], historyStack = [];
+let builderTree = null, builderPath = [], editingKey = null, builderColor = 'white';
+let transpositionMap = {};
+
+// =====================================================
 // INIT & STORAGE
 // =====================================================
 function init() {
     const stored = localStorage.getItem('customOp5');
     if (stored) {
         OPENINGS = JSON.parse(stored);
+    } else {
+        OPENINGS = JSON.parse(JSON.stringify(DEFAULT_OPENINGS));
     }
+    
     document.getElementById('refContent').innerHTML = TYPE_DEFINITIONS.map(x => 
         `<div class="ref-item"><div class="ref-term">${x.t}</div><div class="ref-def">${x.d}</div></div>`
     ).join('');
@@ -468,6 +505,7 @@ function rebuildTranspositionMap() {
 
 function migrateOpening(op) {
     if (op.version === "4.0") return op;
+    
     function walk(n) {
         if (!n) return;
         if (!n.children) n.children = [];
@@ -559,6 +597,9 @@ function renderTrainer() {
     let node = currentOpening.tree;
     let movesText = [node.move];
     
+    // UPDATE HEADER TITLE
+    document.getElementById('trainerHeaderTitle').innerText = currentOpening.name;
+    
     for (let id of currentPath) {
         const child = node.children?.find(c => c.id === id);
         if (child) { node = child; movesText.push(child.move); }
@@ -586,25 +627,26 @@ function renderTrainer() {
     container.innerHTML = options.map(opt => {
         const branchName = opt.explanation || "";
         const color = getColorClass(opt.type);
+        const descriptionHtml = (showCoach && branchName) ? renderExpandableText(branchName) : '';
 
         if (opt.source === 'local') {
             return `<div class="option-btn ${color}" onclick="handleLocalMove('${opt.id}')">
                 <div class="main">
                     <h4>${opt.move}</h4>
-                    ${showCoach && branchName ? `<p class="branch-desc">${branchName}</p>` : ''}
+                    ${descriptionHtml}
                     ${showCoach ? `
                     <div class="tags">
                         ${opt.status ? `<span class="tag-pill status">${opt.status}</span>` : ''}
                         ${opt.type ? `<span class="tag-pill type">${opt.type}</span>` : ''}
                     </div>` : ''}
                 </div>
-                <span>➜</span>
+                <span class="arrow-icon">➜</span>
             </div>`;
         } else {
             return `<div class="option-btn remote ${color}" onclick="jumpToOpening('${opt.targetKey}')">
                 <div class="main">
                     <h4>${opt.move} <span class="badge">${opt.targetName}</span></h4>
-                    ${showCoach && branchName ? `<p class="branch-desc">${branchName}</p>` : ''}
+                    ${descriptionHtml}
                     ${showCoach ? `
                     <div class="tags">
                         <span class="tag-pill type" style="opacity:0.7">VIA ${opt.via}</span>
@@ -612,21 +654,49 @@ function renderTrainer() {
                         ${opt.type ? `<span class="tag-pill type">${opt.type}</span>` : ''}
                     </div>` : ''}
                 </div>
-                <span>↗</span>
+                <span class="arrow-icon">↗</span>
             </div>`;
         }
     }).join('');
+}
+
+function renderExpandableText(text) {
+    if (!text) return '';
+    // Approximate length check (2 lines roughly 100-120 chars on mobile)
+    const isLong = text.length > 85; 
+    const id = 'desc_' + Math.random().toString(36).substr(2, 9);
+    
+    if (!isLong) {
+        return `<p class="branch-desc">${text}</p>`;
+    } else {
+        return `<p class="branch-desc" id="${id}">${text}</p>
+                <span class="expand-link" onclick="toggleDesc(event, '${id}')">...more</span>`;
+    }
+}
+
+function toggleDesc(e, id) {
+    e.stopPropagation();
+    const el = document.getElementById(id);
+    const link = e.target;
+    
+    if (el.classList.contains('expanded')) {
+        el.classList.remove('expanded');
+        link.innerText = '...more';
+    } else {
+        el.classList.add('expanded');
+        link.innerText = 'less';
+    }
 }
 
 function handleLocalMove(id) { currentPath.push(id); renderTrainer(); }
 function updateTheme() {
     document.body.className = (currentOpeningKey !== originalOpeningKey) ? 'theme-purple' : '';
     document.getElementById('returnContainer').innerHTML = historyStack.length ? 
-        `<button class="return-btn" onclick="returnToPrevious()">↩ Return</button>` : '';
+        `<button class="return-btn" onclick="returnToPrevious()">↩</button>` : '';
 }
 
 // =====================================================
-// BUILDER & MENU
+// UI & IMPORT
 // =====================================================
 function showScreen(id) { 
     ['menuScreen', 'trainerScreen', 'builderScreen'].forEach(s => document.getElementById(s).style.display = 'none'); 
@@ -657,8 +727,18 @@ function renderMenu() {
     });
 }
 
-function toggleFolder(id) { const el = document.getElementById(id); if (el) el.classList.toggle('open'); }
-function deleteOpening(key) { if (confirm(`Delete "${OPENINGS[key].name}"?`)) { delete OPENINGS[key]; saveStorage(); renderMenu(); } }
+function toggleFolder(id) { 
+    const el = document.getElementById(id); 
+    if (el) el.classList.toggle('open'); 
+}
+
+function deleteOpening(key) { 
+    if (confirm(`Delete "${OPENINGS[key].name}"?`)) { 
+        delete OPENINGS[key]; 
+        saveStorage(); 
+        renderMenu(); 
+    } 
+}
 
 function importFromMenuText() {
     try {
@@ -688,38 +768,460 @@ function importFromMenuText() {
     }
 }
 
-// BUILDER FUNCTIONS
-function showNewOpeningModal() { builderTree = null; builderPath = []; editingKey = null; document.getElementById('modalName').value = ''; document.getElementById('modalGroup').value = ''; document.getElementById('modalMove').value = ''; document.getElementById('newOpeningModal').style.display = 'flex'; }
-function initializeNewOpening() { try { const name = document.getElementById('modalName').value || "Untitled"; const group = document.getElementById('modalGroup').value || "Uncategorized"; const color = document.getElementById('modalColor').value; const moveRaw = document.getElementById('modalMove').value || "e4"; const game = new Chess(); const validMove = game.move(moveRaw); if (validMove === null) { alert("Invalid starting move!"); return; } const formattedMove = "1. " + validMove.san; builderTree = { id: 'root', move: formattedMove, player: 'white', explanation: 'Starting move.', children: [] }; builderColor = color; document.getElementById('builderName').value = name; document.getElementById('builderGroup').value = group; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = color; document.getElementById('builderDesc').value = ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newOpeningModal').style.display = 'none'; showScreen('builderScreen'); renderBuilder(); } catch (e) { alert("Error: " + e.message); } }
-function editOpening(key) { editingKey = key; const op = OPENINGS[key]; builderTree = JSON.parse(JSON.stringify(op.tree)); builderColor = op.color; document.getElementById('builderName').value = op.name; document.getElementById('builderGroup').value = op.group || ''; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = op.color; document.getElementById('builderDesc').value = op.description || ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; builderPath = []; showScreen('builderScreen'); renderBuilder(); }
-function renderBuilder() { try { if (!builderTree) return; let node = builderTree; const rootLabel = builderTree.move || "Start"; let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`; let tempNode = builderTree; for (let i = 0; i < builderPath.length; i++) { const id = builderPath[i]; const child = tempNode.children.find(c => c.id === id); if (child) { tempNode = child; historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`; } } node = tempNode; document.getElementById('builderHistory').innerHTML = historyHtml; const ply = builderPath.length + 1; const nextMoveColor = (ply % 2 !== 0) ? 'black' : 'white'; const isOpponent = (builderColor === 'white' && nextMoveColor === 'white') || (builderColor === 'black' && nextMoveColor === 'black'); const turnLabel = nextMoveColor === 'white' ? "White to Move" : "Black to Move"; document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card'; document.getElementById('builderCurrentNode').innerHTML = `<div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div><h2>${node.move}</h2><p>${node.explanation || 'No explanation'}</p><div style="margin-top:5px;"><span class="version-tag">${node.status || '-'}</span><span class="version-tag">${node.type || '-'}</span></div>${renderEditExplanation(node)}`; const list = document.getElementById('builderResponses'); list.innerHTML = ''; if (node.children) { node.children.forEach(c => { list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`; }); } const formTitle = document.getElementById('addFormTitle'); if (formTitle) formTitle.innerText = `Add Move (${turnLabel})`; const deleteBtn = document.getElementById('btnDeleteBranch'); if (deleteBtn) { deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch"; } setupEnter(); } catch(e) { alert("Render Error: " + e.message); } }
-function jumpToBuilderStep(index) { if (index === -1) builderPath = []; else builderPath = builderPath.slice(0, index + 1); renderBuilder(); }
-function addBuilderMove() { try { const inputEl = document.getElementById('newMoveInput'); const moveRaw = inputEl.value.trim(); if (!moveRaw) return; const game = new Chess(); const cleanMoveRegex = /^[0-9]+\.+/; if (!builderTree.move) throw new Error("Root move is missing."); let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim(); const rootResult = game.move(rootClean); if (!rootResult) { alert("Error: Root move is invalid."); return; } let node = builderTree; for (let id of builderPath) { node = node.children.find(c => c.id === id); let cleanMove = node.move.replace(cleanMoveRegex, '').trim(); game.move(cleanMove); } const moveObj = game.move(moveRaw); if (moveObj === null) { alert(`Illegal move: ${moveRaw}`); return; } const fen = game.fen(); const fenParts = fen.split(' '); const currentMoveNum = parseInt(fenParts[5]); const turn = game.turn(); let notation = ""; let player = ""; if (turn === 'b') { notation = `${currentMoveNum}. ${moveObj.san}`; player = 'white'; } else { notation = `${currentMoveNum - 1}... ${moveObj.san}`; player = 'black'; } if(!node.children) node.children = []; const newId = 'n' + Date.now(); node.children.push({ id: newId, move: notation, player: player, status: document.getElementById('newStatus').value, type: document.getElementById('newType').value, explanation: document.getElementById('newExpl').value, children: [] }); inputEl.value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newStatus').selectedIndex = 0; builderPath.push(newId); renderBuilder(); } catch (err) { alert("Error: " + err.message); } }
-function deleteBuilderNode() { if (builderPath.length === 0) { if (confirm("Reset entire opening?")) showNewOpeningModal(); return; } if (!confirm('Delete current branch?')) return; const currentId = builderPath.pop(); let node = builderTree; for (let id of builderPath) node = node.children.find(c => c.id === id); node.children = node.children.filter(c => c.id !== currentId); renderBuilder(); }
-function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
-function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
-function renderEditExplanation(node) { return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; }
-function getColorClass(type) { if (!type) return 'blue'; const t = type.toLowerCase(); if (t.includes('tact')||t.includes('forc')) return 'red'; if (t.includes('dynam')) return 'purple'; if (t.includes('defen')) return 'green'; return 'blue'; }
-function toggleDetails() { const d=document.getElementById('builderDetails'); d.style.display=d.style.display==='none'?'block':'none'; }
-function toggleRefModal() { document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; }
-function setupEnter() { setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); }
-function navigateToChild(id) { builderPath.push(id); renderBuilder(); }
-function builderBack() { builderPath.pop(); renderBuilder(); }
-function goBack() { showScreen('menuScreen'); }
-function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
+// =====================================================
+// BUILDER LOGIC
+// =====================================================
+function showNewOpeningModal() { 
+    builderTree = null; 
+    builderPath = []; 
+    editingKey = null; 
+    document.getElementById('modalName').value = ''; 
+    document.getElementById('modalGroup').value = ''; 
+    document.getElementById('modalMove').value = ''; 
+    document.getElementById('newOpeningModal').style.display = 'flex'; 
+}
 
-function saveOpening() { const name = document.getElementById('builderName').value || "Untitled"; const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now()); const color = document.getElementById('builderColor').value || 'white'; OPENINGS[key] = { version: "4.0", name: name, group: document.getElementById('builderGroup').value || "Uncategorized", color: color, description: document.getElementById('builderDesc').value, tree: builderTree, startingMoves: "Custom" }; saveStorage(); exitBuilder(); }
-function downloadCurrentJSON() { const data = editingKey ? OPENINGS[editingKey] : buildOpeningObj(); const json = JSON.stringify(data, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'opening.json'; a.click(); }
-function buildOpeningObj() { return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; }
-function backupLibrary() { const json = JSON.stringify(OPENINGS, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chess_library_backup.json'; a.click(); }
-function restoreLibrary(input) { const file = input.files[0]; if (!file) return; if (!confirm("Overwrite library?")) return; const reader = new FileReader(); reader.onload = (e) => { try { OPENINGS = JSON.parse(e.target.result); saveStorage(); alert("Restored!"); renderMenu(); } catch (err) { alert("Invalid Backup"); } }; reader.readAsText(file); }
-function handleFileUpload(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const json = JSON.parse(e.target.result); if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); const migrated = migrateOpening(json); const key = 'import_' + Date.now(); OPENINGS[key] = migrated; saveStorage(); alert('Imported!'); renderMenu(); } catch (err) { alert('Invalid JSON: '+err.message); } }; reader.readAsText(file); }
-async function importFromUrl() { try { const res = await fetch(document.getElementById('importUrl').value); const json = await res.json(); const migrated = migrateOpening(json); OPENINGS['import_' + Date.now()] = migrated; saveStorage(); alert('Imported!'); document.getElementById('urlImportBox').style.display='none'; renderMenu(); } catch (e) { alert('Error loading URL'); } }
-function toggleUrlImport() { document.getElementById('jsonImportBox').style.display = 'none'; const el = document.getElementById('urlImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
-function toggleJsonImport() { document.getElementById('urlImportBox').style.display = 'none'; const el = document.getElementById('jsonImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
-function switchTab(t) { document.getElementById('tabBuild').classList.toggle('active', t === 'build'); document.getElementById('tabJson').classList.toggle('active', t === 'json'); document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none'; document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none'; if (t === 'json') { if (builderTree && builderTree.children) { document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2); } else { document.getElementById('jsonIn').value = ""; } } }
-function importBuilderJson() { try { let raw = document.getElementById('jsonIn').value; raw = raw.replace(/```json/g, '').replace(/```/g, '').trim(); const json = JSON.parse(raw); if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure"); builderTree = json.tree; builderColor = json.color; document.getElementById('builderName').value = json.name; document.getElementById('builderGroup').value = json.group || ""; document.getElementById('builderColor').value = json.color; document.getElementById('builderDesc').value = json.description || ""; alert("JSON loaded successfully. Click 'Save' to finish."); switchTab('build'); renderBuilder(); } catch(e) { alert("Error: " + e.message); } }
-function copyBuilderJson() { const txt = document.getElementById('jsonIn'); txt.select(); navigator.clipboard.writeText(txt.value); alert("Copied!"); }
+function initializeNewOpening() { 
+    try { 
+        const name = document.getElementById('modalName').value || "Untitled"; 
+        const group = document.getElementById('modalGroup').value || "Uncategorized"; 
+        const color = document.getElementById('modalColor').value; 
+        const moveRaw = document.getElementById('modalMove').value || "e4"; 
+        
+        const game = new Chess(); 
+        const validMove = game.move(moveRaw); 
+        
+        if (validMove === null) { 
+            alert("Invalid starting move!"); 
+            return; 
+        } 
+        
+        const formattedMove = "1. " + validMove.san; 
+        
+        builderTree = { 
+            id: 'root', 
+            move: formattedMove, 
+            player: 'white', 
+            explanation: 'Starting move.', 
+            children: [] 
+        }; 
+        
+        builderColor = color; 
+        document.getElementById('builderName').value = name; 
+        document.getElementById('builderGroup').value = group; 
+        
+        const colorInput = document.getElementById('builderColor'); 
+        if (colorInput) colorInput.value = color; 
+        
+        document.getElementById('builderDesc').value = ''; 
+        document.getElementById('newMoveInput').value = ''; 
+        document.getElementById('newExpl').value = ''; 
+        document.getElementById('newOpeningModal').style.display = 'none'; 
+        
+        showScreen('builderScreen'); 
+        renderBuilder(); 
+    } catch (e) { 
+        alert("Error: " + e.message); 
+    } 
+}
+
+function editOpening(key) { 
+    editingKey = key; 
+    const op = OPENINGS[key]; 
+    builderTree = JSON.parse(JSON.stringify(op.tree)); 
+    builderColor = op.color; 
+    
+    document.getElementById('builderName').value = op.name; 
+    document.getElementById('builderGroup').value = op.group || ''; 
+    
+    const colorInput = document.getElementById('builderColor'); 
+    if (colorInput) colorInput.value = op.color; 
+    
+    document.getElementById('builderDesc').value = op.description || ''; 
+    document.getElementById('newMoveInput').value = ''; 
+    document.getElementById('newExpl').value = ''; 
+    builderPath = []; 
+    
+    showScreen('builderScreen'); 
+    renderBuilder(); 
+}
+
+function renderBuilder() { 
+    try { 
+        if (!builderTree) return; 
+        
+        let node = builderTree; 
+        const rootLabel = builderTree.move || "Start"; 
+        let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`; 
+        
+        let tempNode = builderTree; 
+        for (let i = 0; i < builderPath.length; i++) { 
+            const id = builderPath[i]; 
+            const child = tempNode.children.find(c => c.id === id); 
+            if (child) { 
+                tempNode = child; 
+                historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`; 
+            } 
+        } 
+        node = tempNode; 
+        
+        document.getElementById('builderHistory').innerHTML = historyHtml; 
+        
+        const ply = builderPath.length + 1; 
+        const nextMoveColor = (ply % 2 !== 0) ? 'black' : 'white'; 
+        const isOpponent = (builderColor === 'white' && nextMoveColor === 'white') || 
+                           (builderColor === 'black' && nextMoveColor === 'black'); 
+        const turnLabel = nextMoveColor === 'white' ? "White to Move" : "Black to Move"; 
+        
+        document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card'; 
+        document.getElementById('builderCurrentNode').innerHTML = `
+            <div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div>
+            <h2>${node.move}</h2>
+            <p>${node.explanation || 'No explanation'}</p>
+            <div style="margin-top:5px;">
+                <span class="version-tag">${node.status || '-'}</span>
+                <span class="version-tag">${node.type || '-'}</span>
+            </div>
+            ${renderEditExplanation(node)}
+        `; 
+        
+        const list = document.getElementById('builderResponses'); 
+        list.innerHTML = ''; 
+        if (node.children) { 
+            node.children.forEach(c => { 
+                list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')">
+                    <div class="main"><h4>${c.move}</h4><p>${c.status}</p></div>
+                    <button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button>
+                </div>`; 
+            }); 
+        } 
+        
+        const formTitle = document.getElementById('addFormTitle'); 
+        if (formTitle) formTitle.innerText = `Add Move (${turnLabel})`; 
+        
+        const deleteBtn = document.getElementById('btnDeleteBranch'); 
+        if (deleteBtn) { 
+            deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch"; 
+        } 
+        
+        setupEnter(); 
+    } catch(e) { 
+        alert("Render Error: " + e.message); 
+    } 
+}
+
+function jumpToBuilderStep(index) { 
+    if (index === -1) builderPath = []; 
+    else builderPath = builderPath.slice(0, index + 1); 
+    renderBuilder(); 
+}
+
+function addBuilderMove() { 
+    try { 
+        const inputEl = document.getElementById('newMoveInput'); 
+        const moveRaw = inputEl.value.trim(); 
+        if (!moveRaw) return; 
+        
+        const game = new Chess(); 
+        const cleanMoveRegex = /^[0-9]+\.+/; 
+        
+        if (!builderTree.move) throw new Error("Root move is missing."); 
+        
+        let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim(); 
+        const rootResult = game.move(rootClean); 
+        if (!rootResult) { 
+            alert("Error: Root move is invalid."); 
+            return; 
+        } 
+        
+        let node = builderTree; 
+        for (let id of builderPath) { 
+            node = node.children.find(c => c.id === id); 
+            let cleanMove = node.move.replace(cleanMoveRegex, '').trim(); 
+            game.move(cleanMove); 
+        } 
+        
+        const moveObj = game.move(moveRaw); 
+        if (moveObj === null) { 
+            alert(`Illegal move: ${moveRaw}`); 
+            return; 
+        } 
+        
+        const fen = game.fen(); 
+        const fenParts = fen.split(' '); 
+        const currentMoveNum = parseInt(fenParts[5]); 
+        const turn = game.turn(); 
+        
+        let notation = ""; 
+        let player = ""; 
+        
+        if (turn === 'b') { 
+            notation = `${currentMoveNum}. ${moveObj.san}`; 
+            player = 'white'; 
+        } else { 
+            notation = `${currentMoveNum - 1}... ${moveObj.san}`; 
+            player = 'black'; 
+        } 
+        
+        if(!node.children) node.children = []; 
+        
+        const newId = 'n' + Date.now(); 
+        node.children.push({ 
+            id: newId, 
+            move: notation, 
+            player: player, 
+            status: document.getElementById('newStatus').value, 
+            type: document.getElementById('newType').value, 
+            explanation: document.getElementById('newExpl').value, 
+            children: [] 
+        }); 
+        
+        inputEl.value = ''; 
+        document.getElementById('newExpl').value = ''; 
+        document.getElementById('newStatus').selectedIndex = 0; 
+        
+        builderPath.push(newId); 
+        renderBuilder(); 
+    } catch (err) { 
+        alert("Error: " + err.message); 
+    } 
+}
+
+function deleteBuilderNode() { 
+    if (builderPath.length === 0) { 
+        if (confirm("Reset entire opening?")) showNewOpeningModal(); 
+        return; 
+    } 
+    if (!confirm('Delete current branch?')) return; 
+    
+    const currentId = builderPath.pop(); 
+    let node = builderTree; 
+    for (let id of builderPath) node = node.children.find(c => c.id === id); 
+    
+    node.children = node.children.filter(c => c.id !== currentId); 
+    renderBuilder(); 
+}
+
+function deleteChild(id) { 
+    if(!confirm('Delete move?')) return; 
+    let n=builderTree; 
+    for(let pid of builderPath) n=n.children.find(c=>c.id===pid); 
+    n.children=n.children.filter(c=>c.id!==id); 
+    renderBuilder(); 
+}
+
+function saveExplanation() { 
+    const val=document.getElementById('editExpl').value; 
+    let n=builderTree; 
+    for(let id of builderPath) n=n.children.find(c=>c.id===id); 
+    n.explanation=val; 
+    renderBuilder(); 
+}
+
+function renderEditExplanation(node) { 
+    return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;">
+        <textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea>
+        <button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button>
+    </div>`; 
+}
+
+function getColorClass(type) { 
+    if (!type) return 'blue'; 
+    const t = type.toLowerCase(); 
+    if (t.includes('tact')||t.includes('forc')) return 'red'; 
+    if (t.includes('dynam')) return 'purple'; 
+    if (t.includes('defen')) return 'green'; 
+    return 'blue'; 
+}
+
+function toggleDetails() { 
+    const d=document.getElementById('builderDetails'); 
+    d.style.display=d.style.display==='none'?'block':'none'; 
+}
+
+function toggleRefModal() { 
+    document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; 
+}
+
+function setupEnter() { 
+    setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); 
+}
+
+function navigateToChild(id) { 
+    builderPath.push(id); 
+    renderBuilder(); 
+}
+
+function builderBack() { 
+    builderPath.pop(); 
+    renderBuilder(); 
+}
+
+function goBack() { 
+    showScreen('menuScreen'); 
+}
+
+function exitBuilder() { 
+    showScreen('menuScreen'); 
+    renderMenu(); 
+}
+
+function saveOpening() { 
+    const name = document.getElementById('builderName').value || "Untitled"; 
+    const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now()); 
+    const color = document.getElementById('builderColor').value || 'white'; 
+    
+    OPENINGS[key] = { 
+        version: "4.0", 
+        name: name, 
+        group: document.getElementById('builderGroup').value || "Uncategorized", 
+        color: color, 
+        description: document.getElementById('builderDesc').value, 
+        tree: builderTree, 
+        startingMoves: "Custom" 
+    }; 
+    saveStorage(); 
+    exitBuilder(); 
+}
+
+function downloadCurrentJSON() { 
+    const data = editingKey ? OPENINGS[editingKey] : buildOpeningObj(); 
+    const json = JSON.stringify(data, null, 2); 
+    const blob = new Blob([json], {type: 'application/json'}); 
+    const a = document.createElement('a'); 
+    a.href = URL.createObjectURL(blob); 
+    a.download = 'opening.json'; 
+    a.click(); 
+}
+
+function buildOpeningObj() { 
+    return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; 
+}
+
+function backupLibrary() { 
+    const json = JSON.stringify(OPENINGS, null, 2); 
+    const blob = new Blob([json], {type: 'application/json'}); 
+    const a = document.createElement('a'); 
+    a.href = URL.createObjectURL(blob); 
+    a.download = 'chess_library_backup.json'; 
+    a.click(); 
+}
+
+function restoreLibrary(input) { 
+    const file = input.files[0]; 
+    if (!file) return; 
+    if (!confirm("Overwrite library?")) return; 
+    
+    const reader = new FileReader(); 
+    reader.onload = (e) => { 
+        try { 
+            OPENINGS = JSON.parse(e.target.result); 
+            saveStorage(); 
+            alert("Restored!"); 
+            renderMenu(); 
+        } catch (err) { 
+            alert("Invalid Backup"); 
+        } 
+    }; 
+    reader.readAsText(file); 
+}
+
+function handleFileUpload(input) { 
+    const file = input.files[0]; 
+    if (!file) return; 
+    
+    const reader = new FileReader(); 
+    reader.onload = (e) => { 
+        try { 
+            const json = JSON.parse(e.target.result); 
+            if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); 
+            
+            const migrated = migrateOpening(json); 
+            const key = 'import_' + Date.now(); 
+            OPENINGS[key] = migrated; 
+            
+            saveStorage(); 
+            alert('Imported!'); 
+            renderMenu(); 
+        } catch (err) { 
+            alert('Invalid JSON: '+err.message); 
+        } 
+    }; 
+    reader.readAsText(file); 
+}
+
+async function importFromUrl() { 
+    try { 
+        const res = await fetch(document.getElementById('importUrl').value); 
+        const json = await res.json(); 
+        const migrated = migrateOpening(json); 
+        OPENINGS['import_' + Date.now()] = migrated; 
+        
+        saveStorage(); 
+        alert('Imported!'); 
+        document.getElementById('urlImportBox').style.display='none'; 
+        renderMenu(); 
+    } catch (e) { 
+        alert('Error loading URL'); 
+    } 
+}
+
+function toggleUrlImport() { 
+    document.getElementById('jsonImportBox').style.display = 'none'; 
+    const el = document.getElementById('urlImportBox'); 
+    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
+}
+
+function toggleJsonImport() { 
+    document.getElementById('urlImportBox').style.display = 'none'; 
+    const el = document.getElementById('jsonImportBox'); 
+    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
+}
+
+function switchTab(t) { 
+    document.getElementById('tabBuild').classList.toggle('active', t === 'build'); 
+    document.getElementById('tabJson').classList.toggle('active', t === 'json'); 
+    document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none'; 
+    document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none'; 
+    
+    if (t === 'json') { 
+        if (builderTree && builderTree.children) { 
+            document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2); 
+        } else { 
+            document.getElementById('jsonIn').value = ""; 
+        } 
+    } 
+}
+
+function importBuilderJson() { 
+    try { 
+        let raw = document.getElementById('jsonIn').value; 
+        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim(); 
+        
+        const json = JSON.parse(raw); 
+        if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure"); 
+        
+        builderTree = json.tree; 
+        builderColor = json.color; 
+        document.getElementById('builderName').value = json.name; 
+        document.getElementById('builderGroup').value = json.group || ""; 
+        document.getElementById('builderColor').value = json.color; 
+        document.getElementById('builderDesc').value = json.description || ""; 
+        
+        alert("JSON loaded successfully. Click 'Save' to finish."); 
+        switchTab('build'); 
+        renderBuilder(); 
+    } catch(e) { 
+        alert("Error: " + e.message); 
+    } 
+}
+
+function copyBuilderJson() { 
+    const txt = document.getElementById('jsonIn'); 
+    txt.select(); 
+    navigator.clipboard.writeText(txt.value); 
+    alert("Copied!"); 
+}
 
 init();
 </script>
