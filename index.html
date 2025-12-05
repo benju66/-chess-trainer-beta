@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V4.10</title>
+    <title>Chess Trainer V4.11</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -38,7 +38,7 @@
         .header-tools { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
         .tool-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .tool-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
-        .version-tag { background: #0ea5e9; color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+        .version-tag { background: #8b5cf6; color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
 
         /* FOLDERS */
         .folder-header {
@@ -129,6 +129,21 @@
         .end-card { text-align: center; padding: 40px 20px; } 
         .end-card h3 { font-size: 1.3rem; margin-bottom: 8px; } 
 
+        /* BREADCRUMB STYLES (V4.11) */
+        .breadcrumb-item { 
+            display: inline-block; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            background: rgba(255,255,255,0.1); 
+            color: #94a3b8; 
+            margin-right: 4px; 
+            cursor: pointer; 
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .breadcrumb-item:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .breadcrumb-item.active { background: var(--accent-color); color: #1e293b; font-weight: bold; pointer-events: none; }
+
         /* MODAL */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; display:none; justify-content:center; align-items:center; padding:20px; }
         .modal-content { background:#1e293b; padding:24px; border-radius:16px; width:100%; max-width:400px; max-height:80vh; overflow-y:auto; }
@@ -139,14 +154,14 @@
         
         .builder-section { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 16px; } 
         .builder-section h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 16px; }
-        .template-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd; }
+        .template-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd; } .template-info summary { cursor: pointer; font-weight: 600; margin-bottom: 8px; } .template-info ul { margin: 8px 0 0 16px; color: #94a3b8; } .template-info code { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; color: #fbbf24; }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V4.10</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V4.11</span></h1>
                 <p>Unified Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
@@ -258,7 +273,7 @@
                             </div>
                         </div>
                         <button class="nav-btn" style="width:100%; background:#3b82f6" onclick="addBuilderMove()">Add Move</button>
-                        <button class="nav-btn" style="width:100%; background:#ef4444; margin-top:10px;" onclick="deleteBuilderNode()">Delete Branch</button>
+                        <button id="btnDeleteBranch" class="nav-btn" style="width:100%; background:#ef4444; margin-top:10px;" onclick="deleteBuilderNode()">Delete Branch</button>
                     </div>
                     
                     <div style="margin-top:20px;">
@@ -384,7 +399,7 @@ function rebuildTranspositionMap() {
                 transpositionMap[fen].push({
                     key: key, 
                     name: op.name,
-                    color: op.color,
+                    color: op.color, // Store color for filtering
                     group: op.group || "Uncategorized",
                     nextMoves: node.children ? node.children.map(c => ({
                         move: c.move, type: c.type, status: c.status
@@ -479,7 +494,7 @@ function getUnifiedOptions(currentNode) {
 }
 
 // =====================================================
-// TRAINER
+// TRAINER LOGIC
 // =====================================================
 function startTraining(key) {
     currentOpening = OPENINGS[key];
@@ -587,7 +602,6 @@ function switchTab(t) {
     document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none';
     document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none';
     if (t === 'json') {
-        // If builderTree exists (editing or creating), convert it to JSON
         if (builderTree && builderTree.children) {
            document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2);
         } else {
@@ -600,16 +614,13 @@ function importBuilderJson() {
     try {
         const json = JSON.parse(document.getElementById('jsonIn').value);
         if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure");
-        
-        // Update Builder state
         builderTree = json.tree;
         builderColor = json.color;
         document.getElementById('builderName').value = json.name;
         document.getElementById('builderGroup').value = json.group || "";
         document.getElementById('builderColor').value = json.color;
         document.getElementById('builderDesc').value = json.description || "";
-        
-        alert("JSON loaded into Builder. Click 'Save' to persist changes.");
+        alert("JSON loaded. Click 'Save' to finish.");
         switchTab('build');
         renderBuilder();
     } catch(e) { alert("Error: " + e.message); }
@@ -619,11 +630,11 @@ function copyBuilderJson() {
     const txt = document.getElementById('jsonIn');
     txt.select();
     navigator.clipboard.writeText(txt.value);
-    alert("Copied to clipboard!");
+    alert("Copied!");
 }
 
 function renderBuilder() {
-    // First move UI check
+    // START SCREEN LOGIC
     if (!builderTree || (builderTree.id === 'root' && builderTree.move === 'Start' && builderTree.children.length === 0)) {
          const isWhite = builderColor === 'white';
          document.getElementById('builderContent').innerHTML = `
@@ -634,20 +645,34 @@ function renderBuilder() {
                 <div class="form-group"><textarea id="newExpl" rows="2" placeholder="Explanation"></textarea></div>
                 <button class="nav-btn" style="background:#3b82f6" onclick="addFirstMove()">Add Start Move</button>
             </div>`;
+        document.getElementById('builderHistory').innerHTML = 'Start';
+        document.getElementById('builderCurrentNode').innerHTML = '';
         return;
     }
 
     let node = builderTree;
     let historyHtml = '';
     
-    for (let id of builderPath) {
-        const child = node.children.find(c => c.id === id);
-        if (child) { node = child; historyHtml += `<span class="move-tag white">${child.move}</span> `; }
+    // Build Breadcrumbs
+    let tempNode = builderTree;
+    // Root (Start)
+    historyHtml += `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">Root</div>`;
+    
+    // Path items
+    for (let i = 0; i < builderPath.length; i++) {
+        const id = builderPath[i];
+        const child = tempNode.children.find(c => c.id === id);
+        if (child) {
+            tempNode = child;
+            historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`;
+        }
     }
+    node = tempNode;
     
-    document.getElementById('builderHistory').innerHTML = historyHtml || 'Root';
+    document.getElementById('builderHistory').innerHTML = historyHtml;
     
-    const ply = builderPath.length; 
+    // Calculate Context
+    const ply = builderPath.length + 1; 
     const lastMoveColor = (ply % 2 === 0) ? 'white' : 'black';
     const nextMoveColor = (lastMoveColor === 'white') ? 'black' : 'white';
     const isOpponent = nextMoveColor !== builderColor;
@@ -672,12 +697,32 @@ function renderBuilder() {
         });
     }
     
-    const nextPlayerName = isOpponent ? "You" : "Opponent";
-    // Fix for dynamic title
+    // Update form title & Delete Button Text
     const titleEl = document.getElementById('addFormTitle');
     if(titleEl) titleEl.innerText = `Add ${nextMoveColor === 'white' ? "White" : "Black"}'s Move`;
     
+    const deleteBtn = document.getElementById('btnDeleteBranch');
+    if (deleteBtn) {
+        if (builderPath.length === 0) {
+            deleteBtn.innerText = "Reset Tree (Delete Root)";
+        } else {
+            deleteBtn.innerText = "Delete Current Branch";
+        }
+    }
+    
     setupEnter();
+}
+
+// NAVIGATION HELPERS
+function jumpToBuilderStep(index) {
+    // index -1 means root. index 0 means first move.
+    if (index === -1) {
+        builderPath = [];
+    } else {
+        // Slice path up to that index
+        builderPath = builderPath.slice(0, index + 1);
+    }
+    renderBuilder();
 }
 
 function addFirstMove() {
@@ -697,9 +742,9 @@ function addBuilderMove() {
     const moveRaw = document.getElementById('newMoveInput').value.trim();
     if (!moveRaw) return;
     
-    const currentPly = builderPath.length + 1; 
-    const moveNum = Math.floor(currentPly / 2) + 1;
-    const isBlack = currentPly % 2 !== 0;
+    const currentPly = builderPath.length + 1 + (builderTree.id==='root'?1:0); 
+    const moveNum = Math.floor((currentPly+1) / 2);
+    const isBlack = currentPly % 2 === 0;
     
     const notation = isBlack ? `${moveNum}... ${moveRaw}` : `${moveNum}. ${moveRaw}`;
     const player = isBlack ? 'black' : 'white';
@@ -723,7 +768,24 @@ function addBuilderMove() {
     renderBuilder();
 }
 
-function deleteBuilderNode() { if(!builderPath.length || !confirm('Delete branch?'))return; const id=builderPath.pop(); let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
+function deleteBuilderNode() {
+    if (builderPath.length === 0) {
+        // ROOT DELETE LOGIC
+        if (confirm("Delete the entire opening tree and start over?")) {
+            builderTree = { id: 'root', move: 'Start', children: [] };
+            renderBuilder();
+        }
+        return;
+    }
+    
+    if (!confirm('Delete current branch?')) return;
+    const currentId = builderPath.pop();
+    let node = builderTree;
+    for (let id of builderPath) node = node.children.find(c => c.id === id);
+    node.children = node.children.filter(c => c.id !== currentId);
+    renderBuilder();
+}
+
 function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
 function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
 function renderEditExplanation(node) { return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; }
