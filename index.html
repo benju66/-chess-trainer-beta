@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V4.7</title>
+    <title>Chess Trainer V4.10</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -31,9 +31,14 @@
         }
 
         .container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; }
+        
+        /* HEADER */
         .header { text-align: center; padding: 20px 0; position: relative; }
         .header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--header-color); }
-        .version-tag { background: #10b981; color: #1e293b; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+        .header-tools { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .tool-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .tool-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .version-tag { background: #0ea5e9; color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
 
         /* FOLDERS */
         .folder-header {
@@ -64,17 +69,25 @@
             background: rgba(139, 92, 246, 0.2); border: 1px solid #8b5cf6; color: #c4b5fd;
             display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
         }
+        .screen { display: none; }
 
-        /* TRAINER */
-        .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; }
+        /* TABS */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3); border: 1px solid #334155; border-radius: 12px; color: #94a3b8; font-weight: 600; cursor: pointer; text-align: center; }
+        .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
+
+        /* TRAINER UI */
+        .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; }
         .move-tag { padding: 4px 8px; border-radius: 4px; font-family: monospace; margin-right: 6px; display: inline-block; }
         .move-tag.white { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
         .move-tag.black { color: #e2e8f0; background: rgba(255, 255, 255, 0.1); }
 
         .current-move-card { background: #334155; border-radius: 20px; padding: 24px; margin-bottom: 16px; text-align: center; }
-        .current-move h2 { font-size: 2rem; font-family: monospace; margin: 10px 0; }
-        .explanation { color: #cbd5e1; line-height: 1.5; font-size: 0.95rem; }
-
+        .current-move-card.opponent { border: 1px solid #475569; }
+        .move-label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; letter-spacing: 1px; }
+        .current-move h2 { font-size: 2rem; font-family: monospace; margin: 10px 0; color: #e2e8f0; }
+        .explanation { color: #cbd5e1; line-height: 1.5; font-size: 0.95rem; margin-top: 10px; }
+        
         .options-header { display: flex; justify-content: space-between; align-items: center; margin: 24px 0 12px 0; color: #94a3b8; font-size: 0.9rem; font-weight: 600; }
         .toggle-container { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
         .toggle-checkbox { accent-color: #8b5cf6; width: 16px; height: 16px; }
@@ -97,75 +110,62 @@
         .option-btn.remote h4 { color: #c4b5fd; }
         .option-btn.remote .badge { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; }
 
-        /* BUILDER */
-        .add-form { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px dashed #475569; }
+        /* BUILDER & FORMS */
+        .add-form { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px dashed #475569; margin-bottom: 16px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; }
         .form-group input, .form-group select, textarea {
             width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-family: inherit;
         }
         .form-group textarea, .edit-explanation textarea { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #334155 !important; }
-        
+        .json-area { width: 100%; min-height: 200px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 14px; color: #e2e8f0; font-family: monospace; font-size: 0.8rem; resize: vertical; }
+
         .details-toggle-btn { background: none; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; padding: 0; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 4px; }
         .details-drawer { display: none; margin-bottom: 16px; border-top: 1px solid #334155; padding-top: 16px; }
         .details-drawer.visible { display: block; }
+        .delete-item-btn { background: rgba(239, 68, 68, 0.2); border: none; color: #f87171; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; margin-left: 10px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; } 
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+        .end-card { text-align: center; padding: 40px 20px; } 
+        .end-card h3 { font-size: 1.3rem; margin-bottom: 8px; } 
 
-        /* BUILDER POSITIONS */
-        .position-card { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
-        .position-card.opponent { background: rgba(100, 116, 139, 0.1); border-color: rgba(100, 116, 139, 0.3); }
-        .position-label { font-size: 0.75rem; text-transform: uppercase; color: #fbbf24; margin-bottom: 8px; }
-        .position-card.opponent .position-label { color: #94a3b8; }
-        .position-move { font-family: monospace; font-size: 1.4rem; font-weight: 700; color: #e2e8f0; }
-        .position-expl { font-size: 0.9rem; color: #cbd5e1; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; }
-
-        /* CHOICE CARD */
-        .choice-card { background: rgba(51, 65, 85, 0.3); border: 2px solid; border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; }
-        .choice-card:hover { transform: scale(1.02); }
-        .choice-card.red { border-color: rgba(239, 68, 68, 0.5); } .choice-card.red:hover { background: rgba(239, 68, 68, 0.1); } .choice-card.red h4 { color: #f87171; }
-        .choice-card.blue { border-color: rgba(59, 130, 246, 0.5); } .choice-card.blue:hover { background: rgba(59, 130, 246, 0.1); } .choice-card.blue h4 { color: #60a5fa; }
-        .choice-card.purple { border-color: rgba(168, 85, 247, 0.5); } .choice-card.purple:hover { background: rgba(168, 85, 247, 0.1); } .choice-card.purple h4 { color: #c084fc; }
-        .choice-card.green { border-color: rgba(34, 197, 94, 0.5); } .choice-card.green:hover { background: rgba(34, 197, 94, 0.1); } .choice-card.green h4 { color: #4ade80; }
-        .choice-card h4 { font-family: monospace; font-size: 1.125rem; margin-bottom: 4px; } .choice-card .name { font-weight: 600; font-size: 0.875rem; margin-bottom: 4px; } .choice-card .style { font-size: 0.75rem; color: #94a3b8; }
-        
         /* MODAL */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; display:none; justify-content:center; align-items:center; padding:20px; }
         .modal-content { background:#1e293b; padding:24px; border-radius:16px; width:100%; max-width:400px; max-height:80vh; overflow-y:auto; }
         .ref-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #334155; }
         .ref-term { color: #fbbf24; font-weight: 700; margin-bottom: 4px; }
         .ref-def { color: #cbd5e1; font-size: 0.9rem; }
-
-        .response-list { margin-bottom: 16px; } 
-        .response-item { background: rgba(51, 65, 85, 0.5); border: 1px solid #475569; border-radius: 14px; padding: 18px 20px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; min-height: 64px; } 
-        .response-item .move { font-family: monospace; font-size: 1.15rem; font-weight: 600; color: #cbd5e1; flex: 1; } 
-        .response-item .arrow { color: #64748b; font-size: 1.3rem; }
-        .delete-item-btn { background: rgba(239, 68, 68, 0.2); border: none; color: #f87171; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; margin-right: 8px; flex-shrink: 0; } .choice-card .delete-item-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; font-size: 1rem; }
-
-        .path-display { background: #1e293b; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 0.85rem; color: #64748b; overflow-x: auto; white-space: nowrap; } .path-display .current { color: #fbbf24; font-weight: 600; }
-        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; } .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; } .tab { flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3); border: 1px solid #334155; border-radius: 12px; color: #94a3b8; font-weight: 600; cursor: pointer; text-align: center; } .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
-        .json-area { width: 100%; min-height: 180px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 14px; color: #e2e8f0; font-family: monospace; font-size: 0.8rem; resize: vertical; }
-        .template-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd; } .template-info summary { cursor: pointer; font-weight: 600; margin-bottom: 8px; } .template-info ul { margin: 8px 0 0 16px; color: #94a3b8; } .template-info code { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; color: #fbbf24; }
+        .info-icon { cursor: pointer; color: #60a5fa; font-size: 1rem; margin-left: 5px; }
+        
+        .builder-section { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 16px; } 
+        .builder-section h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 16px; }
+        .template-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd; }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V4.7</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V4.10</span></h1>
                 <p>Unified Repertoire Manager</p>
+                <div class="header-tools">
+                    <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
+                    <button class="tool-btn" onclick="document.getElementById('restoreInput').click()">📥 Restore</button>
+                </div>
             </div>
             <div id="openingsContainer"></div>
             <button class="nav-btn" style="width:100%; margin-top:20px; background:#22c55e; color:white;" onclick="showBuilder()">+ Create New Opening</button>
             
             <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="nav-btn" style="flex:1" onclick="document.getElementById('fileInput').click()">📂 Import JSON</button>
-                <button class="nav-btn" style="flex:1" onclick="toggleUrlImport()">🔗 Import URL</button>
+                <button class="nav-btn" style="flex:1" onclick="document.getElementById('fileInput').click()">📂 Add File</button>
+                <button class="nav-btn" style="flex:1" onclick="toggleUrlImport()">🔗 Add URL</button>
             </div>
             <div id="urlImportBox" style="display:none; margin-top:10px;">
                 <input type="text" id="importUrl" placeholder="Paste raw JSON URL..." style="width:100%; padding:12px; border-radius:8px; margin-bottom:8px;">
                 <button class="nav-btn" style="width:100%" onclick="importFromUrl()">Fetch</button>
             </div>
             <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(this)">
+            <input type="file" id="restoreInput" style="display:none" onchange="restoreLibrary(this)">
         </div>
 
         <div id="trainerScreen" class="screen" style="display:none;">
@@ -198,63 +198,88 @@
                 <button class="nav-btn" style="background:#22c55e" onclick="saveOpening()">Save</button>
             </div>
             
-            <div class="add-form">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h3>Opening Metadata</h3>
-                    <button class="icon-btn" onclick="downloadCurrentJSON()">📥</button>
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('build')" id="tabBuild">Build</button>
+                <button class="tab" onclick="switchTab('json')" id="tabJson">JSON</button>
+            </div>
+            
+            <div id="buildTab">
+                <div class="add-form">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3>Metadata</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="builderName">
+                    </div>
+                    <div class="form-group">
+                        <label>Folder / Group</label>
+                        <input type="text" id="builderGroup" placeholder="e.g. White Repertoire">
+                    </div>
+                    <div class="form-group">
+                        <label>You Play As</label>
+                        <select id="builderColor">
+                            <option value="white">White</option>
+                            <option value="black">Black</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="builderDesc" rows="2" placeholder="Brief summary..."></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="builderName">
-                </div>
-                <div class="form-group">
-                    <label>Folder / Group</label>
-                    <input type="text" id="builderGroup" placeholder="e.g. White Repertoire">
-                </div>
-                <div class="form-group">
-                    <label>You Play As</label>
-                    <select id="builderColor">
-                        <option value="white">White</option>
-                        <option value="black">Black</option>
-                    </select>
+
+                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #334155;">
+                    <div class="move-history" id="builderHistory"></div>
+                    <div id="builderCurrentNode" class="current-move-card"></div>
+                    
+                    <div class="add-form" style="margin-top:20px;">
+                        <h4 id="addFormTitle">Add Move</h4>
+                        <div class="form-group">
+                            <input type="text" id="newMoveInput" placeholder="Move (e.g. Nf3)">
+                        </div>
+                        <button class="nav-btn" style="width:100%; font-size:0.8rem; margin-bottom:10px;" onclick="toggleDetails()">▼ Add Details (Coach Mode)</button>
+                        <div id="builderDetails" style="display:none;">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="newStatus">
+                                    <option>Mainline</option><option>Sideline</option><option>Novelty</option><option>Blunder</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Type <span class="info-icon" onclick="toggleRefModal()">ⓘ</span></label>
+                                <select id="newType">
+                                    <option>Positional/Strategic</option><option>Tactical</option><option>Dynamic</option><option>Defensive/Prophylactic</option><option>Forcing</option><option>Quiet</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Explanation</label>
+                                <textarea id="newExpl" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <button class="nav-btn" style="width:100%; background:#3b82f6" onclick="addBuilderMove()">Add Move</button>
+                        <button class="nav-btn" style="width:100%; background:#ef4444; margin-top:10px;" onclick="deleteBuilderNode()">Delete Branch</button>
+                    </div>
+                    
+                    <div style="margin-top:20px;">
+                        <p class="section-title">Existing Responses:</p>
+                        <div id="builderResponses"></div>
+                    </div>
                 </div>
             </div>
-
-            <div style="margin-top:20px; padding-top:20px; border-top:1px solid #334155;">
-                <div class="move-history" id="builderHistory"></div>
-                <div id="builderCurrentNode" class="current-move-card"></div>
-                
-                <div class="add-form" style="margin-top:20px;">
-                    <h4 id="addFormTitle">Add Move</h4>
-                    <div class="form-group">
-                        <input type="text" id="newMoveInput" placeholder="Move (e.g. Nf3)">
+            
+            <div id="jsonTab" style="display:none">
+                <div class="builder-section">
+                    <h3>Raw JSON</h3>
+                    <details class="template-info">
+                        <summary>📋 V4 Schema</summary>
+                        <p style="font-size:0.8rem; color:#94a3b8">Paste valid JSON here to overwrite the current opening.</p>
+                    </details>
+                    <textarea class="json-area" id="jsonIn" placeholder="Paste opening JSON here..."></textarea>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="nav-btn" style="background:#3b82f6" onclick="importBuilderJson()">Import & Overwrite</button>
+                        <button class="nav-btn" onclick="copyBuilderJson()">Copy to Clipboard</button>
                     </div>
-                    <button class="nav-btn" style="width:100%; font-size:0.8rem; margin-bottom:10px;" onclick="toggleDetails()">▼ Add Details (Coach Mode)</button>
-                    <div id="builderDetails" style="display:none;">
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select id="newStatus">
-                                <option>Mainline</option><option>Sideline</option><option>Novelty</option><option>Blunder</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Type</label>
-                            <select id="newType">
-                                <option>Positional/Strategic</option><option>Tactical</option><option>Dynamic</option><option>Defensive/Prophylactic</option><option>Forcing</option><option>Quiet</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Explanation</label>
-                            <textarea id="newExpl" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <button class="nav-btn" style="width:100%; background:#3b82f6" onclick="addBuilderMove()">Add Move</button>
-                    <button class="nav-btn" style="width:100%; background:#ef4444; margin-top:10px;" onclick="deleteBuilderNode()">Delete Current Branch</button>
-                </div>
-                
-                <div style="margin-top:20px;">
-                    <p class="section-title">Existing Responses:</p>
-                    <div id="builderResponses"></div>
                 </div>
             </div>
         </div>
@@ -272,7 +297,7 @@
 
 <script>
 // =====================================================
-// V4.7 DATA CONSTANTS (RESTORED)
+// DATA & CONFIG
 // =====================================================
 const DEFAULT_OPENINGS = {
     italian_game: {
@@ -288,33 +313,8 @@ const DEFAULT_OPENINGS = {
                 ]}
             ]}
         ]}
-    },
-    london_system: {
-        version: "4.0",
-        name: "London System", color: "white", description: "Solid d4 setup with early Bf4", startingMoves: "1. d4 d5 2. Bf4",
-        group: "White Repertoire",
-        tree: { id: 'root', move: '1. d4', player: 'white', explanation: 'Queen\'s Pawn.', children: [
-            { id: 'd5', move: '1... d5', player: 'black', label: 'Main Line', children: [
-                { id: 'Bf4', move: '2. Bf4', player: 'white', explanation: 'The London! Develop bishop before e3.', children: [] }
-            ]}
-        ]}
-    },
-    sicilian_najdorf: {
-        version: "4.0",
-        name: "Sicilian Najdorf", color: "black", description: "Fighting defense to 1.e4", startingMoves: "1. e4 c5 2. Nf3 d6",
-        group: "Black Repertoire",
-        tree: { id: 'root', move: '1. e4', player: 'white', explanation: 'White opens with King\'s pawn.', children: [
-            { id: 'c5', move: '1... c5', player: 'black', label: 'Sicilian!', explanation: 'Fight for the center.', children: [
-                { id: 'Nf3', move: '2. Nf3', player: 'white', label: 'Open Sicilian', children: [
-                    { id: 'd6', move: '2... d6', player: 'black', explanation: 'Preparing the Najdorf.', children: [] }
-                ]}
-            ]}
-        ]}
     }
 };
-
-const JSON_TEMPLATE_WHITE = { "_comment": "V4.0 UNIVERSAL TEMPLATE (WHITE)", "version": "4.0", "name": "New White Opening", "color": "white", "description": "", "startingMoves": "1. e4", "tree": { "id": "root", "move": "1. e4", "player": "white", "status": "Mainline", "type": "Positional", "explanation": "Start here", "children": [] } };
-const JSON_TEMPLATE_BLACK = { "_comment": "V4.0 UNIVERSAL TEMPLATE (BLACK)", "version": "4.0", "name": "New Black Opening", "color": "black", "description": "", "startingMoves": "1. d4 d5", "tree": { "id": "root", "move": "1. d4", "player": "white", "status": "Mainline", "explanation": "Opponent move", "children": [] } };
 
 const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
 const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
@@ -329,7 +329,7 @@ const TYPE_DEFINITIONS = [
 ];
 
 // =====================================================
-// STATE & CONFIG
+// STATE
 // =====================================================
 let OPENINGS = {};
 let currentOpening = null, currentOpeningKey = null, originalOpeningKey = null;
@@ -345,7 +345,6 @@ function init() {
     if (stored) {
         OPENINGS = JSON.parse(stored);
     } else {
-        // Load defaults if empty
         OPENINGS = JSON.parse(JSON.stringify(DEFAULT_OPENINGS));
     }
     
@@ -363,7 +362,7 @@ function saveStorage() {
 }
 
 // =====================================================
-// THE BRAIN: TRANSPOSITION MAP
+// LOGIC: TRANSPOSITION & MIGRATION
 // =====================================================
 function rebuildTranspositionMap() {
     if (typeof Chess === 'undefined') return;
@@ -383,7 +382,10 @@ function rebuildTranspositionMap() {
             
             if (!transpositionMap[fen].find(x => x.key === key)) {
                 transpositionMap[fen].push({
-                    key: key, name: op.name, group: op.group || "Uncategorized",
+                    key: key, 
+                    name: op.name,
+                    color: op.color,
+                    group: op.group || "Uncategorized",
                     nextMoves: node.children ? node.children.map(c => ({
                         move: c.move, type: c.type, status: c.status
                     })) : []
@@ -397,27 +399,78 @@ function rebuildTranspositionMap() {
     });
 }
 
+function validateTree(node) {
+    if (!node) return false;
+    if (node.children) {
+        if (!Array.isArray(node.children)) return false;
+        for (let child of node.children) {
+            if (!validateTree(child)) return false;
+        }
+    }
+    if (node.response || node.choices) return false;
+    return true;
+}
+
+function migrateOpening(op) {
+    if (op.version === "4.0") return op;
+    console.log("Migrating " + op.name + " to V4.0...");
+
+    function walk(n) {
+        if (!n) return;
+        if (!n.children) n.children = [];
+        if (n.label && !n.status) n.status = n.label;
+        if (n.style && !n.type) {
+            const s = n.style.toLowerCase();
+            if (s.includes('agg')||s.includes('tact')) n.type='Tactical';
+            else if (s.includes('sol')||s.includes('pos')) n.type='Positional/Strategic';
+            else if (s.includes('safe')) n.type='Defensive/Prophylactic';
+            else n.type='Dynamic';
+        }
+        if (n.response) {
+            if (n.response.isChoice && n.response.choices) {
+                n.response.choices.forEach(c => n.children.push(c));
+            } else {
+                n.children.push(n.response);
+            }
+            delete n.response;
+        }
+        n.children.forEach(walk);
+    }
+    walk(op.tree);
+    op.version = "4.0";
+    return op;
+}
+
 function getUnifiedOptions(currentNode) {
     let options = (currentNode.children || []).map(c => ({ ...c, source: 'local' }));
     
     if (document.getElementById('transpoToggle').checked) {
         const game = new Chess();
         let ptr = currentOpening.tree;
-        game.move(ptr.move.replace(/^\d+\.+/, '').trim());
+        const rootMove = ptr.move.replace(/^\d+\.+/, '').trim();
+        if (rootMove) game.move(rootMove);
+        
         for (let id of currentPath) {
             ptr = ptr.children.find(c => c.id === id);
             if (ptr) game.move(ptr.move.replace(/^\d+\.+/, '').trim());
         }
         
+        const history = game.history();
+        const lastMove = history.length > 0 ? history[history.length - 1] : "Start";
+        const userColor = currentOpening.color;
+
         const matches = transpositionMap[game.fen()] || [];
         matches.forEach(match => {
             if (match.key === currentOpeningKey) return;
+            if (match.color !== userColor) return;
+            
             match.nextMoves.forEach(next => {
                 if (options.find(o => o.move === next.move)) return;
                 options.push({
                     id: 'remote_' + match.key,
                     move: next.move, type: next.type, status: next.status,
-                    source: 'remote', targetKey: match.key, targetName: match.name
+                    source: 'remote', targetKey: match.key, targetName: match.name,
+                    via: lastMove
                 });
             });
         });
@@ -426,7 +479,7 @@ function getUnifiedOptions(currentNode) {
 }
 
 // =====================================================
-// TRAINER LOGIC
+// TRAINER
 // =====================================================
 function startTraining(key) {
     currentOpening = OPENINGS[key];
@@ -438,29 +491,11 @@ function startTraining(key) {
     renderTrainer();
 }
 
-function jumpToOpening(targetKey, moveText) {
-    // 1. Push current state to history
-    historyStack.push({
-        key: currentOpeningKey,
-        path: [...currentPath],
-        name: currentOpening.name
-    });
-    
-    // 2. Load new opening
+function jumpToOpening(targetKey) {
+    historyStack.push({ key: currentOpeningKey, path: [...currentPath], name: currentOpening.name });
     currentOpeningKey = targetKey;
     currentOpening = OPENINGS[targetKey];
-    
-    // 3. Find the path in new opening that matches current FEN
-    // (For simplicity in V4.5, we just start at root, but a real deep-link 
-    // requires searching the tree for the FEN. Implementing simple root jump for now).
-    // *Advanced Logic*: In a real app, we would use findPathToFen() here.
-    // Since we are jumping based on a matching position, let's assume user wants to explore the NEW file from that spot.
-    // Re-calculating the path in the new file is complex. 
-    // SIMPLIFICATION: We just load the file. User navigates.
-    // Ideally: path = findPathByFEN(currentFEN, newFile);
-    
-    currentPath = []; // Reset path for new file (Simplified)
-    
+    currentPath = []; 
     updateTheme();
     renderTrainer();
 }
@@ -468,181 +503,66 @@ function jumpToOpening(targetKey, moveText) {
 function returnToPrevious() {
     if (historyStack.length === 0) return;
     const state = historyStack.pop();
-    
     currentOpeningKey = state.key;
     currentOpening = OPENINGS[state.key];
     currentPath = state.path;
-    
     updateTheme();
     renderTrainer();
 }
 
-function updateTheme() {
-    const body = document.body;
-    if (currentOpeningKey !== originalOpeningKey) {
-        body.classList.add('theme-purple');
-    } else {
-        body.classList.remove('theme-purple');
-    }
-    
-    // Update Return Button
-    const container = document.getElementById('returnContainer');
-    if (historyStack.length > 0) {
-        const last = historyStack[historyStack.length - 1];
-        container.innerHTML = `<button class="return-btn" onclick="returnToPrevious()">↩ Return to ${last.name}</button>`;
-    } else {
-        container.innerHTML = '';
-    }
-}
-
 function renderTrainer() {
-    // 1. Get Current Node
     let node = currentOpening.tree;
     let movesText = [node.move];
     
     for (let id of currentPath) {
         const child = node.children?.find(c => c.id === id);
-        if (child) {
-            node = child;
-            movesText.push(child.move);
-        }
+        if (child) { node = child; movesText.push(child.move); }
     }
     
-    // 2. Update Display
     document.getElementById('currentMoveText').textContent = node.move;
-    document.getElementById('currentExplanation').textContent = node.explanation || "No explanation available.";
-    document.getElementById('moveHistory').innerHTML = movesText.map(m => 
-        `<span class="move-tag ${m.includes('...')?'black':'white'}">${m}</span>`
-    ).join('');
+    document.getElementById('currentExplanation').textContent = node.explanation || "No notes.";
     
-    // 3. Get Unified Options
+    const histEl = document.getElementById('moveHistory');
+    histEl.innerHTML = movesText.map(m => `<span class="move-tag ${m.includes('...')?'black':'white'}">${m}</span>`).join('');
+    histEl.scrollLeft = histEl.scrollWidth;
+    
     const options = getUnifiedOptions(node);
     const container = document.getElementById('trainerOptions');
     
     if (options.length === 0) {
-        container.innerHTML = `<div class="end-card"><h3>End of Line</h3><p>No moves defined here.</p></div>`;
+        container.innerHTML = `<div class="end-card"><h3>End of Line</h3><p>No moves defined.</p></div>`;
         return;
     }
     
     container.innerHTML = options.map(opt => {
         if (opt.source === 'local') {
-            const color = getColorClass(opt.type);
-            return `<div class="option-btn ${color}" onclick="handleLocalMove('${opt.id}')">
-                <div class="main">
-                    <h4>${opt.move}</h4>
-                    <p>${opt.status || ''} • ${opt.type || ''}</p>
-                </div>
-                <span class="arrow">➜</span>
-            </div>`;
+            return `<div class="option-btn ${getColorClass(opt.type)}" onclick="handleLocalMove('${opt.id}')">
+                <div class="main"><h4>${opt.move}</h4><p>${opt.status||''} ${opt.type||''}</p></div><span>➜</span></div>`;
         } else {
-            // Remote / Ghost
-            return `<div class="option-btn remote" onclick="jumpToOpening('${opt.targetKey}', '${opt.move}')">
-                <div class="main">
-                    <h4>${opt.move} <span class="badge">Found in: ${opt.targetName}</span></h4>
-                    <p>Tap to jump to this file</p>
-                </div>
-                <span class="arrow">↗</span>
-            </div>`;
+            return `<div class="option-btn remote" onclick="jumpToOpening('${opt.targetKey}')">
+                <div class="main"><h4>${opt.move} <span class="badge">${opt.targetName}</span></h4><p>via ${opt.via} • Tap to jump</p></div><span>↗</span></div>`;
         }
     }).join('');
 }
 
-function handleLocalMove(id) {
-    currentPath.push(id);
-    renderTrainer();
-}
-
-function getColorClass(type) {
-    if (!type) return 'blue';
-    const t = type.toLowerCase();
-    if (t.includes('tact') || t.includes('forc')) return 'red';
-    if (t.includes('dynam')) return 'purple';
-    if (t.includes('defen')) return 'green';
-    return 'blue';
+function handleLocalMove(id) { currentPath.push(id); renderTrainer(); }
+function updateTheme() {
+    document.body.className = (currentOpeningKey !== originalOpeningKey) ? 'theme-purple' : '';
+    document.getElementById('returnContainer').innerHTML = historyStack.length ? 
+        `<button class="return-btn" onclick="returnToPrevious()">↩ Return</button>` : '';
 }
 
 // =====================================================
-// MENU & FOLDERS
+// BUILDER
 // =====================================================
-function renderMenu() {
-    const container = document.getElementById('openingsContainer');
-    container.innerHTML = '';
-    
-    // Group by Folder
-    const groups = { "Uncategorized": [] };
-    
-    Object.entries(OPENINGS).forEach(([key, op]) => {
-        // Auto-migrate on load if old version
-        if (!op.version) op = migrateOpening(op);
-        
-        const g = op.group || "Uncategorized";
-        if (!groups[g]) groups[g] = [];
-        groups[g].push({ key, ...op });
-    });
-    
-    // Render Groups
-    Object.keys(groups).sort().forEach(groupName => {
-        const items = groups[groupName];
-        if (items.length === 0) return;
-        
-        const groupId = 'g_' + groupName.replace(/\s/g, '');
-        
-        // Header
-        const header = document.createElement('div');
-        header.className = 'folder-header';
-        header.innerHTML = `<span>📁 ${groupName}</span> <span class="folder-count">${items.length}</span>`;
-        header.onclick = () => {
-            toggleFolder(groupId);
-        };
-        container.appendChild(header);
-        
-        // Content
-        const content = document.createElement('div');
-        content.id = groupId;
-        content.className = 'folder-content ' + (groupName === 'Uncategorized' ? 'open' : ''); // Default open uncat
-        
-        items.forEach(op => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.onclick = () => startTraining(op.key);
-            card.innerHTML = `
-                <div class="card-actions">
-                    <button class="icon-btn" onclick="event.stopPropagation(); editOpening('${op.key}')">✏️</button>
-                    <button class="icon-btn" onclick="event.stopPropagation(); deleteOpening('${op.key}')">🗑</button>
-                </div>
-                <h3>${op.name} <span class="version-tag" style="background:${op.color==='white'?'#fbbf24':'#94a3b8'}">${op.color}</span></h3>
-                <p>${op.description || ''}</p>
-                <div class="moves">${op.startingMoves}</div>
-            `;
-            content.appendChild(card);
-        });
-        container.appendChild(content);
-    });
-}
-
-function toggleFolder(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('open');
-}
-
-function deleteOpening(key) {
-    if(confirm('Delete this opening?')) {
-        delete OPENINGS[key];
-        saveStorage();
-        renderMenu();
-    }
-}
-
-// =====================================================
-// BUILDER (Simplified V4)
-// =====================================================
-// ... (Builder Logic remains mostly same as V4.0 but populates OPENINGS)
-
 function showBuilder() {
-    builderTree = { id: 'root', move: 'Start', children: [] }; // Reset
-    builderPath = [];
-    editingKey = null;
+    builderTree = { id: 'root', move: 'Start', children: [] };
+    builderPath = []; editingKey = null;
+    document.getElementById('builderName').value = '';
+    document.getElementById('builderGroup').value = '';
+    document.getElementById('builderDesc').value = '';
     showScreen('builderScreen');
+    switchTab('build');
     renderBuilder();
 }
 
@@ -654,128 +574,165 @@ function editOpening(key) {
     document.getElementById('builderName').value = op.name;
     document.getElementById('builderGroup').value = op.group || '';
     document.getElementById('builderColor').value = op.color;
+    document.getElementById('builderDesc').value = op.description || '';
     builderPath = [];
     showScreen('builderScreen');
+    switchTab('build');
     renderBuilder();
 }
 
+function switchTab(t) {
+    document.getElementById('tabBuild').classList.toggle('active', t === 'build');
+    document.getElementById('tabJson').classList.toggle('active', t === 'json');
+    document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none';
+    document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none';
+    if (t === 'json') {
+        // If builderTree exists (editing or creating), convert it to JSON
+        if (builderTree && builderTree.children) {
+           document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2);
+        } else {
+           document.getElementById('jsonIn').value = "";
+        }
+    }
+}
+
+function importBuilderJson() {
+    try {
+        const json = JSON.parse(document.getElementById('jsonIn').value);
+        if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure");
+        
+        // Update Builder state
+        builderTree = json.tree;
+        builderColor = json.color;
+        document.getElementById('builderName').value = json.name;
+        document.getElementById('builderGroup').value = json.group || "";
+        document.getElementById('builderColor').value = json.color;
+        document.getElementById('builderDesc').value = json.description || "";
+        
+        alert("JSON loaded into Builder. Click 'Save' to persist changes.");
+        switchTab('build');
+        renderBuilder();
+    } catch(e) { alert("Error: " + e.message); }
+}
+
+function copyBuilderJson() {
+    const txt = document.getElementById('jsonIn');
+    txt.select();
+    navigator.clipboard.writeText(txt.value);
+    alert("Copied to clipboard!");
+}
+
 function renderBuilder() {
-    // Identify Current Node
+    // First move UI check
+    if (!builderTree || (builderTree.id === 'root' && builderTree.move === 'Start' && builderTree.children.length === 0)) {
+         const isWhite = builderColor === 'white';
+         document.getElementById('builderContent').innerHTML = `
+            <div class="empty-state"><div class="icon">♟️</div><p>Start by adding the first move.</p></div>
+            <div class="add-form">
+                <h4 id="addFormTitle">First Move (${isWhite ? 'White' : 'Black'})</h4>
+                <div class="form-group"><input type="text" id="newMoveInput" placeholder="e.g. e4"></div>
+                <div class="form-group"><textarea id="newExpl" rows="2" placeholder="Explanation"></textarea></div>
+                <button class="nav-btn" style="background:#3b82f6" onclick="addFirstMove()">Add Start Move</button>
+            </div>`;
+        return;
+    }
+
     let node = builderTree;
     let historyHtml = '';
     
     for (let id of builderPath) {
         const child = node.children.find(c => c.id === id);
-        if (child) {
-            node = child;
-            historyHtml += `<span class="move-tag white">${child.move}</span> `;
-        }
+        if (child) { node = child; historyHtml += `<span class="move-tag white">${child.move}</span> `; }
     }
     
     document.getElementById('builderHistory').innerHTML = historyHtml || 'Root';
     
-    // Current Node Card
+    const ply = builderPath.length; 
+    const lastMoveColor = (ply % 2 === 0) ? 'white' : 'black';
+    const nextMoveColor = (lastMoveColor === 'white') ? 'black' : 'white';
+    const isOpponent = nextMoveColor !== builderColor;
+    
+    document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card';
     document.getElementById('builderCurrentNode').innerHTML = `
+        <div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div>
         <h2>${node.move}</h2>
         <p>${node.explanation || 'No explanation'}</p>
         <div style="margin-top:5px;">
             <span class="version-tag">${node.status || '-'}</span>
             <span class="version-tag">${node.type || '-'}</span>
         </div>
+        ${renderEditExplanation(node)}
     `;
     
-    // Responses List
     const list = document.getElementById('builderResponses');
     list.innerHTML = '';
     if (node.children) {
         node.children.forEach(c => {
-            const color = getColorClass(c.type);
-            list.innerHTML += `
-                <div class="option-btn ${color}" onclick="builderPath.push('${c.id}'); renderBuilder();">
-                    <div class="main"><h4>${c.move}</h4><p>${c.status}</p></div>
-                    <span>➜</span>
-                </div>
-            `;
+            list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`;
         });
     }
+    
+    const nextPlayerName = isOpponent ? "You" : "Opponent";
+    // Fix for dynamic title
+    const titleEl = document.getElementById('addFormTitle');
+    if(titleEl) titleEl.innerText = `Add ${nextMoveColor === 'white' ? "White" : "Black"}'s Move`;
+    
+    setupEnter();
 }
 
-function toggleDetails() {
-    const d = document.getElementById('builderDetails');
-    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+function addFirstMove() {
+    const move = document.getElementById('newMoveInput').value.trim();
+    if (!move) return;
+    builderTree = { 
+        id: 'root', 
+        move: '1. ' + move, 
+        player: 'white', 
+        explanation: document.getElementById('newExpl')?.value || '', 
+        children: [] 
+    };
+    renderBuilder();
 }
 
 function addBuilderMove() {
-    const move = document.getElementById('newMoveInput').value;
-    if (!move) return;
+    const moveRaw = document.getElementById('newMoveInput').value.trim();
+    if (!moveRaw) return;
     
-    // Find parent
-    let parent = builderTree;
-    for (let id of builderPath) {
-        parent = parent.children.find(c => c.id === id);
-    }
+    const currentPly = builderPath.length + 1; 
+    const moveNum = Math.floor(currentPly / 2) + 1;
+    const isBlack = currentPly % 2 !== 0;
     
-    if (!parent.children) parent.children = [];
+    const notation = isBlack ? `${moveNum}... ${moveRaw}` : `${moveNum}. ${moveRaw}`;
+    const player = isBlack ? 'black' : 'white';
     
-    const newId = 'node_' + Date.now();
-    parent.children.push({
-        id: newId,
-        move: move, // User must type full notation "1. e4" for now
-        status: document.getElementById('newStatus').value,
-        type: document.getElementById('newType').value,
-        explanation: document.getElementById('newExpl').value,
-        children: []
+    let node = builderTree;
+    for(let id of builderPath) node = node.children.find(c => c.id === id);
+    if(!node.children) node.children=[];
+    
+    const newId = 'n'+Date.now();
+    node.children.push({ 
+        id: newId, 
+        move: notation, 
+        player: player,
+        status: document.getElementById('newStatus').value, 
+        type: document.getElementById('newType').value, 
+        explanation: document.getElementById('newExpl').value, 
+        children: [] 
     });
     
-    // Clear inputs
     document.getElementById('newMoveInput').value = '';
-    document.getElementById('newExpl').value = '';
-    
     renderBuilder();
 }
 
-function deleteBuilderNode() {
-    if (builderPath.length === 0) return;
-    if (!confirm('Delete current branch?')) return;
-    
-    const currentId = builderPath.pop();
-    // Find parent
-    let parent = builderTree;
-    for (let id of builderPath) {
-        parent = parent.children.find(c => c.id === id);
-    }
-    // Remove child
-    parent.children = parent.children.filter(c => c.id !== currentId);
-    renderBuilder();
-}
-
-function saveExplanation() {
-    const val = document.getElementById('editExpl').value;
-    let node = builderTree;
-    for (let id of builderPath) node = node.children.find(c => c.id === id);
-    node.explanation = val;
-    renderBuilder();
-}
-
-function renderEditExplanation(node) {
-    return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;">
-        <textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea>
-        <button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button>
-    </div>`;
-}
+function deleteBuilderNode() { if(!builderPath.length || !confirm('Delete branch?'))return; const id=builderPath.pop(); let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
+function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
+function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
+function renderEditExplanation(node) { return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; }
 
 // =====================================================
-// HELPERS
+// UTILS & IO
 // =====================================================
-function getColorClass(type) {
-    if (!type) return 'blue';
-    const t = type.toLowerCase();
-    if (t.includes('tact') || t.includes('forc')) return 'red';
-    if (t.includes('dynam')) return 'purple';
-    if (t.includes('defen')) return 'green';
-    return 'blue';
-}
-function toggleDetails() { const d = document.getElementById('builderDetails'); d.style.display = d.style.display === 'none' ? 'block' : 'none'; }
+function getColorClass(type) { if (!type) return 'blue'; const t = type.toLowerCase(); if (t.includes('tact')||t.includes('forc')) return 'red'; if (t.includes('dynam')) return 'purple'; if (t.includes('defen')) return 'green'; return 'blue'; }
+function toggleDetails() { const d=document.getElementById('builderDetails'); d.style.display=d.style.display==='none'?'block':'none'; }
 function toggleRefModal() { document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; }
 function setupEnter() { setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); }
 function navigateToChild(id) { builderPath.push(id); renderBuilder(); }
@@ -783,135 +740,46 @@ function builderBack() { builderPath.pop(); renderBuilder(); }
 function goBack() { showScreen('menuScreen'); }
 function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
 
-// =====================================================
-// IO & MIGRATION (THE FIX)
-// =====================================================
 function saveOpening() {
     const name = document.getElementById('builderName').value || "Untitled";
     const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now());
-    OPENINGS[key] = {
-        version: "4.0",
-        name: name,
-        group: document.getElementById('builderGroup').value || "Uncategorized",
-        color: document.getElementById('builderColor').value,
-        tree: builderTree,
-        startingMoves: "Custom"
+    OPENINGS[key] = { 
+        version: "4.0", 
+        name: name, 
+        group: document.getElementById('builderGroup').value || "Uncategorized", 
+        color: document.getElementById('builderColor').value, 
+        description: document.getElementById('builderDesc').value,
+        tree: builderTree, 
+        startingMoves: "Custom" 
     };
-    saveStorage();
-    exitBuilder();
+    saveStorage(); exitBuilder();
 }
 
-function downloadCurrentJSON() {
-    const json = JSON.stringify(OPENINGS[editingKey], null, 2);
-    const blob = new Blob([json], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'opening.json';
-    a.click();
-}
+function downloadCurrentJSON() { const data = editingKey ? OPENINGS[editingKey] : buildOpeningObj(); const json = JSON.stringify(data, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'opening.json'; a.click(); }
+function buildOpeningObj() { return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; }
 
-// THIS IS THE REAL RECURSIVE MIGRATOR FROM V3 -> V4
-function migrateOpening(op) {
-    // 1. If already migrated, stop.
-    if (op.version === "4.0") return op;
-    
-    console.log("Migrating " + op.name + " to V4.0...");
+function backupLibrary() { const json = JSON.stringify(OPENINGS, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chess_library_backup.json'; a.click(); }
+function restoreLibrary(input) { const file = input.files[0]; if (!file) return; if (!confirm("Overwrite library?")) return; const reader = new FileReader(); reader.onload = (e) => { try { OPENINGS = JSON.parse(e.target.result); saveStorage(); alert("Restored!"); renderMenu(); } catch (err) { alert("Invalid Backup"); } }; reader.readAsText(file); }
 
-    // 2. Recursive walker to fix every node
-    function walk(node) {
-        if (!node) return;
+function handleFileUpload(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const json = JSON.parse(e.target.result); if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); const migrated = migrateOpening(json); const key = 'import_' + Date.now(); OPENINGS[key] = migrated; saveStorage(); alert('Imported!'); renderMenu(); } catch (err) { alert('Invalid JSON: '+err.message); } }; reader.readAsText(file); }
+async function importFromUrl() { try { const res = await fetch(document.getElementById('importUrl').value); const json = await res.json(); const migrated = migrateOpening(json); OPENINGS['import_' + Date.now()] = migrated; saveStorage(); alert('Imported!'); document.getElementById('urlImportBox').style.display='none'; renderMenu(); } catch (e) { alert('Error loading URL'); } }
+function toggleUrlImport() { const el = document.getElementById('urlImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
 
-        // Ensure children array exists
-        if (!node.children) node.children = [];
-
-        // MIGRATION: Move 'response' into 'children'
-        if (node.response) {
-            if (node.response.isChoice && node.response.choices) {
-                // If it was a choice, push all choices to children
-                node.response.choices.forEach(c => node.children.push(c));
-            } else {
-                // If it was a single response, push it to children
-                node.children.push(node.response);
-            }
-            // Destructive: Remove the old field so V4 logic doesn't get confused
-            delete node.response;
-        }
-
-        // MIGRATION: Fix old Labels/Styles
-        if (node.label && !node.status) node.status = node.label;
-        if (node.style && !node.type) {
-            const s = node.style.toLowerCase();
-            if (s.includes('aggressive') || s.includes('tactical')) node.type = 'Tactical';
-            else if (s.includes('solid') || s.includes('positional')) node.type = 'Positional/Strategic';
-            else if (s.includes('safe')) node.type = 'Defensive/Prophylactic';
-            else node.type = 'Dynamic';
-        }
-
-        // Recurse down the tree
-        if (node.children && node.children.length > 0) {
-            node.children.forEach(walk);
-        }
-    }
-
-    // 3. Execute
-    walk(op.tree);
-    op.version = "4.0"; // Mark as done
-    return op;
-}
-
-function handleFileUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const json = JSON.parse(e.target.result);
-            // CRITICAL: Run Migrator Here
-            const migrated = migrateOpening(json);
-            
-            const key = 'import_' + Date.now();
-            OPENINGS[key] = migrated;
-            saveStorage();
-            alert('Imported & Migrated successfully!');
-            renderMenu();
-        } catch (err) { alert('Invalid JSON: ' + err.message); }
-    };
-    reader.readAsText(file);
-}
-
-async function importFromUrl() {
-    const url = document.getElementById('importUrl').value;
-    try {
-        const res = await fetch(url);
-        const json = await res.json();
-        // CRITICAL: Run Migrator Here
-        const migrated = migrateOpening(json);
-        
-        const key = 'import_' + Date.now();
-        OPENINGS[key] = migrated;
-        saveStorage();
-        alert('Imported!');
-        document.getElementById('urlImportBox').style.display='none';
-        renderMenu();
-    } catch (e) { alert('Failed to load URL'); }
-}
-
-// =====================================================
-// MISSING UI FUNCTIONS (FIX)
-// =====================================================
-function showScreen(id) {
-    // Hide all screens
-    ['menuScreen', 'trainerScreen', 'builderScreen'].forEach(s => {
-        document.getElementById(s).style.display = 'none';
+// UI Functions
+function showScreen(id) { ['menuScreen', 'trainerScreen', 'builderScreen'].forEach(s => document.getElementById(s).style.display = 'none'); document.getElementById(id).style.display = 'block'; window.scrollTo(0, 0); }
+function renderMenu() {
+    const container = document.getElementById('openingsContainer'); container.innerHTML = '';
+    const groups = {};
+    Object.entries(OPENINGS).forEach(([key, op]) => { if (!op.version) op = migrateOpening(op); const g = op.group || "Uncategorized"; if (!groups[g]) groups[g] = []; groups[g].push({ key, ...op }); });
+    if (Object.keys(groups).length === 0) { container.innerHTML = `<div class="empty-state"><div class="icon">♟️</div><p>No openings found.</p></div>`; return; }
+    Object.entries(groups).forEach(([groupName, items]) => {
+        const folderId = 'folder_' + groupName.replace(/\s/g, '');
+        container.innerHTML += `<div class="folder-header" onclick="toggleFolder('${folderId}')"><span>📂 ${groupName}</span><span class="folder-count">${items.length}</span></div><div id="${folderId}" class="folder-content open">${items.map(item => `<div class="card" onclick="startTraining('${item.key}')"><div class="card-actions"><button class="icon-btn" onclick="event.stopPropagation(); editOpening('${item.key}')">✏️</button><button class="icon-btn" onclick="event.stopPropagation(); deleteOpening('${item.key}')">🗑</button></div><h3>${item.name} <span class="version-tag" style="background:${item.color==='white'?'#fbbf24':'#334155'}; color:${item.color==='white'?'#000':'#fff'}">${item.color.toUpperCase()}</span></h3><p>${item.description || ''}</p><div class="moves">${item.startingMoves || ''}</div></div>`).join('')}</div>`;
     });
-    // Show target
-    document.getElementById(id).style.display = 'block';
-    
-    // Scroll to top
-    window.scrollTo(0, 0);
 }
+function toggleFolder(id) { const el = document.getElementById(id); if (el) el.classList.toggle('open'); }
+function deleteOpening(key) { if (confirm(`Delete "${OPENINGS[key].name}"?`)) { delete OPENINGS[key]; saveStorage(); renderMenu(); } }
 
-// Start
 init();
 </script>
 </body>
