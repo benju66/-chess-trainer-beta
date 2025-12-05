@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V5.1 (Patched)</title>
+    <title>Chess Trainer V5.1 (Robust)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -388,7 +388,8 @@ function rebuildTranspositionMap() {
         const game = new Chess();
         function mapNode(node) {
             if (!node) return;
-            const clean = node.move.replace(/^\d+\.+/, '').trim();
+            // Robust cleaning
+            const clean = node.move.replace(/^[0-9]+\.+/, '').trim();
             game.move(clean);
             
             const fen = game.fen();
@@ -462,12 +463,16 @@ function getUnifiedOptions(currentNode) {
     if (document.getElementById('transpoToggle').checked) {
         const game = new Chess();
         let ptr = currentOpening.tree;
-        const rootMove = ptr.move.replace(/^\d+\.+/, '').trim();
-        if (rootMove) game.move(rootMove);
+        
+        const cleanRoot = ptr.move.replace(/^[0-9]+\.+/, '').trim();
+        if (cleanRoot) game.move(cleanRoot);
         
         for (let id of currentPath) {
             ptr = ptr.children.find(c => c.id === id);
-            if (ptr) game.move(ptr.move.replace(/^\d+\.+/, '').trim());
+            if (ptr) {
+                const cleanMove = ptr.move.replace(/^[0-9]+\.+/, '').trim();
+                game.move(cleanMove);
+            }
         }
         
         const history = game.history();
@@ -598,8 +603,6 @@ function initializeNewOpening() {
     }
 
     // 2. FORMAT ROOT MOVE (Use SAN from engine for cleanliness)
-    // If user is playing Black, we usually still start with White's move in the tree root
-    // but denote it properly.
     const formattedMove = "1. " + validMove.san; 
 
     builderTree = {
@@ -645,15 +648,21 @@ function editOpening(key) {
 }
 
 function renderBuilder() {
+    if (!builderTree) return; // Safety check
+
     let node = builderTree;
     
-    // FIXED: Use the actual root move (e.g., "1. e4") instead of the word "Root"
-    let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${builderTree.move}</div>`;
+    // ROBUST: Fallback if move is missing, though unlikely
+    const rootLabel = builderTree.move || "Start";
     
-    // Breadcrumbs Loop
+    let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`;
+    
+    // Breadcrumbs
     let tempNode = builderTree;
     for (let i = 0; i < builderPath.length; i++) {
         const id = builderPath[i];
+        if (!tempNode.children) break; 
+        
         const child = tempNode.children.find(c => c.id === id);
         if (child) {
             tempNode = child;
@@ -664,12 +673,8 @@ function renderBuilder() {
     
     document.getElementById('builderHistory').innerHTML = historyHtml;
     
-    // Context Logic
-    const ply = builderPath.length + 1;
-    // Logic: Root is White. Ply 1 (Response) is Black.
-    const nextMoveColor = (ply % 2 !== 0) ? 'black' : 'white';
-    
-    const turnLabel = nextMoveColor === 'white' ? "White to Move" : "Black to Move";
+    // Determine whose turn it is next based on who played the current node
+    const turnLabel = node.player === 'white' ? "Black to Move" : "White to Move";
     
     document.getElementById('builderCurrentNode').innerHTML = `
         <div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div>
@@ -715,9 +720,12 @@ function addBuilderMove() {
         // --- STEP 1: REPLAY GAME TO VALIDATE ---
         const game = new Chess();
         
-        // Robust cleaning of the Root move (e.g., "1. e4" -> "e4")
-        let rootClean = builderTree.move;
-        if (rootClean.includes('.')) rootClean = rootClean.split('.').pop().trim();
+        // ROBUST: Use Regex to remove leading numbers/dots (e.g. "1. e4", "23... Nf6")
+        // ^ means start of string, [0-9]+ means any numbers, \.+ means one or more dots
+        const cleanMoveRegex = /^[0-9]+\.+/; 
+
+        // Clean Root
+        let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim();
         
         const rootResult = game.move(rootClean);
         if (!rootResult) {
@@ -730,10 +738,8 @@ function addBuilderMove() {
         for (let id of builderPath) {
             node = node.children.find(c => c.id === id);
             
-            // Clean previous moves (e.g., "1... e5" -> "e5")
-            let cleanMove = node.move;
-            if (cleanMove.includes('.')) cleanMove = cleanMove.split('.').pop().trim();
-            
+            // Clean previous moves
+            let cleanMove = node.move.replace(cleanMoveRegex, '').trim();
             game.move(cleanMove);
         }
         
@@ -745,24 +751,29 @@ function addBuilderMove() {
             return;
         }
         
-        // --- STEP 3: CALCULATE NOTATION ---
+        // --- STEP 3: CALCULATE NOTATION (The "Engine" Way) ---
+        // We parse the FEN string to get the EXACT move number from the engine.
+        // FEN structure: "rnbqkbnr/.../RNBQKBNR b KQkq e3 0 1" -> The LAST number is Full Move Num.
+        const fen = game.fen(); 
+        const fenParts = fen.split(' ');
+        const currentMoveNum = parseInt(fenParts[5]); // The move number for the *upcoming* turn
         const turn = game.turn(); // 'w' or 'b' (Side to move NEXT)
-        const moveNum = game.moveNumber(); 
-        
-        // Logic: 
-        // If turn is now 'b', White just moved. The moveNum matches (e.g. 1). -> "1. e4"
-        // If turn is now 'w', Black just moved. The moveNum is for NEXT turn (e.g. 2). -> "1... e5"
         
         let notation = "";
         let player = "";
 
+        // Logic: The engine has already advanced. 
+        // If it's now Black's turn ('b'), White just made move X. 
+        // If it's now White's turn ('w'), Black just made move X.
+        
         if (turn === 'b') {
-            // White just played
-            notation = `${moveNum}. ${moveObj.san}`;
+            // White just moved. The move number in FEN is for the current turn (1).
+            notation = `${currentMoveNum}. ${moveObj.san}`;
             player = 'white';
         } else {
-            // Black just played
-            notation = `${moveNum - 1}... ${moveObj.san}`;
+            // Black just moved. The move number in FEN has incremented to the NEXT move (2).
+            // So we must subtract 1 to label Black's move correctly.
+            notation = `${currentMoveNum - 1}... ${moveObj.san}`;
             player = 'black';
         }
         
@@ -793,6 +804,7 @@ function addBuilderMove() {
         console.error(err);
     }
 }
+
 function deleteBuilderNode() {
     if (builderPath.length === 0) {
         if (confirm("Reset entire opening?")) showNewOpeningModal();
