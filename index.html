@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V5.3 (Demo Ready)</title>
+    <title>Chess Trainer V5.4 (Bulletproof)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* =========================================
@@ -104,7 +104,7 @@
         .option-btn h4 { font-family: monospace; font-size: 1.1rem; margin-bottom: 4px; }
         .option-btn p { font-size: 0.8rem; opacity: 0.8; }
         
-        /* NEW: Branch Description Style */
+        /* Branch Descriptions */
         .option-btn .branch-desc {
             font-size: 0.85rem; color: #94a3b8; margin: 4px 0 6px 0; line-height: 1.4;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -121,13 +121,12 @@
         .option-btn.green { border-left: 4px solid #22c55e; }
         .option-btn.purple { border-left: 4px solid #a855f7; }
         
-        /* Remote Buttons (Ghost) */
+        /* Remote Buttons */
         .option-btn.remote { background: transparent; border: 1px dashed; opacity: 0.9; }
         .option-btn.remote.blue { border-color: #3b82f6; }
         .option-btn.remote.red { border-color: #ef4444; }
         .option-btn.remote.green { border-color: #22c55e; }
         .option-btn.remote.purple { border-color: #a855f7; }
-        
         .option-btn.remote h4 { color: #c4b5fd; }
         .option-btn.remote .badge { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; }
 
@@ -176,7 +175,7 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V5.3</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V5.4</span></h1>
                 <p>Unified Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
@@ -359,93 +358,24 @@
 
 <script>
 // =====================================================
-// DATA & CONFIG (PRE-LOADED LIBRARY)
+// UTILS
 // =====================================================
-const DEFAULT_OPENINGS = {
-    white_italian: {
-        version: "4.0", name: "Italian Game Master", color: "white", group: "White Repertoire",
-        description: "A complete repertoire covering the Giuoco Piano, Two Knights, and Evans Gambit.",
-        startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
-        tree: { id: "root", move: "1. e4", player: "white", explanation: "We start by controlling the center and opening lines for the bishop and queen.", status: "Mainline", type: "Positional/Strategic", children: [
-            { id: "n1", move: "1... e5", player: "black", explanation: "Black challenges the center immediately.", status: "Mainline", type: "Positional/Strategic", children: [
-                { id: "n2", move: "2. Nf3", player: "white", explanation: "Developing the knight to a natural square and attacking e5.", status: "Mainline", type: "Dynamic", children: [
-                    { id: "n3", move: "2... Nc6", player: "black", explanation: "Standard development defending the e-pawn.", status: "Mainline", type: "Positional/Strategic", children: [
-                        { id: "n4", move: "3. Bc4", player: "white", explanation: "The Italian Game! We target the weak f7 square and prepare to castle.", status: "Mainline", type: "Positional/Strategic", children: [
-                            { id: "n5", move: "3... Bc5", player: "black", explanation: "The Giuoco Piano ('Quiet Game'). Black develops logically.", status: "Mainline", type: "Positional/Strategic", children: [
-                                { id: "n6", move: "4. c3", player: "white", explanation: "Preparing to build a big center with d4.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n7", move: "4... Nf6", player: "black", explanation: "Attacking our e4 pawn.", status: "Mainline", type: "Dynamic", children: [
-                                        { id: "n8", move: "5. d3", player: "white", explanation: "The 'Giuoco Pianissimo' (Very Quiet Game). We support the center solidly rather than rushing d4.", status: "Mainline", type: "Positional/Strategic", children: [] },
-                                        { id: "n9", move: "5. d4", player: "white", explanation: "Striking immediately in the center! This leads to sharper positions.", status: "Sideline", type: "Dynamic", children: [] }
-                                    ]}
-                                ]},
-                                { id: "n10", move: "4. b4", player: "white", explanation: "The Evans Gambit! We sacrifice a pawn to deflect the bishop and gain rapid development.", status: "Novelty", type: "Dynamic", children: [
-                                    { id: "n11", move: "4... Bxb4", player: "black", explanation: "They accept the gambit.", status: "Mainline", type: "Tactical", children: [
-                                        { id: "n12", move: "5. c3", player: "white", explanation: "Gaining time on the bishop and preparing d4.", status: "Mainline", type: "Forcing", children: [] }
-                                    ]}
-                                ]}
-                            ]},
-                            { id: "n13", move: "3... Nf6", player: "black", explanation: "The Two Knights Defense. A more aggressive counter-attack.", status: "Mainline", type: "Dynamic", children: [
-                                { id: "n14", move: "4. Ng5", player: "white", explanation: "The Fried Liver Attack setup! We immediately target f7.", status: "Mainline", type: "Tactical", children: [
-                                    { id: "n15", move: "4... d5", player: "black", explanation: "The only good move to stop the threat.", status: "Mainline", type: "Forcing", children: [
-                                        { id: "n16", move: "5. exd5", player: "white", explanation: "Opening lines.", status: "Mainline", type: "Forcing", children: [
-                                            { id: "n17", move: "5... Na5", player: "black", explanation: "The Polerio Defense. Attacking the bishop.", status: "Mainline", type: "Dynamic", children: [] },
-                                            { id: "n18", move: "5... Nxd5", player: "black", explanation: "A mistake! This allows the Fried Liver Sacrifice.", status: "Blunder", type: "Tactical", children: [
-                                                { id: "n19", move: "6. Nxf7", player: "white", explanation: "Sacrificing the knight to draw the King out!", status: "Mainline", type: "Tactical", children: [] }
-                                            ]}
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n20", move: "4. d3", player: "white", explanation: "A quiet alternative, avoiding the tactical chaos of Ng5.", status: "Sideline", type: "Quiet", children: [] }
-                            ]}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]}
-    },
-    black_italian: {
-        version: "4.0", name: "Black vs Italian Game", color: "black", group: "Black Repertoire",
-        description: "Complete Black repertoire against 3. Bc4. Includes the solid Giuoco Piano (3... Bc5) and the sharp Two Knights (3... Nf6).",
-        startingMoves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
-        tree: { id: "root", move: "1. e4", player: "white", explanation: "White starts with the King's Pawn.", status: "Mainline", type: "Positional/Strategic", children: [
-            { id: "n1", move: "1... e5", player: "black", explanation: "We mirror White to control the center.", status: "Mainline", type: "Positional/Strategic", children: [
-                { id: "n2", move: "2. Nf3", player: "white", explanation: "White attacks e5.", status: "Mainline", type: "Positional/Strategic", children: [
-                    { id: "n3", move: "2... Nc6", player: "black", explanation: "We develop and defend e5.", status: "Mainline", type: "Positional/Strategic", children: [
-                        { id: "n4", move: "3. Bc4", player: "white", explanation: "The Italian Game. White eyes f7.", status: "Mainline", type: "Positional/Strategic", children: [
-                            { id: "n5", move: "3... Nf6", player: "black", explanation: "OPTION A: The Two Knights Defense. This is the more aggressive, counter-attacking choice. We ignore the f7 threat to attack e4 immediately.", status: "Mainline", type: "Dynamic", children: [
-                                { id: "n6", move: "4. Ng5", player: "white", explanation: "The Knight Attack. White accepts the challenge and attacks f7 immediately.", status: "Mainline", type: "Tactical", children: [
-                                    { id: "n7", move: "4... d5", player: "black", explanation: "The only move! We must block the bishop's vision of f7.", status: "Mainline", type: "Forcing", children: [
-                                        { id: "n8", move: "5. exd5", player: "white", explanation: "White captures.", status: "Mainline", type: "Forcing", children: [
-                                            { id: "n9", move: "5... Na5", player: "black", explanation: "The Polerio Defense. We DO NOT recapture on d5 (which allows the Fried Liver). Instead, we attack the bishop to gain time.", status: "Mainline", type: "Dynamic", children: [] }
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n10", move: "4. d3", player: "white", explanation: "Giuoco Pianissimo ('Very Quiet Game'). White declines the chaos.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n11", move: "4... h6", player: "black", explanation: "Prophylaxis. We prevent Ng5/Bg5 forever before continuing development.", status: "Mainline", type: "Defensive/Prophylactic", children: [] }
-                                ]}
-                            ]},
-                            { id: "n12", move: "3... Bc5", player: "black", explanation: "OPTION B: The Giuoco Piano. The classical choice. We develop the bishop to an active square and maintain symmetry.", status: "Mainline", type: "Positional/Strategic", children: [
-                                { id: "n13", move: "4. c3", player: "white", explanation: "White prepares d4 to build a big center.", status: "Mainline", type: "Positional/Strategic", children: [
-                                    { id: "n14", move: "4... Nf6", player: "black", explanation: "We attack e4. This forces White to make a decision about their center.", status: "Mainline", type: "Dynamic", children: [
-                                        { id: "n15", move: "5. d4", player: "white", explanation: "White strikes in the center.", status: "Mainline", type: "Dynamic", children: [
-                                            { id: "n16", move: "5... exd4", player: "black", explanation: "We must trade. Maintaining the tension here is dangerous.", status: "Mainline", type: "Forcing", children: [] }
-                                        ]},
-                                        { id: "n17", move: "5. d3", player: "white", explanation: "White switches to a slower setup.", status: "Mainline", type: "Positional/Strategic", children: [
-                                            { id: "n18", move: "5... d6", player: "black", explanation: "Solidifying our center pawn.", status: "Mainline", type: "Positional/Strategic", children: [] }
-                                        ]}
-                                    ]}
-                                ]},
-                                { id: "n19", move: "4. b4", player: "white", explanation: "The Evans Gambit. White offers a pawn for rapid development.", status: "Sideline", type: "Tactical", children: [
-                                    { id: "n20", move: "4... Bxb4", player: "black", explanation: "We accept the challenge. The best way to refute a gambit is often to accept it and defend carefully.", status: "Mainline", type: "Tactical", children: [] }
-                                ]}
-                            ]}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]}
+function validateTree(node) {
+    if (!node) return false;
+    if (node.children) {
+        if (!Array.isArray(node.children)) return false;
+        for (let child of node.children) {
+            if (!validateTree(child)) return false;
+        }
     }
-};
+    if (node.response || node.choices) return false;
+    return true;
+}
+
+// =====================================================
+// DATA & CONFIG
+// =====================================================
+const DEFAULT_OPENINGS = {}; // Empty default to rely on imports
 
 const STATUS_OPTIONS = ['', 'Mainline', 'Sideline', 'Novelty', 'Blunder', 'Mistake', 'Theoretical'];
 const TYPE_OPTIONS = ['', 'Positional/Strategic', 'Tactical', 'Defensive/Prophylactic', 'Dynamic', 'Forcing', 'Quiet'];
@@ -476,7 +406,7 @@ function init() {
     if (stored) {
         OPENINGS = JSON.parse(stored);
     } else {
-        OPENINGS = JSON.parse(JSON.stringify(DEFAULT_OPENINGS));
+        OPENINGS = {};
     }
     
     document.getElementById('refContent').innerHTML = TYPE_DEFINITIONS.map(x => 
@@ -505,8 +435,12 @@ function rebuildTranspositionMap() {
         const game = new Chess();
         function mapNode(node) {
             if (!node) return;
+            // Robust cleaning
             const clean = node.move.replace(/^[0-9]+\.+/, '').trim();
-            game.move(clean);
+            if (clean) {
+                // Safety: catch invalid moves in map generation
+                try { game.move(clean); } catch (e) { return; }
+            }
             
             const fen = game.fen();
             if (!transpositionMap[fen]) transpositionMap[fen] = [];
@@ -526,20 +460,8 @@ function rebuildTranspositionMap() {
             if (node.children) node.children.forEach(child => mapNode(child));
             game.undo();
         }
-        mapNode(op.tree);
+        if(op.tree) mapNode(op.tree);
     });
-}
-
-function validateTree(node) {
-    if (!node) return false;
-    if (node.children) {
-        if (!Array.isArray(node.children)) return false;
-        for (let child of node.children) {
-            if (!validateTree(child)) return false;
-        }
-    }
-    if (node.response || node.choices) return false;
-    return true;
 }
 
 function migrateOpening(op) {
@@ -566,7 +488,7 @@ function migrateOpening(op) {
         }
         n.children.forEach(walk);
     }
-    walk(op.tree);
+    if(op.tree) walk(op.tree);
     op.version = "4.0";
     return op;
 }
@@ -696,7 +618,7 @@ function updateTheme() {
 }
 
 // =====================================================
-// BUILDER (V5.3 - Polished + Validated)
+// BUILDER (V5.4 - Bulletproof)
 // =====================================================
 function showNewOpeningModal() {
     builderTree = null;
@@ -718,7 +640,6 @@ function initializeNewOpening() {
         const color = document.getElementById('modalColor').value;
         const moveRaw = document.getElementById('modalMove').value || "e4";
         
-        // --- V5.3 VALIDATION ---
         const game = new Chess();
         const validMove = game.move(moveRaw);
         
@@ -784,6 +705,7 @@ function renderBuilder() {
         if (!builderTree) return;
 
         let node = builderTree;
+        // V5.4 SAFETY: Ensure move is defined or fallback
         const rootLabel = builderTree.move || "Start";
         let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${rootLabel}</div>`;
         
@@ -852,36 +774,34 @@ function addBuilderMove() {
         const moveRaw = inputEl.value.trim();
         if (!moveRaw) return;
         
-        // --- STEP 1: REPLAY GAME TO VALIDATE ---
         const game = new Chess();
-        
-        // Robust cleaning of the Root move using Regex
         const cleanMoveRegex = /^[0-9]+\.+/; 
-        let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim();
         
+        // V5.4 SAFETY: Check for move existence
+        if (!builderTree.move) throw new Error("Root move is missing.");
+        
+        let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim();
         const rootResult = game.move(rootClean);
         if (!rootResult) {
             alert("Error: Root move is invalid internal state.");
             return;
         }
         
-        // Replay current path
         let node = builderTree;
         for (let id of builderPath) {
             node = node.children.find(c => c.id === id);
+            // V5.4 SAFETY: Check if move exists on node
+            if (!node || !node.move) throw new Error("Tree corruption: Missing node move.");
             let cleanMove = node.move.replace(cleanMoveRegex, '').trim();
             game.move(cleanMove);
         }
         
-        // --- STEP 2: ATTEMPT NEW MOVE ---
-        const moveObj = game.move(moveRaw); // Returns null if illegal
-        
+        const moveObj = game.move(moveRaw);
         if (moveObj === null) {
             alert(`Illegal move: ${moveRaw}\n\nMake sure it's valid in the current position.`);
             return;
         }
         
-        // --- STEP 3: CALCULATE NOTATION (Engine Way) ---
         const fen = game.fen(); 
         const fenParts = fen.split(' ');
         const currentMoveNum = parseInt(fenParts[5]); 
@@ -891,16 +811,13 @@ function addBuilderMove() {
         let player = "";
 
         if (turn === 'b') {
-            // White just moved
             notation = `${currentMoveNum}. ${moveObj.san}`;
             player = 'white';
         } else {
-            // Black just moved (Engine incremented move num, so we subtract 1)
             notation = `${currentMoveNum - 1}... ${moveObj.san}`;
             player = 'black';
         }
         
-        // --- STEP 4: ADD TO TREE ---
         if(!node.children) node.children = [];
         
         const newId = 'n' + Date.now();
@@ -915,7 +832,6 @@ function addBuilderMove() {
             children: [] 
         });
         
-        // --- STEP 5: RESET FORM & AUTO ADVANCE ---
         inputEl.value = '';
         document.getElementById('newExpl').value = ''; 
         document.getElementById('newStatus').selectedIndex = 0; 
@@ -996,7 +912,11 @@ function switchTab(t) {
 }
 function importBuilderJson() {
     try {
-        const json = JSON.parse(document.getElementById('jsonIn').value);
+        let raw = document.getElementById('jsonIn').value;
+        // V5.4 SAFETY: Auto-strip markdown code blocks
+        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+        
+        const json = JSON.parse(raw);
         if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure");
         builderTree = json.tree;
         builderColor = json.color;
@@ -1004,7 +924,7 @@ function importBuilderJson() {
         document.getElementById('builderGroup').value = json.group || "";
         document.getElementById('builderColor').value = json.color;
         document.getElementById('builderDesc').value = json.description || "";
-        alert("JSON loaded. Click 'Save' to finish.");
+        alert("JSON loaded successfully. Click 'Save' to finish.");
         switchTab('build');
         renderBuilder();
     } catch(e) { alert("Error: " + e.message); }
