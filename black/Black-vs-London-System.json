@@ -1,0 +1,185 @@
+{
+  "version": "4.0",
+  "name": "Black vs London System",
+  "group": "Black Repertoire",
+  "color": "black",
+  "description": "A dynamic, anti-system repertoire. We punish the 'autopilot' London System by attacking the center immediately (c5) and targeting the b2 pawn.",
+  "startingMoves": "1. d4 d5 2. Bf4",
+  "tree": {
+    "id": "root",
+    "move": "1. d4",
+    "player": "white",
+    "explanation": "White opens.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "n1",
+        "move": "1... d5",
+        "player": "black",
+        "explanation": "Solid center.",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "n2",
+            "move": "2. Bf4",
+            "player": "white",
+            "explanation": "The London System. White develops the bishop early to set up a pyramid (c3/d4/e3) regardless of what we do.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "n3",
+                "move": "2... c5",
+                "player": "black",
+                "explanation": "The Antidote! We strike the d4 pawn immediately. If White takes (dxc5), they ruin their structure. If they maintain, we pressure them.",
+                "status": "Mainline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "n4",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "Standard London move. White reinforces d4.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "n5",
+                        "move": "3... Nc6",
+                        "player": "black",
+                        "explanation": "We increase pressure on the center.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "n6",
+                            "move": "4. c3",
+                            "player": "white",
+                            "explanation": "The London Pyramid. White is playing on autopilot.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "n7",
+                                "move": "4... Qb6",
+                                "player": "black",
+                                "explanation": "The Killer Move! Because the Bishop left c1 early (to go to f4), the b2 pawn is defenseless. We attack it immediately.",
+                                "status": "Mainline",
+                                "type": "Tactical",
+                                "children": [
+                                  {
+                                    "id": "n8",
+                                    "move": "5. Qb3",
+                                    "player": "white",
+                                    "explanation": "The only good defense. White offers a queen trade to save the pawn.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "n9",
+                                        "move": "5... c4",
+                                        "player": "black",
+                                        "explanation": "We advance! We gain space and force White to decide where to put the Queen.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "n10",
+                                            "move": "6. Qc2",
+                                            "player": "white",
+                                            "explanation": "Trying to stay active.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "n11",
+                                                "move": "6... Bf5",
+                                                "player": "black",
+                                                "explanation": "A tactical shot! White cannot take (Qxf5) because Qxb2 traps the Rook!",
+                                                "status": "Mainline",
+                                                "type": "Tactical",
+                                                "children": []
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "id": "n12",
+                                            "move": "6. Qxb6",
+                                            "player": "white",
+                                            "explanation": "White bails out into an endgame.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "n13",
+                                                "move": "6... axb6",
+                                                "player": "black",
+                                                "explanation": "Great for us! The a-file opens for our Rook, and we have a space advantage on the Queenside.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "n14",
+                                    "move": "5. b3",
+                                    "player": "white",
+                                    "explanation": "A mistake. This creates huge holes in their position.",
+                                    "status": "Mistake",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "n15",
+                                        "move": "5... cxd4",
+                                        "player": "black",
+                                        "explanation": "Opening the c-file.",
+                                        "status": "Mainline",
+                                        "type": "Forcing",
+                                        "children": [
+                                          {
+                                            "id": "n16",
+                                            "move": "6. cxd4",
+                                            "player": "white",
+                                            "explanation": "Recapture.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "n17",
+                                                "move": "6... e5",
+                                                "player": "black",
+                                                "explanation": "Exploding the center! White's pieces are awkward and we take over.",
+                                                "status": "Mainline",
+                                                "type": "Winning",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
