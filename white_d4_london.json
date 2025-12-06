@@ -1,0 +1,548 @@
+{
+  "version": "4.0",
+  "name": "White: 1. d4 London System",
+  "group": "White Repertoire",
+  "color": "white",
+  "description": "The London System - a solid, easy-to-learn opening that works against almost anything Black plays. Develop Bf4, e3, Nf3, c3, and you'll always get a playable position.",
+  "startingMoves": "1. d4 d5 2. Bf4",
+  "tree": {
+    "id": "root",
+    "move": "1. d4",
+    "player": "black",
+    "explanation": "The Queen's Pawn Opening. We control the center and prepare to develop our dark-squared bishop before playing e3.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "d5_london",
+        "move": "1... d5",
+        "player": "white",
+        "explanation": "The most common response. Black mirrors our central control.",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "bf4",
+            "move": "2. Bf4",
+            "player": "black",
+            "explanation": "The London System! We develop the bishop BEFORE playing e3, so it doesn't get trapped inside the pawn chain. This is the key idea.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "nf6_main",
+                "move": "2... Nf6",
+                "player": "white",
+                "explanation": "Natural development, controlling e4.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e3_main",
+                    "move": "3. e3",
+                    "player": "black",
+                    "explanation": "Solid. We reinforce d4 and prepare to develop the light-squared bishop.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c5_main",
+                        "move": "3... c5",
+                        "player": "white",
+                        "explanation": "Black challenges our center. This is the main counter to the London.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "c3_main",
+                            "move": "4. c3",
+                            "player": "black",
+                            "explanation": "We reinforce d4 again. Our pawn structure is rock-solid.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nc6_main",
+                                "move": "4... Nc6",
+                                "player": "white",
+                                "explanation": "Development and pressure on d4.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "nd2_main",
+                                    "move": "5. Nd2",
+                                    "player": "black",
+                                    "explanation": "The knight goes to d2 (not c3) to keep c3 supporting d4. From d2, it can go to f3 or even e5 via f3.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "e6_main",
+                                        "move": "5... e6",
+                                        "player": "white",
+                                        "explanation": "Solid. Black prepares to develop the bishop.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "ngf3_main",
+                                            "move": "6. Ngf3",
+                                            "player": "black",
+                                            "explanation": "Natural development. Next: Bd3, O-O, and we have a great position.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "bd6_main",
+                                                "move": "6... Bd6",
+                                                "player": "white",
+                                                "explanation": "Black offers to trade our good bishop. This is the main theoretical line.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "bg3_main",
+                                                    "move": "7. Bg3",
+                                                    "player": "black",
+                                                    "explanation": "We retreat, keeping the bishop pair. If Black trades on g3, we recapture hxg3 and get an open h-file for attacking.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "oo_main",
+                                                        "move": "7... O-O",
+                                                        "player": "white",
+                                                        "explanation": "Black castles.",
+                                                        "status": "Mainline",
+                                                        "type": "Positional/Strategic",
+                                                        "children": [
+                                                          {
+                                                            "id": "bd3_main",
+                                                            "move": "8. Bd3",
+                                                            "player": "black",
+                                                            "explanation": "Developing. We're ready to castle and have a pleasant position.",
+                                                            "status": "Mainline",
+                                                            "type": "Positional/Strategic",
+                                                            "children": []
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "qb6_qside",
+                                        "move": "5... Qb6",
+                                        "player": "white",
+                                        "explanation": "Black attacks b2 and d4. This is the critical test of the London.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "qb3_trade",
+                                            "move": "6. Qb3",
+                                            "player": "black",
+                                            "explanation": "Offering a queen trade. If Black takes, we recapture and have an easy endgame. If Black retreats, we've defended b2.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "c4_qb6",
+                                                "move": "6... c4",
+                                                "player": "white",
+                                                "explanation": "Black tries to harass our queen.",
+                                                "status": "Mainline",
+                                                "type": "Dynamic",
+                                                "children": [
+                                                  {
+                                                    "id": "qc2_retreat",
+                                                    "move": "7. Qc2",
+                                                    "player": "black",
+                                                    "explanation": "Simple retreat. We're fine - Black's c4 pawn could become a target later.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": []
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "e6_solid",
+                        "move": "3... e6",
+                        "player": "white",
+                        "explanation": "Solid setup. Black will develop quietly.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nf3_vs_e6",
+                            "move": "4. Nf3",
+                            "player": "black",
+                            "explanation": "Standard development. We continue with our setup.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bd6_vs_e6",
+                                "move": "4... Bd6",
+                                "player": "white",
+                                "explanation": "Black wants to trade our bishop.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "bg3_vs_bd6",
+                                    "move": "5. Bg3",
+                                    "player": "black",
+                                    "explanation": "We keep the bishop. Standard London technique.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "bf5_mirror",
+                        "move": "3... Bf5",
+                        "player": "white",
+                        "explanation": "Black mirrors us! This is annoying but not dangerous.",
+                        "status": "Sideline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "c4_vs_bf5",
+                            "move": "4. c4",
+                            "player": "black",
+                            "explanation": "We strike at the center. The position becomes more dynamic.",
+                            "status": "Mainline",
+                            "type": "Dynamic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "c5_early",
+                "move": "2... c5",
+                "player": "white",
+                "explanation": "Immediate central pressure. Black wants to disrupt our setup.",
+                "status": "Mainline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "e3_vs_c5",
+                    "move": "3. e3",
+                    "player": "black",
+                    "explanation": "Stay calm and continue developing. Our setup still works.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nc6_vs_c5",
+                        "move": "3... Nc6",
+                        "player": "white",
+                        "explanation": "Development and pressure on d4.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "c3_vs_nc6",
+                            "move": "4. c3",
+                            "player": "black",
+                            "explanation": "Solid. We reinforce d4.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nf6_indian",
+        "move": "1... Nf6",
+        "player": "white",
+        "explanation": "The Indian Defense setup. Black might play g6 and Bg7 (King's Indian) or e6 and Bb4 (Nimzo/Queen's Indian).",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "bf4_vs_nf6",
+            "move": "2. Bf4",
+            "player": "black",
+            "explanation": "We stick with our London setup regardless of what Black plays!",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "g6_ki",
+                "move": "2... g6",
+                "player": "white",
+                "explanation": "King's Indian setup. Black will fianchetto the bishop.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e3_vs_ki",
+                    "move": "3. e3",
+                    "player": "black",
+                    "explanation": "Same setup. Against the fianchetto, our bishop goes to e2 instead of d3 (where Black's pawns would block it).",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bg7_ki",
+                        "move": "3... Bg7",
+                        "player": "white",
+                        "explanation": "The fianchetto is complete.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nf3_vs_bg7",
+                            "move": "4. Nf3",
+                            "player": "black",
+                            "explanation": "Standard development.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "oo_ki",
+                                "move": "4... O-O",
+                                "player": "white",
+                                "explanation": "Black castles.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "be2_ki",
+                                    "move": "5. Be2",
+                                    "player": "black",
+                                    "explanation": "Against the fianchetto, Be2 is better than Bd3 since Black's g6/d6 pawns would restrict Bd3.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "d6_ki",
+                                        "move": "5... d6",
+                                        "player": "white",
+                                        "explanation": "Standard King's Indian structure.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "h3_ki",
+                                            "move": "6. h3",
+                                            "player": "black",
+                                            "explanation": "Prophylaxis! We prevent ...Nh5 (attacking our bishop) and give it a retreat square on h2 if needed.",
+                                            "status": "Mainline",
+                                            "type": "Defensive/Prophylactic",
+                                            "children": [
+                                              {
+                                                "id": "c5_ki",
+                                                "move": "6... c5",
+                                                "player": "white",
+                                                "explanation": "Black challenges our center.",
+                                                "status": "Mainline",
+                                                "type": "Dynamic",
+                                                "children": [
+                                                  {
+                                                    "id": "c3_ki",
+                                                    "move": "7. c3",
+                                                    "player": "black",
+                                                    "explanation": "Reinforcing d4. We have a solid position.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": []
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "e6_qid",
+                "move": "2... e6",
+                "player": "white",
+                "explanation": "Queen's Indian / Nimzo style. Black keeps options flexible.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e3_vs_e6",
+                    "move": "3. e3",
+                    "player": "black",
+                    "explanation": "Same setup works here too.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c5_vs_e6",
+                        "move": "3... c5",
+                        "player": "white",
+                        "explanation": "Challenging d4.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "c3_vs_c5_qid",
+                            "move": "4. c3",
+                            "player": "black",
+                            "explanation": "Our standard response. Solid as a rock.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "d6_pirc_style",
+                "move": "2... d6",
+                "player": "white",
+                "explanation": "Preparing ...g6 with a solid setup.",
+                "status": "Sideline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e3_vs_d6",
+                    "move": "3. e3",
+                    "player": "black",
+                    "explanation": "Continue with our setup.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "f5_dutch",
+        "move": "1... f5",
+        "player": "white",
+        "explanation": "The Dutch Defense. Ambitious but weakens Black's kingside.",
+        "status": "Sideline",
+        "type": "Dynamic",
+        "children": [
+          {
+            "id": "bf4_vs_dutch",
+            "move": "2. Bf4",
+            "player": "black",
+            "explanation": "London works here too! We control e5 and have a great bishop.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "nf6_dutch",
+                "move": "2... Nf6",
+                "player": "white",
+                "explanation": "Natural development.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e3_dutch",
+                    "move": "3. e3",
+                    "player": "black",
+                    "explanation": "Same setup. We're slightly better due to Black's weakened kingside.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "c5_benoni",
+        "move": "1... c5",
+        "player": "white",
+        "explanation": "Trying for a Benoni setup. Black wants us to play d5.",
+        "status": "Sideline",
+        "type": "Dynamic",
+        "children": [
+          {
+            "id": "d5_vs_benoni",
+            "move": "2. d5",
+            "player": "black",
+            "explanation": "We accept and grab space. This gives Black their Benoni, but we have a strong center.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "nf6_benoni",
+                "move": "2... Nf6",
+                "player": "white",
+                "explanation": "Standard development.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "bf4_benoni",
+                    "move": "3. Bf4",
+                    "player": "black",
+                    "explanation": "We can still use London ideas here. The bishop controls e5.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
