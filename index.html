@@ -974,9 +974,10 @@ function renderTrainer() {
     // Update board
     updateTrainerBoard(fen, currentOpening.color);
 
-    // Determine turn
-    const isPlayerTurn = (game.turn() === 'w' && currentOpening.color === 'white') || 
-                         (game.turn() === 'b' && currentOpening.color === 'black');
+    // Determine who played the current move (not whose turn is next)
+    // After a move: game.turn() === 'b' means White just moved, 'w' means Black just moved
+    const isPlayerMove = (game.turn() === 'b' && currentOpening.color === 'white') || 
+                         (game.turn() === 'w' && currentOpening.color === 'black');
     
     // Update text card
     const cardEl = document.getElementById('trainerMoveCard');
@@ -984,8 +985,8 @@ function renderTrainer() {
     const textEl = document.getElementById('currentMoveText');
     const explEl = document.getElementById('currentExplanation');
     
-    cardEl.className = isPlayerTurn ? 'current-move-card' : 'current-move-card opponent';
-    labelEl.textContent = isPlayerTurn ? "YOUR MOVE" : "OPPONENT'S MOVE";
+    cardEl.className = isPlayerMove ? 'current-move-card' : 'current-move-card opponent';
+    labelEl.textContent = isPlayerMove ? "YOUR MOVE" : "OPPONENT'S MOVE";
     textEl.textContent = node.move;
     
     // Coach mode
@@ -1005,7 +1006,8 @@ function renderTrainer() {
         const branchName = opt.explanation || "";
         const color = getColorClass(opt.type);
         const descriptionHtml = (showCoach && branchName) ? renderExpandableText(branchName) : '';
-        const isMain = isPlayerTurn && opt.status === 'Mainline';
+        // Highlight mainline when these are YOUR candidate moves (after opponent moved)
+        const isMain = !isPlayerMove && opt.status === 'Mainline';
         const highlightClass = isMain ? 'mainline-highlight' : '';
 
         if (opt.source === 'local') {
