@@ -1,0 +1,1369 @@
+{
+  "version": "4.0",
+  "name": "White: 1. e4 Complete Repertoire",
+  "group": "White Repertoire",
+  "color": "white",
+  "description": "Complete 1. e4 repertoire covering all major Black responses: Italian Game vs 1...e5, Alapin vs Sicilian, Advance vs French/Caro-Kann, and straightforward play vs the Scandinavian.",
+  "startingMoves": "1. e4",
+  "tree": {
+    "id": "root",
+    "move": "1. e4",
+    "player": "white",
+    "explanation": "The King's Pawn Opening. We stake a claim in the center, open diagonals for our bishop and queen, and prepare to develop quickly. This is the most popular first move in chess.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "e5_main",
+        "move": "1... e5",
+        "player": "black",
+        "explanation": "The Open Game. Black mirrors our central control. This leads to the Italian Game, Spanish, and other classical openings.",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "nf3",
+            "move": "2. Nf3",
+            "player": "white",
+            "explanation": "Developing with a threat! Our knight attacks e5, forcing Black to defend. This is the most principled move.",
+            "status": "Mainline",
+            "type": "Dynamic",
+            "children": [
+              {
+                "id": "nc6",
+                "move": "2... Nc6",
+                "player": "black",
+                "explanation": "The most common defense. Black develops a piece and protects e5.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "bc4",
+                    "move": "3. Bc4",
+                    "player": "white",
+                    "explanation": "The Italian Game! Our bishop targets the weak f7 square (only defended by the king) and prepares to castle. This is one of the oldest and most natural openings.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bc5",
+                        "move": "3... Bc5",
+                        "player": "black",
+                        "explanation": "The Giuoco Piano ('Quiet Game'). Black develops symmetrically, also eyeing f2. This is the most solid response.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "c3",
+                            "move": "4. c3",
+                            "player": "white",
+                            "explanation": "Preparing d4 to build a big pawn center. This is the main line, leading to rich strategic play.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nf6_gp",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "Developing and attacking our e4 pawn. Now we must decide: quiet play with d3 or sharp play with d4.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": [
+                                  {
+                                    "id": "d3_pianissimo",
+                                    "move": "5. d3",
+                                    "player": "white",
+                                    "explanation": "The Giuoco Pianissimo ('Very Quiet Game'). We solidly protect e4 and plan slow maneuvering: Nbd2-f1-g3 to pressure Black's kingside. This is recommended for beginners - safe and strategic.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "d6_pianissimo",
+                                        "move": "5... d6",
+                                        "player": "black",
+                                        "explanation": "Solid. Black reinforces e5 and prepares to develop.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "o-o_pianissimo",
+                                            "move": "6. O-O",
+                                            "player": "white",
+                                            "explanation": "Castle early, castle often! Our king is safe and rook is connected. Next: Nbd2, then Nf1-g3.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "oo_black",
+                                                "move": "6... O-O",
+                                                "player": "black",
+                                                "explanation": "Both sides have castled. A typical middlegame position.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "nbd2",
+                                                    "move": "7. Nbd2",
+                                                    "player": "white",
+                                                    "explanation": "The knight heads to f1, then g3 or e3. From g3, it eyes f5 and h5. This slow buildup is typical of the Pianissimo.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": []
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "a6_pianissimo",
+                                        "move": "5... a6",
+                                        "player": "black",
+                                        "explanation": "Black prepares ...Ba7 (keeping the bishop safe from b4 ideas) and ...b5 to expand on the queenside.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "oo_vs_a6",
+                                            "move": "6. O-O",
+                                            "player": "white",
+                                            "explanation": "Castle first, then continue development. We're not worried about Black's slow plan.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "d4_sharp",
+                                    "move": "5. d4",
+                                    "player": "white",
+                                    "explanation": "The sharp approach! We strike in the center immediately. This leads to open, tactical positions. Good if you like complications.",
+                                    "status": "Sideline",
+                                    "type": "Dynamic",
+                                    "children": [
+                                      {
+                                        "id": "exd4",
+                                        "move": "5... exd4",
+                                        "player": "black",
+                                        "explanation": "Black captures, opening the position.",
+                                        "status": "Mainline",
+                                        "type": "Forcing",
+                                        "children": [
+                                          {
+                                            "id": "cxd4",
+                                            "move": "6. cxd4",
+                                            "player": "white",
+                                            "explanation": "We recapture with the pawn, maintaining the center.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "d6_slow",
+                                "move": "4... d6",
+                                "player": "black",
+                                "explanation": "A slower approach. Black solidifies e5 before developing the knight.",
+                                "status": "Sideline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "d4_vs_d6",
+                                    "move": "5. d4",
+                                    "player": "white",
+                                    "explanation": "We strike now while Black hasn't developed the kingside knight. This gives us a strong center.",
+                                    "status": "Mainline",
+                                    "type": "Dynamic",
+                                    "children": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "b4_evans",
+                            "move": "4. b4",
+                            "player": "white",
+                            "explanation": "The Evans Gambit! We sacrifice a pawn to deflect Black's bishop and gain rapid development. Very aggressive and fun, but requires knowing the theory.",
+                            "status": "Sideline",
+                            "type": "Tactical",
+                            "children": [
+                              {
+                                "id": "bxb4",
+                                "move": "4... Bxb4",
+                                "player": "black",
+                                "explanation": "Black accepts. Declining (4...Bb6) lets us play c3 and d4 with an extra tempo.",
+                                "status": "Mainline",
+                                "type": "Tactical",
+                                "children": [
+                                  {
+                                    "id": "c3_evans",
+                                    "move": "5. c3",
+                                    "player": "white",
+                                    "explanation": "Attacking the bishop and preparing d4. Black must retreat, giving us time.",
+                                    "status": "Mainline",
+                                    "type": "Forcing",
+                                    "children": [
+                                      {
+                                        "id": "ba5",
+                                        "move": "5... Ba5",
+                                        "player": "black",
+                                        "explanation": "The main retreat. The bishop stays active on the a5-e1 diagonal.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "d4_evans",
+                                            "move": "6. d4",
+                                            "player": "white",
+                                            "explanation": "Mission accomplished! We have a powerful center and open lines. Our lead in development compensates for the pawn.",
+                                            "status": "Mainline",
+                                            "type": "Dynamic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "nf6_twoknights",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "The Two Knights Defense. Black counterattacks immediately, ignoring the f7 threat. This is more aggressive than 3...Bc5.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "ng5",
+                            "move": "4. Ng5",
+                            "player": "white",
+                            "explanation": "The Knight Attack! We immediately threaten Nxf7, forking queen and rook. If Black doesn't know the correct defense, they can lose quickly. Very dangerous at beginner levels.",
+                            "status": "Mainline",
+                            "type": "Tactical",
+                            "children": [
+                              {
+                                "id": "d5_defense",
+                                "move": "4... d5",
+                                "player": "black",
+                                "explanation": "The only good move! Black blocks our bishop's view of f7. Any other move loses.",
+                                "status": "Mainline",
+                                "type": "Forcing",
+                                "children": [
+                                  {
+                                    "id": "exd5",
+                                    "move": "5. exd5",
+                                    "player": "white",
+                                    "explanation": "We capture, opening lines and maintaining the threat.",
+                                    "status": "Mainline",
+                                    "type": "Forcing",
+                                    "children": [
+                                      {
+                                        "id": "nxd5_blunder",
+                                        "move": "5... Nxd5",
+                                        "player": "black",
+                                        "explanation": "A BLUNDER! This is the move beginners always play, and it loses to the Fried Liver Attack. Strong players avoid this.",
+                                        "status": "Blunder",
+                                        "type": "Tactical",
+                                        "children": [
+                                          {
+                                            "id": "nxf7_friedliver",
+                                            "move": "6. Nxf7!",
+                                            "player": "white",
+                                            "explanation": "THE FRIED LIVER ATTACK! We sacrifice the knight to drag the king out. Black is in serious trouble.",
+                                            "status": "Mainline",
+                                            "type": "Tactical",
+                                            "children": [
+                                              {
+                                                "id": "kxf7",
+                                                "move": "6... Kxf7",
+                                                "player": "black",
+                                                "explanation": "Forced. The king must capture.",
+                                                "status": "Mainline",
+                                                "type": "Forcing",
+                                                "children": [
+                                                  {
+                                                    "id": "qf3_check",
+                                                    "move": "7. Qf3+",
+                                                    "player": "white",
+                                                    "explanation": "Check! And we attack the undefended knight on d5. Black is lost - they'll have to give up material or get mated.",
+                                                    "status": "Mainline",
+                                                    "type": "Tactical",
+                                                    "children": [
+                                                      {
+                                                        "id": "ke6",
+                                                        "move": "7... Ke6",
+                                                        "player": "black",
+                                                        "explanation": "The king tries to defend the knight. It looks absurd, but it's the only try.",
+                                                        "status": "Mainline",
+                                                        "type": "Forcing",
+                                                        "children": [
+                                                          {
+                                                            "id": "nc3",
+                                                            "move": "8. Nc3",
+                                                            "player": "white",
+                                                            "explanation": "Developing with attack on the knight. White has a crushing position - the black king is completely exposed.",
+                                                            "status": "Mainline",
+                                                            "type": "Tactical",
+                                                            "children": []
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "na5_polerio",
+                                        "move": "5... Na5",
+                                        "player": "black",
+                                        "explanation": "The Polerio Defense. The correct move! Black attacks our bishop instead of recapturing. This is what strong players do.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "bb5_check",
+                                            "move": "6. Bb5+",
+                                            "player": "white",
+                                            "explanation": "We save the bishop with check. The game becomes very sharp and theoretical from here.",
+                                            "status": "Mainline",
+                                            "type": "Forcing",
+                                            "children": [
+                                              {
+                                                "id": "c6",
+                                                "move": "6... c6",
+                                                "player": "black",
+                                                "explanation": "Blocking the check and attacking our pawn.",
+                                                "status": "Mainline",
+                                                "type": "Forcing",
+                                                "children": [
+                                                  {
+                                                    "id": "dxc6",
+                                                    "move": "7. dxc6",
+                                                    "player": "white",
+                                                    "explanation": "We capture, opening lines. The position is very sharp with chances for both sides.",
+                                                    "status": "Mainline",
+                                                    "type": "Forcing",
+                                                    "children": [
+                                                      {
+                                                        "id": "bxc6",
+                                                        "move": "7... bxc6",
+                                                        "player": "black",
+                                                        "explanation": "Black recaptures. They're down a pawn but have active pieces and attacking chances.",
+                                                        "status": "Mainline",
+                                                        "type": "Dynamic",
+                                                        "children": [
+                                                          {
+                                                            "id": "be2_retreat",
+                                                            "move": "8. Be2",
+                                                            "player": "white",
+                                                            "explanation": "The bishop retreats. We're a pawn up with a complex game ahead.",
+                                                            "status": "Mainline",
+                                                            "type": "Positional/Strategic",
+                                                            "children": []
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "d3_quiet_twoknights",
+                            "move": "4. d3",
+                            "player": "white",
+                            "explanation": "The quiet approach against the Two Knights. We avoid the sharp Ng5 lines and just develop solidly. Good if you want a calmer game.",
+                            "status": "Sideline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bc5_after_d3",
+                                "move": "4... Bc5",
+                                "player": "black",
+                                "explanation": "Now we transpose to Giuoco Pianissimo positions. A solid game for both sides.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "be7_hungarian",
+                        "move": "3... Be7",
+                        "player": "black",
+                        "explanation": "The Hungarian Defense. Very solid but passive. Black avoids all complications.",
+                        "status": "Sideline",
+                        "type": "Defensive/Prophylactic",
+                        "children": [
+                          {
+                            "id": "d4_vs_hungarian",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "We seize the center immediately. Black's passive setup gives us free rein.",
+                            "status": "Mainline",
+                            "type": "Dynamic",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "id": "d6_paris",
+                        "move": "3... d6",
+                        "player": "black",
+                        "explanation": "The Paris Defense / Semi-Italian. Solid but slow. Black reinforces e5 before developing.",
+                        "status": "Sideline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "d4_vs_paris",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "Strike in the center while Black is slow. We get a nice space advantage.",
+                            "status": "Mainline",
+                            "type": "Dynamic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "d6_philidor",
+                "move": "2... d6",
+                "player": "black",
+                "explanation": "The Philidor Defense. A solid but slightly passive choice. Black defends e5 with a pawn instead of developing a piece.",
+                "status": "Sideline",
+                "type": "Defensive/Prophylactic",
+                "children": [
+                  {
+                    "id": "d4_vs_philidor",
+                    "move": "3. d4",
+                    "player": "white",
+                    "explanation": "Challenge the center immediately! Black must deal with the tension.",
+                    "status": "Mainline",
+                    "type": "Dynamic",
+                    "children": [
+                      {
+                        "id": "nf6_philidor",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "The most common continuation. Black develops and attacks e4.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nc3_philidor",
+                            "move": "4. Nc3",
+                            "player": "white",
+                            "explanation": "Solid development, defending e4. We have more space and a strong center.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "id": "exd4_philidor",
+                        "move": "3... exd4",
+                        "player": "black",
+                        "explanation": "Black exchanges. This releases the tension but gives us a free hand in the center.",
+                        "status": "Sideline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nxd4_philidor",
+                            "move": "4. Nxd4",
+                            "player": "white",
+                            "explanation": "We recapture. Our knight is centralized and we have easy development ahead.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "nf6_petrov",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "The Petrov Defense (Russian Game). Black counterattacks instead of defending e5. This leads to symmetrical, drawish positions at high levels, but beginners can go wrong.",
+                "status": "Sideline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "nxe5_petrov",
+                    "move": "3. Nxe5",
+                    "player": "white",
+                    "explanation": "We simply capture the pawn. Black should NOT immediately recapture...",
+                    "status": "Mainline",
+                    "type": "Tactical",
+                    "children": [
+                      {
+                        "id": "d6_petrov",
+                        "move": "3... d6",
+                        "player": "black",
+                        "explanation": "The correct response. Black kicks our knight and will recapture on e4 next.",
+                        "status": "Mainline",
+                        "type": "Forcing",
+                        "children": [
+                          {
+                            "id": "nf3_retreat",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "We retreat. The position is equal but we have easy play.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nxe4_petrov",
+                                "move": "4... Nxe4",
+                                "player": "black",
+                                "explanation": "Black recovers the pawn. The game is level.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "d4_petrov",
+                                    "move": "5. d4",
+                                    "player": "white",
+                                    "explanation": "Grabbing space in the center. Simple chess ahead.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "nxe4_blunder",
+                        "move": "3... Nxe4",
+                        "player": "black",
+                        "explanation": "A common beginner mistake! This loses material after our queen check.",
+                        "status": "Blunder",
+                        "type": "Tactical",
+                        "children": [
+                          {
+                            "id": "qe2",
+                            "move": "4. Qe2",
+                            "player": "white",
+                            "explanation": "Pinning the knight to the king! Black is in trouble.",
+                            "status": "Mainline",
+                            "type": "Tactical",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "c5_sicilian",
+        "move": "1... c5",
+        "player": "black",
+        "explanation": "The Sicilian Defense - Black's most popular and ambitious response to 1.e4. Black fights for the d4 square from the flank. We'll play the Alapin (2.c3) to avoid massive theory.",
+        "status": "Mainline",
+        "type": "Dynamic",
+        "children": [
+          {
+            "id": "c3_alapin",
+            "move": "2. c3",
+            "player": "white",
+            "explanation": "The Alapin Variation! Instead of entering Black's theoretical maze with 2.Nf3 Nc6/d6 3.d4, we prepare to build an ideal pawn center with d4. This frustrates Sicilian players who want sharp tactical games.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "d5_alapin",
+                "move": "2... d5",
+                "player": "black",
+                "explanation": "The main response. Black strikes back immediately while we can't play Nc3 to attack the queen.",
+                "status": "Mainline",
+                "type": "Forcing",
+                "children": [
+                  {
+                    "id": "exd5",
+                    "move": "3. exd5",
+                    "player": "white",
+                    "explanation": "We capture. Taking is best - advancing e5 lets Black equalize easily.",
+                    "status": "Mainline",
+                    "type": "Forcing",
+                    "children": [
+                      {
+                        "id": "qxd5",
+                        "move": "3... Qxd5",
+                        "player": "black",
+                        "explanation": "Black recaptures with the queen. Normally this is bad (early queen development), but here we can't chase it with Nc3.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "d4_alapin",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "Mission accomplished! We have our ideal center. Now we develop rapidly.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nf6_alapin",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "Natural development, controlling e4.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "nf3_alapin",
+                                    "move": "5. Nf3",
+                                    "player": "white",
+                                    "explanation": "Solid development. If Black plays ...cxd4, we get an Isolated Queen Pawn (IQP) position - good for attacking players!",
+                                    "status": "Mainline",
+                                    "type": "Dynamic",
+                                    "children": [
+                                      {
+                                        "id": "e6_alapin",
+                                        "move": "5... e6",
+                                        "player": "black",
+                                        "explanation": "Black solidifies and prepares ...Be7 or ...Bd6.",
+                                        "status": "Mainline",
+                                        "type": "Defensive/Prophylactic",
+                                        "children": [
+                                          {
+                                            "id": "be3_alapin",
+                                            "move": "6. Be3",
+                                            "player": "white",
+                                            "explanation": "Developing and reinforcing d4. We're slightly better with more space and easy play.",
+                                            "status": "Mainline",
+                                            "type": "Dynamic",
+                                            "children": []
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "bg4_alapin",
+                                        "move": "5... Bg4",
+                                        "player": "black",
+                                        "explanation": "Black pins our knight, trying to disrupt our center.",
+                                        "status": "Sideline",
+                                        "type": "Tactical",
+                                        "children": [
+                                          {
+                                            "id": "be2_alapin",
+                                            "move": "6. Be2",
+                                            "player": "white",
+                                            "explanation": "Simple unpinning. We continue with normal development.",
+                                            "status": "Mainline",
+                                            "type": "Defensive/Prophylactic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "nf6_alapin",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "Black attacks e4 immediately, hoping to lure it forward.",
+                "status": "Mainline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "e5_alapin",
+                    "move": "3. e5",
+                    "player": "white",
+                    "explanation": "We accept! We gain space and kick the knight. Black will be cramped.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nd5_alapin",
+                        "move": "3... Nd5",
+                        "player": "black",
+                        "explanation": "The knight retreats to the only good square.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "d4_alapin2",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "Seizing the center as planned.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "cxd4_alapin",
+                                "move": "4... cxd4",
+                                "player": "black",
+                                "explanation": "Black exchanges to relieve the pressure.",
+                                "status": "Mainline",
+                                "type": "Forcing",
+                                "children": [
+                                  {
+                                    "id": "nf3_alapin2",
+                                    "move": "5. Nf3",
+                                    "player": "white",
+                                    "explanation": "The modern approach. We develop before recapturing, keeping Black guessing.",
+                                    "status": "Mainline",
+                                    "type": "Dynamic",
+                                    "children": [
+                                      {
+                                        "id": "e6_alapin2",
+                                        "move": "5... e6",
+                                        "player": "black",
+                                        "explanation": "Black prepares ...d6 to challenge our e5 pawn.",
+                                        "status": "Mainline",
+                                        "type": "Defensive/Prophylactic",
+                                        "children": [
+                                          {
+                                            "id": "cxd4_alapin2",
+                                            "move": "6. cxd4",
+                                            "player": "white",
+                                            "explanation": "Now we recapture. We have a space advantage and easy development.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "nc6_alapin",
+                "move": "2... Nc6",
+                "player": "black",
+                "explanation": "A mistake! This lets us achieve the ideal center.",
+                "status": "Sideline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "d4_vs_nc6",
+                    "move": "3. d4",
+                    "player": "white",
+                    "explanation": "We get our perfect center. Black cannot prevent this after 2...Nc6.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "e6_french",
+        "move": "1... e6",
+        "player": "black",
+        "explanation": "The French Defense. Black prepares ...d5 with support. The downside is the light-squared bishop gets blocked behind the pawns.",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "d4_vs_french",
+            "move": "2. d4",
+            "player": "white",
+            "explanation": "Taking the center. Now Black will play ...d5.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "d5_french",
+                "move": "2... d5",
+                "player": "black",
+                "explanation": "The typical French pawn structure emerges.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e5_advance",
+                    "move": "3. e5",
+                    "player": "white",
+                    "explanation": "The Advance Variation! We grab space and lock the center. Black's light bishop is now permanently restricted. This is simple and effective for beginners.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c5_advance",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "Black attacks our pawn chain at its base - a standard French plan.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "c3_advance",
+                            "move": "4. c3",
+                            "player": "white",
+                            "explanation": "We reinforce d4. Our pawn chain is solid.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nc6_advance",
+                                "move": "4... Nc6",
+                                "player": "black",
+                                "explanation": "Black develops and adds pressure to d4.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "nf3_advance",
+                                    "move": "5. Nf3",
+                                    "player": "white",
+                                    "explanation": "Solid development, defending d4.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "qb6_advance",
+                                        "move": "5... Qb6",
+                                        "player": "black",
+                                        "explanation": "Black pressures d4 and b2.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "be2_advance",
+                                            "move": "6. Be2",
+                                            "player": "white",
+                                            "explanation": "Preparing to castle. We can also play a4 to gain space on the queenside.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "c6_caro",
+        "move": "1... c6",
+        "player": "black",
+        "explanation": "The Caro-Kann Defense. Like the French, Black prepares ...d5, but keeps the light bishop free. Very solid.",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "d4_vs_caro",
+            "move": "2. d4",
+            "player": "white",
+            "explanation": "Standard. We take the center.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "d5_caro",
+                "move": "2... d5",
+                "player": "black",
+                "explanation": "Now Black challenges our center.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e5_caro_advance",
+                    "move": "3. e5",
+                    "player": "white",
+                    "explanation": "The Advance Variation - same idea as vs the French! We gain space. The difference is Black's bishop isn't blocked here.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bf5_caro",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "Black develops the bishop before it gets trapped. This is the key advantage of the Caro over the French.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nf3_caro",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "Simple development. We'll castle short and have a space advantage.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "e6_caro",
+                                "move": "4... e6",
+                                "player": "black",
+                                "explanation": "Black solidifies and prepares ...c5.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "be2_caro",
+                                    "move": "5. Be2",
+                                    "player": "white",
+                                    "explanation": "Preparing to castle. We have a slight edge due to space.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "c5_caro",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "Black strikes immediately at our chain.",
+                        "status": "Sideline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "c3_caro",
+                            "move": "4. c3",
+                            "player": "white",
+                            "explanation": "Reinforcing d4. Same structure as the French Advance.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d5_scandinavian",
+        "move": "1... d5",
+        "player": "black",
+        "explanation": "The Scandinavian Defense. Black immediately challenges our center, but brings the queen out early. We can exploit this.",
+        "status": "Mainline",
+        "type": "Forcing",
+        "children": [
+          {
+            "id": "exd5_scandi",
+            "move": "2. exd5",
+            "player": "white",
+            "explanation": "Always capture! If we play e5 instead, Black develops easily.",
+            "status": "Mainline",
+            "type": "Forcing",
+            "children": [
+              {
+                "id": "qxd5_scandi",
+                "move": "2... Qxd5",
+                "player": "black",
+                "explanation": "The main line. Black's queen comes out early - we'll attack it.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "nc3_scandi",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "Developing with tempo! The queen must move again.",
+                    "status": "Mainline",
+                    "type": "Dynamic",
+                    "children": [
+                      {
+                        "id": "qa5_scandi",
+                        "move": "3... Qa5",
+                        "player": "black",
+                        "explanation": "The most popular retreat. The queen stays active but safe.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "d4_scandi",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "We seize the center. Black has a knight out; we have a pawn center and developed knight.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nf6_scandi",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "Black develops.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "nf3_scandi",
+                                    "move": "5. Nf3",
+                                    "player": "white",
+                                    "explanation": "Natural development.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "c6_scandi",
+                                        "move": "5... c6",
+                                        "player": "black",
+                                        "explanation": "Black creates a retreat square on c7 for the queen.",
+                                        "status": "Mainline",
+                                        "type": "Defensive/Prophylactic",
+                                        "children": [
+                                          {
+                                            "id": "bd2_scandi",
+                                            "move": "6. Bd2",
+                                            "player": "white",
+                                            "explanation": "A clever move! The bishop eyes a5, potentially winning tempi with Nc3-b5 ideas later. We have a pleasant advantage.",
+                                            "status": "Mainline",
+                                            "type": "Tactical",
+                                            "children": []
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "bf5_scandi",
+                                        "move": "5... Bf5",
+                                        "player": "black",
+                                        "explanation": "Black develops the bishop actively before playing ...e6.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "bc4_scandi",
+                                            "move": "6. Bc4",
+                                            "player": "white",
+                                            "explanation": "Active development, eyeing f7. We're slightly better.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "qd8_scandi",
+                        "move": "3... Qd8",
+                        "player": "black",
+                        "explanation": "The 'Banker' retreat - all the way back. Solid but very passive.",
+                        "status": "Sideline",
+                        "type": "Defensive/Prophylactic",
+                        "children": [
+                          {
+                            "id": "d4_vs_qd8",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "We get the center for free. Nice advantage.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "id": "qd6_scandi",
+                        "move": "3... Qd6",
+                        "player": "black",
+                        "explanation": "The Gubinsky-Melts Defense. The queen stays central but can be awkward.",
+                        "status": "Sideline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "d4_vs_qd6",
+                            "move": "4. d4",
+                            "player": "white",
+                            "explanation": "Standard. We have a great position.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "nf6_scandi",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "The Modern Scandinavian. Black develops before recapturing. Less common but playable.",
+                "status": "Sideline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "d4_vs_nf6_scandi",
+                    "move": "3. d4",
+                    "player": "white",
+                    "explanation": "We keep the pawn and grab the center. If Black takes on d5, we develop with tempo.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nxd5_modern",
+                        "move": "3... Nxd5",
+                        "player": "black",
+                        "explanation": "Black recovers the pawn.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "c4_modern",
+                            "move": "4. c4",
+                            "player": "white",
+                            "explanation": "Kicking the knight and gaining space.",
+                            "status": "Mainline",
+                            "type": "Forcing",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nf6_alekhine",
+        "move": "1... Nf6",
+        "player": "black",
+        "explanation": "Alekhine's Defense. Black invites us to push the pawn and attack the knight. The knight will hop around while we overextend (in theory). Unusual but playable.",
+        "status": "Sideline",
+        "type": "Dynamic",
+        "children": [
+          {
+            "id": "e5_alekhine",
+            "move": "2. e5",
+            "player": "white",
+            "explanation": "We accept the challenge and chase the knight.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "nd5_alekhine",
+                "move": "2... Nd5",
+                "player": "black",
+                "explanation": "The knight retreats to its only good square.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "d4_alekhine",
+                    "move": "3. d4",
+                    "player": "white",
+                    "explanation": "We build a strong center. This is the main line.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "d6_alekhine",
+                        "move": "3... d6",
+                        "player": "black",
+                        "explanation": "Black challenges our center.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "nf3_alekhine",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "Solid development. We maintain our space advantage.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d6_pirc",
+        "move": "1... d6",
+        "player": "black",
+        "explanation": "The Pirc Defense. Black will fianchetto the king's bishop and let us build a big center, then attack it later. Hypermodern approach.",
+        "status": "Sideline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "d4_pirc",
+            "move": "2. d4",
+            "player": "white",
+            "explanation": "We take the full center. Classical play.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "nf6_pirc",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "Black develops, preparing ...g6 and ...Bg7.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "nc3_pirc",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "We develop and reinforce our center.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "g6_pirc",
+                        "move": "3... g6",
+                        "player": "black",
+                        "explanation": "The Pirc setup begins.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "f4_pirc",
+                            "move": "4. f4",
+                            "player": "white",
+                            "explanation": "The Austrian Attack - the most aggressive response. We prepare to storm the kingside.",
+                            "status": "Mainline",
+                            "type": "Dynamic",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "g6_modern",
+        "move": "1... g6",
+        "player": "black",
+        "explanation": "The Modern Defense. Similar to the Pirc but even more flexible. Black will fianchetto and wait to see our setup.",
+        "status": "Sideline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "d4_modern",
+            "move": "2. d4",
+            "player": "white",
+            "explanation": "Grab the center. Don't be shy!",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "bg7_modern",
+                "move": "2... Bg7",
+                "player": "black",
+                "explanation": "The fianchetto is complete.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "nc3_modern",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "Simple development. We have a big center and easy play.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
