@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V6.0 (Fixed)</title>
-    <link rel="stylesheet" href="https://unpkg.com/cm-chessboard@4/assets/styles/cm-chessboard.css"/>
+    <title>Chess Trainer V6.5</title>
+    <!-- V6.5: Fixed CSS path - use chessboard.css not styles/cm-chessboard.css -->
+    <link rel="stylesheet" href="https://unpkg.com/cm-chessboard@8/assets/chessboard.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
-        /* =========================================
-           CORE STYLES
-           ========================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         :root {
@@ -34,7 +32,6 @@
 
         .container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; }
         
-        /* HEADER */
         .header { text-align: center; padding: 20px 0; position: relative; }
         .header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--header-color); }
         .header-tools { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
@@ -42,7 +39,6 @@
         .tool-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
         .version-tag { background: #0ea5e9; color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
 
-        /* FOLDERS */
         .folder-header {
             background: rgba(255, 255, 255, 0.05); padding: 12px 16px; border-radius: 12px;
             margin-top: 20px; margin-bottom: 10px; cursor: pointer; font-weight: 600;
@@ -53,7 +49,6 @@
         .folder-content.open { display: block; }
         .folder-count { background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; color: #94a3b8; }
 
-        /* CARDS */
         .card {
             background: var(--card-bg); border: 1px solid #334155; border-radius: 16px;
             padding: 20px; margin-bottom: 12px; cursor: pointer; position: relative;
@@ -64,7 +59,6 @@
         .card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
         .icon-btn { background: rgba(100, 116, 139, 0.3); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
 
-        /* NAVIGATION (Grid from V5.8) */
         .nav-bar { display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; margin-bottom: 16px; }
         .nav-title { text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--accent-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .nav-btn { background: rgba(255,255,255,0.1); border: none; color: #e2e8f0; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
@@ -74,30 +68,49 @@
         }
         .screen { display: none; }
 
-        /* TABS */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab { flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3); border: 1px solid #334155; border-radius: 12px; color: #94a3b8; font-weight: 600; cursor: pointer; text-align: center; }
         .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
 
-        /* =========================================
-           V6.0 VISUAL BOARD STYLES
-           ========================================= */
+        /* V6.5: Improved board container with explicit dimensions */
         .board-container {
             width: 100%;
             max-width: 400px;
-            aspect-ratio: 1 / 1;
             margin: 0 auto 16px auto;
-            border-radius: 4px;
-            overflow: hidden;
             background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        /* V6.5: Fixed aspect ratio container */
+        .board-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            min-height: 280px;
+        }
+        
+        /* V6.5: Ensure cm-chessboard fills container */
+        .board-wrapper .cm-chessboard {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* V6.5: Fallback board square colors if external CSS fails */
+        .cm-chessboard .board .square.white {
+            fill: #f0d9b5;
+        }
+        .cm-chessboard .board .square.black {
+            fill: #b58863;
+        }
+        .cm-chessboard .coordinates {
+            fill: #666;
+            font-size: 10px;
         }
 
-        .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; }
-        .move-tag { padding: 4px 8px; border-radius: 4px; font-family: monospace; margin-right: 6px; display: inline-block; }
-        .move-tag.white { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
-        .move-tag.black { color: #e2e8f0; background: rgba(255, 255, 255, 0.1); }
-
-        /* V6 Compact Card */
         .current-move-card { background: #334155; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; border: 1px solid #475569; }
         .current-move-card.opponent { border-color: #94a3b8; }
         .move-label { font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 1px; }
@@ -109,7 +122,6 @@
         .toggle-container { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer; }
         .toggle-checkbox { accent-color: #8b5cf6; width: 16px; height: 16px; cursor: pointer; }
 
-        /* BUTTONS */
         .option-btn {
             width: 100%; display: flex; justify-content: space-between; align-items: flex-start;
             padding: 16px; margin-bottom: 10px; border-radius: 12px; cursor: pointer;
@@ -120,36 +132,26 @@
         .option-btn .main { flex: 1; }
         .option-btn h4 { font-family: monospace; font-size: 1.1rem; margin-bottom: 4px; }
         
-        /* Highlight Mainline (V6) */
         .option-btn.mainline-highlight { border: 1px solid #fbbf24; background: rgba(251, 191, 36, 0.05); }
         .option-btn.mainline-highlight h4 { color: #fbbf24; }
         
-        /* Expandable Text (V5.8) */
         .option-btn .branch-desc {
             font-size: 0.85rem; color: #94a3b8; margin: 4px 0 6px 0; line-height: 1.4;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-            transition: all 0.2s ease;
         }
-        .option-btn .branch-desc.expanded {
-            display: block; -webkit-line-clamp: unset; overflow: visible;
-        }
-        .expand-link {
-            color: #60a5fa; font-size: 0.75rem; font-weight: 600; text-decoration: none; margin-left: 6px; cursor: pointer;
-        }
-        .expand-link:hover { text-decoration: underline; }
+        .option-btn .branch-desc.expanded { display: block; -webkit-line-clamp: unset; overflow: visible; }
+        .expand-link { color: #60a5fa; font-size: 0.75rem; font-weight: 600; text-decoration: none; margin-left: 6px; cursor: pointer; }
         
         .option-btn .tags { display: flex; gap: 6px; margin-top: 4px; }
         .tag-pill { padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; text-transform: uppercase; font-weight: 700; }
         .tag-pill.status { background: rgba(255,255,255,0.1); color: #e2e8f0; }
         .tag-pill.type { background: rgba(0,0,0,0.2); color: #fbbf24; }
 
-        /* Colors */
         .option-btn.blue { border-left: 4px solid #3b82f6; }
         .option-btn.red { border-left: 4px solid #ef4444; }
         .option-btn.green { border-left: 4px solid #22c55e; }
         .option-btn.purple { border-left: 4px solid #a855f7; }
         
-        /* Remote Buttons */
         .option-btn.remote { background: transparent; border: 1px dashed; opacity: 0.9; }
         .option-btn.remote.blue { border-color: #3b82f6; }
         .option-btn.remote.red { border-color: #ef4444; }
@@ -159,14 +161,12 @@
         .option-btn.remote .badge { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; }
         .arrow-icon { font-size: 1.2rem; padding-left: 10px; opacity: 0.5; align-self: center; }
 
-        /* FORMS */
         .add-form { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; border: 1px dashed #475569; margin-bottom: 16px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; }
         .form-group input, .form-group select, textarea {
             width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-family: inherit;
         }
-        .form-group textarea, .edit-explanation textarea { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #334155 !important; }
         .json-area { width: 100%; min-height: 200px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 14px; color: #e2e8f0; font-family: monospace; font-size: 0.8rem; resize: vertical; }
 
         .details-toggle-btn { background: none; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; padding: 0; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 4px; }
@@ -178,16 +178,14 @@
         .end-card { text-align: center; padding: 40px 20px; } 
         .end-card h3 { font-size: 1.3rem; margin-bottom: 8px; } 
 
-        /* BREADCRUMB STYLES */
         .breadcrumb-item { 
             display: inline-block; padding: 6px 12px; border-radius: 6px; 
             background: rgba(255,255,255,0.1); color: #94a3b8; margin-right: 6px; 
-            cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
+            cursor: pointer; font-size: 0.9rem; font-weight: 500;
         }
         .breadcrumb-item:hover { background: var(--accent-color); color: #1e293b; }
         .breadcrumb-item.active { background: rgba(255,255,255,0.05); color: #e2e8f0; border: 1px solid #475569; pointer-events: none; }
 
-        /* MODAL */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; display:none; justify-content:center; align-items:center; padding:20px; }
         .modal-content { background:#1e293b; padding:24px; border-radius:16px; width:100%; max-width:400px; max-height:80vh; overflow-y:auto; }
         .ref-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #334155; }
@@ -197,14 +195,62 @@
         
         .builder-section { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 16px; } 
         .builder-section h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 16px; }
-        .template-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 0.8rem; color: #93c5fd; }
+        
+        .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; }
+        
+        /* V6.5: Loading and error states */
+        .board-loading { 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            height: 100%; 
+            min-height: 280px; 
+            color: #94a3b8;
+            gap: 12px;
+        }
+        .board-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #fbbf24;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .board-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 280px;
+            color: #f87171;
+            gap: 12px;
+            text-align: center;
+            padding: 20px;
+        }
+        .retry-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .retry-btn:hover {
+            background: #2563eb;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V6.0</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V6.5</span></h1>
                 <p>Visual Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
@@ -265,12 +311,19 @@
 
         <div id="trainerScreen" class="screen" style="display:none;">
             <div class="nav-bar">
-                <button id="trainerBackBtn" class="nav-btn" onclick="goBack()">← Menu</button>
+                <button class="nav-btn" onclick="goBack()">← Menu</button>
                 <div id="trainerHeaderTitle" class="nav-title">Opening Name</div>
                 <div id="returnContainer"></div>
             </div>
             
-            <div id="trainerBoard" class="board-container"></div>
+            <div id="trainerBoardContainer" class="board-container">
+                <div id="trainerBoard" class="board-wrapper">
+                    <div class="board-loading">
+                        <div class="spinner"></div>
+                        <span>Loading board...</span>
+                    </div>
+                </div>
+            </div>
             
             <div class="current-move-card" id="trainerMoveCard">
                 <div class="move-label" id="trainerMoveLabel">CURRENT MOVE</div>
@@ -308,7 +361,14 @@
             <div id="buildTab">
                 <div class="move-history" id="builderHistory"></div>
                 
-                <div id="builderBoard" class="board-container"></div>
+                <div id="builderBoardContainer" class="board-container">
+                    <div id="builderBoard" class="board-wrapper">
+                        <div class="board-loading">
+                            <div class="spinner"></div>
+                            <span>Loading board...</span>
+                        </div>
+                    </div>
+                </div>
                 
                 <div id="builderCurrentNode" class="current-move-card"></div>
                 
@@ -397,7 +457,60 @@
         </div>
     </div>
 
+<script type="module">
+// =====================================================
+// V6.5: IMPORT CM-CHESSBOARD v8 AS MODULE WITH BORDER_TYPE
+// =====================================================
+import { Chessboard, COLOR, FEN, BORDER_TYPE } from "https://unpkg.com/cm-chessboard@8/src/Chessboard.js";
+
+// Store references globally for use in non-module scripts
+window.Chessboard = Chessboard;
+window.COLOR = COLOR;
+window.FEN = FEN;
+window.BORDER_TYPE = BORDER_TYPE;
+window.boardModuleReady = true;
+
+console.log('V6.5: cm-chessboard module loaded successfully');
+
+// Notify that module is ready
+window.dispatchEvent(new Event('boardModuleReady'));
+</script>
+
 <script>
+// =====================================================
+// V6.5: INITIALIZATION WITH PROPER SEQUENCING
+// =====================================================
+let domReady = false;
+let moduleReady = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+    domReady = true;
+    console.log('V6.5: DOM ready');
+    tryInit();
+});
+
+window.addEventListener('boardModuleReady', () => {
+    moduleReady = true;
+    console.log('V6.5: Board module ready');
+    tryInit();
+});
+
+// Fallback timeout for module loading
+setTimeout(() => {
+    if (!moduleReady) {
+        console.warn('V6.5: Board module timeout - continuing without board');
+        moduleReady = true; // Allow app to continue
+        tryInit();
+    }
+}, 5000);
+
+function tryInit() {
+    if (domReady && moduleReady) {
+        console.log('V6.5: Both ready - initializing app');
+        init();
+    }
+}
+
 // =====================================================
 // UTILS
 // =====================================================
@@ -414,7 +527,7 @@ function validateTree(node) {
 }
 
 // =====================================================
-// DEMO DATA (RESTORABLE)
+// DEMO DATA
 // =====================================================
 const DEFAULT_OPENINGS = {
     white_italian: {
@@ -451,6 +564,13 @@ let currentPath = [], historyStack = [];
 let builderTree = null, builderPath = [], editingKey = null, builderColor = 'white';
 let transpositionMap = {};
 
+// V6.5: Board instances
+let trainerBoard = null;
+let builderBoardInstance = null;
+
+// V6.5: Debounce timer for transposition map
+let transpoRebuildTimer = null;
+
 // =====================================================
 // INIT & STORAGE
 // =====================================================
@@ -466,27 +586,43 @@ function init() {
         `<div class="ref-item"><div class="ref-term">${x.t}</div><div class="ref-def">${x.d}</div></div>`
     ).join('');
     
-    rebuildTranspositionMap();
+    // V6.5: Only rebuild transposition map when needed (entering trainer)
     renderMenu();
+    console.log('V6.5: App initialized');
 }
 
 function saveStorage() {
     localStorage.setItem('customOp5', JSON.stringify(OPENINGS));
-    rebuildTranspositionMap();
+    // V6.5: Debounced transposition rebuild
+    scheduleTranspoRebuild();
+}
+
+// V6.5: Debounced transposition map rebuild
+function scheduleTranspoRebuild() {
+    if (transpoRebuildTimer) {
+        clearTimeout(transpoRebuildTimer);
+    }
+    transpoRebuildTimer = setTimeout(() => {
+        rebuildTranspositionMap();
+    }, 1000);
 }
 
 // =====================================================
-// LOGIC: TRANSPOSITION & MIGRATION
+// TRANSPOSITION MAP WITH PATH TRACKING
 // =====================================================
 function rebuildTranspositionMap() {
-    if (typeof Chess === 'undefined') return;
+    if (typeof Chess === 'undefined') {
+        console.warn('V6.5: Chess.js not loaded, skipping transposition map');
+        return;
+    }
     transpositionMap = {};
     
     Object.entries(OPENINGS).forEach(([key, op]) => {
         if (!op.version) op = migrateOpening(op);
         
         const game = new Chess();
-        function mapNode(node) {
+        
+        function mapNode(node, pathToNode) {
             if (!node) return;
             const clean = node.move.replace(/^[0-9]+\.+/, '').trim();
             if (clean) {
@@ -496,23 +632,37 @@ function rebuildTranspositionMap() {
             const fen = game.fen();
             if (!transpositionMap[fen]) transpositionMap[fen] = [];
             
-            if (!transpositionMap[fen].find(x => x.key === key)) {
+            const existingEntry = transpositionMap[fen].find(x => x.key === key);
+            
+            if (!existingEntry) {
                 transpositionMap[fen].push({
                     key: key, 
                     name: op.name,
                     color: op.color,
                     group: op.group || "Uncategorized",
+                    pathToNode: [...pathToNode],
                     nextMoves: node.children ? node.children.map(c => ({
-                        move: c.move, type: c.type, status: c.status, explanation: c.explanation
+                        move: c.move, 
+                        type: c.type, 
+                        status: c.status, 
+                        explanation: c.explanation,
+                        childId: c.id
                     })) : []
                 });
             }
             
-            if (node.children) node.children.forEach(child => mapNode(child));
+            if (node.children) {
+                node.children.forEach(child => {
+                    mapNode(child, [...pathToNode, child.id]);
+                });
+            }
+            
             game.undo();
         }
-        if(op.tree) mapNode(op.tree);
+        
+        if(op.tree) mapNode(op.tree, []);
     });
+    console.log('V6.5: Transposition map rebuilt');
 }
 
 function migrateOpening(op) {
@@ -536,8 +686,12 @@ function migrateOpening(op) {
     return op;
 }
 
-function getUnifiedOptions(currentNode) {
-    let options = (currentNode.children || []).map(c => ({ ...c, source: 'local' }));
+function getUnifiedOptions(currentNode, currentFen) {
+    let options = (currentNode.children || []).map(c => ({ 
+        ...c, 
+        source: 'local',
+        childId: c.id 
+    }));
     
     if (document.getElementById('transpoToggle').checked) {
         const game = new Chess();
@@ -553,19 +707,28 @@ function getUnifiedOptions(currentNode) {
         const history = game.history();
         const lastMove = history.length > 0 ? history[history.length - 1] : "Start";
         const userColor = currentOpening.color;
+        const fen = game.fen();
 
-        const matches = transpositionMap[game.fen()] || [];
+        const matches = transpositionMap[fen] || [];
         matches.forEach(match => {
             if (match.key === currentOpeningKey) return;
             if (match.color !== userColor) return;
             
             match.nextMoves.forEach(next => {
                 if (options.find(o => o.move === next.move)) return;
+                
                 options.push({
-                    id: 'remote_' + match.key,
-                    move: next.move, type: next.type, status: next.status,
-                    source: 'remote', targetKey: match.key, targetName: match.name,
-                    via: lastMove, explanation: next.explanation 
+                    id: 'remote_' + match.key + '_' + next.childId,
+                    move: next.move, 
+                    type: next.type, 
+                    status: next.status,
+                    source: 'remote', 
+                    targetKey: match.key, 
+                    targetName: match.name,
+                    targetPath: match.pathToNode,
+                    targetChildId: next.childId,
+                    via: lastMove, 
+                    explanation: next.explanation 
                 });
             });
         });
@@ -574,38 +737,208 @@ function getUnifiedOptions(currentNode) {
 }
 
 // =====================================================
-// TRAINER LOGIC (ROBUST)
+// V6.5: CM-CHESSBOARD MANAGEMENT WITH IMPROVED CONFIG
+// =====================================================
+function isBoardModuleReady() {
+    return window.boardModuleReady && window.Chessboard;
+}
+
+async function createTrainerBoard(fen, orientation) {
+    const container = document.getElementById('trainerBoard');
+    if (!container) return;
+    
+    // Show loading state
+    container.innerHTML = `<div class="board-loading"><div class="spinner"></div><span>Loading board...</span></div>`;
+    
+    // Check if module is ready
+    if (!isBoardModuleReady()) {
+        console.error('V6.5: Board module not ready');
+        container.innerHTML = `<div class="board-error">
+            <span>⚠️ Board failed to load</span>
+            <p>The chess board library could not be loaded.</p>
+            <button class="retry-btn" onclick="retryTrainerBoard()">Retry</button>
+        </div>`;
+        return;
+    }
+    
+    // Destroy existing board
+    if (trainerBoard) {
+        try {
+            trainerBoard.destroy();
+        } catch (e) {
+            console.warn('V6.5: Error destroying trainer board:', e);
+        }
+        trainerBoard = null;
+    }
+    
+    // Clear container
+    container.innerHTML = '';
+    
+    try {
+        // V6.5: Create board with proper configuration
+        trainerBoard = new window.Chessboard(container, {
+            position: fen,
+            orientation: orientation === 'white' ? window.COLOR.white : window.COLOR.black,
+            assetsUrl: "https://unpkg.com/cm-chessboard@8/assets/",
+            style: {
+                cssClass: "default",
+                showCoordinates: true,
+                borderType: window.BORDER_TYPE ? window.BORDER_TYPE.none : undefined,
+                aspectRatio: 1,
+                pieces: {
+                    file: "pieces/standard.svg"
+                }
+            },
+            animationDuration: 0
+        });
+        console.log('V6.5: Trainer board created successfully');
+    } catch (err) {
+        console.error('V6.5: Failed to create trainer board:', err);
+        container.innerHTML = `<div class="board-error">
+            <span>⚠️ Board error</span>
+            <p>${err.message}</p>
+            <button class="retry-btn" onclick="retryTrainerBoard()">Retry</button>
+        </div>`;
+    }
+}
+
+function updateTrainerBoard(fen, orientation) {
+    if (trainerBoard) {
+        try {
+            trainerBoard.setPosition(fen, false);
+            trainerBoard.setOrientation(orientation === 'white' ? window.COLOR.white : window.COLOR.black);
+        } catch (e) {
+            console.warn('V6.5: Error updating trainer board:', e);
+        }
+    }
+}
+
+// V6.5: Retry function for trainer board
+function retryTrainerBoard() {
+    if (currentOpening) {
+        const game = new Chess();
+        const rootMove = currentOpening.tree.move.replace(/^[0-9]+\.+/, '').trim();
+        if (rootMove) game.move(rootMove);
+        createTrainerBoard(game.fen(), currentOpening.color);
+    }
+}
+
+async function createBuilderBoard(fen, orientation) {
+    const container = document.getElementById('builderBoard');
+    if (!container) return;
+    
+    container.innerHTML = `<div class="board-loading"><div class="spinner"></div><span>Loading board...</span></div>`;
+    
+    if (!isBoardModuleReady()) {
+        container.innerHTML = `<div class="board-error">
+            <span>⚠️ Board failed to load</span>
+            <button class="retry-btn" onclick="retryBuilderBoard()">Retry</button>
+        </div>`;
+        return;
+    }
+    
+    if (builderBoardInstance) {
+        try {
+            builderBoardInstance.destroy();
+        } catch (e) {
+            console.warn('V6.5: Error destroying builder board:', e);
+        }
+        builderBoardInstance = null;
+    }
+    
+    container.innerHTML = '';
+    
+    try {
+        builderBoardInstance = new window.Chessboard(container, {
+            position: fen,
+            orientation: orientation === 'white' ? window.COLOR.white : window.COLOR.black,
+            assetsUrl: "https://unpkg.com/cm-chessboard@8/assets/",
+            style: {
+                cssClass: "default",
+                showCoordinates: true,
+                borderType: window.BORDER_TYPE ? window.BORDER_TYPE.none : undefined,
+                aspectRatio: 1,
+                pieces: {
+                    file: "pieces/standard.svg"
+                }
+            },
+            animationDuration: 0
+        });
+        console.log('V6.5: Builder board created successfully');
+    } catch (err) {
+        console.error('V6.5: Failed to create builder board:', err);
+        container.innerHTML = `<div class="board-error">
+            <span>⚠️ Board error</span>
+            <button class="retry-btn" onclick="retryBuilderBoard()">Retry</button>
+        </div>`;
+    }
+}
+
+function updateBuilderBoard(fen, orientation) {
+    if (builderBoardInstance) {
+        try {
+            builderBoardInstance.setPosition(fen, false);
+            builderBoardInstance.setOrientation(orientation === 'white' ? window.COLOR.white : window.COLOR.black);
+        } catch (e) {
+            console.warn('V6.5: Error updating builder board:', e);
+        }
+    }
+}
+
+// V6.5: Retry function for builder board
+function retryBuilderBoard() {
+    if (builderTree) {
+        const game = new Chess();
+        const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
+        if (rootMove) game.move(rootMove);
+        createBuilderBoard(game.fen(), builderColor);
+    }
+}
+
+// =====================================================
+// TRAINER LOGIC
 // =====================================================
 function startTraining(key) {
     currentOpening = OPENINGS[key];
     currentOpeningKey = key;
     originalOpeningKey = key;
-    historyStack = []; currentPath = [];
+    historyStack = []; 
+    currentPath = [];
+    
+    // V6.5: Rebuild transposition map when entering trainer
+    rebuildTranspositionMap();
+    
     showScreen('trainerScreen');
     
-    // SAFETY: If board fails (CORS/Net), still render buttons
-    if(window.initVisualBoard) {
-        window.initVisualBoard('trainerBoard', false)
-            .then(() => {
-                 updateTheme();
-                 renderTrainer();
-            })
-            .catch(err => {
-                console.log("Board failed to load, proceeding with text only mode.");
-                updateTheme();
-                renderTrainer();
-            });
-    } else {
+    // Calculate initial FEN
+    const game = new Chess();
+    const rootMove = currentOpening.tree.move.replace(/^[0-9]+\.+/, '').trim();
+    if (rootMove) game.move(rootMove);
+    const initialFen = game.fen();
+    
+    // Create board after DOM is ready
+    setTimeout(async () => {
+        await createTrainerBoard(initialFen, currentOpening.color);
         updateTheme();
         renderTrainer();
-    }
+    }, 50);
 }
 
-function jumpToOpening(targetKey) {
-    historyStack.push({ key: currentOpeningKey, path: [...currentPath], name: currentOpening.name });
+function jumpToOpening(targetKey, targetPath, targetChildId) {
+    historyStack.push({ 
+        key: currentOpeningKey, 
+        path: [...currentPath], 
+        name: currentOpening.name 
+    });
+    
     currentOpeningKey = targetKey;
     currentOpening = OPENINGS[targetKey];
-    currentPath = []; 
+    
+    currentPath = [...targetPath];
+    if (targetChildId) {
+        currentPath.push(targetChildId);
+    }
+    
     updateTheme();
     renderTrainer();
 }
@@ -622,12 +955,10 @@ function returnToPrevious() {
 
 function renderTrainer() {
     let node = currentOpening.tree;
-    // Calculate FEN
     const game = new Chess();
     const rootMove = node.move.replace(/^[0-9]+\.+/, '').trim();
     if(rootMove) game.move(rootMove);
 
-    // Update Header Title (V5.8)
     document.getElementById('trainerHeaderTitle').innerText = currentOpening.name;
     
     for (let id of currentPath) {
@@ -638,16 +969,16 @@ function renderTrainer() {
         }
     }
     
-    // Update Board (Check if function exists first)
-    if(window.updateBoardPosition) {
-        window.updateBoardPosition(game.fen(), currentOpening.color);
-    }
+    const fen = game.fen();
+    
+    // Update board
+    updateTrainerBoard(fen, currentOpening.color);
 
-    // Determine Turn
+    // Determine turn
     const isPlayerTurn = (game.turn() === 'w' && currentOpening.color === 'white') || 
                          (game.turn() === 'b' && currentOpening.color === 'black');
     
-    // Update Text Card
+    // Update text card
     const cardEl = document.getElementById('trainerMoveCard');
     const labelEl = document.getElementById('trainerMoveLabel');
     const textEl = document.getElementById('currentMoveText');
@@ -657,31 +988,13 @@ function renderTrainer() {
     labelEl.textContent = isPlayerTurn ? "YOUR MOVE" : "OPPONENT'S MOVE";
     textEl.textContent = node.move;
     
-    // COACH MODE
+    // Coach mode
     const showCoach = document.getElementById('coachToggle').checked;
     const expl = node.explanation || "No notes.";
     explEl.textContent = showCoach ? expl : (expl === "No notes." ? expl : "Explanation hidden (Coach Mode)");
     
-    const options = getUnifiedOptions(node);
+    const options = getUnifiedOptions(node, fen);
     const container = document.getElementById('trainerOptions');
-    
-    // SAFETY: Coach Arrows - Wrap in try/catch to prevent UI crash if board is broken
-    try {
-        if(showCoach && window.drawCoachArrows) {
-            const arrows = options.map(opt => {
-                const temp = new Chess(game.fen());
-                const clean = opt.move.replace(/^[0-9]+\.+/, '').trim();
-                if(!clean) return null;
-                const m = temp.move(clean);
-                return m ? { from: m.from, to: m.to, type: opt.type } : null;
-            }).filter(x => x);
-            window.drawCoachArrows(arrows);
-        } else if (window.clearArrows) {
-            window.clearArrows();
-        }
-    } catch(err) {
-        console.log("Coach arrows failed to draw", err);
-    }
     
     if (options.length === 0) {
         container.innerHTML = `<div class="end-card"><h3>End of Line</h3><p>No moves defined.</p></div>`;
@@ -691,9 +1004,7 @@ function renderTrainer() {
     container.innerHTML = options.map(opt => {
         const branchName = opt.explanation || "";
         const color = getColorClass(opt.type);
-        // V5.8: Expandable Text
         const descriptionHtml = (showCoach && branchName) ? renderExpandableText(branchName) : '';
-        // V6: Highlight Mainline
         const isMain = isPlayerTurn && opt.status === 'Mainline';
         const highlightClass = isMain ? 'mainline-highlight' : '';
 
@@ -711,7 +1022,8 @@ function renderTrainer() {
                 <span class="arrow-icon">➜</span>
             </div>`;
         } else {
-            return `<div class="option-btn remote ${color}" onclick="jumpToOpening('${opt.targetKey}')">
+            const pathJson = JSON.stringify(opt.targetPath || []);
+            return `<div class="option-btn remote ${color}" onclick='handleTranspositionMove("${opt.targetKey}", ${pathJson}, "${opt.targetChildId}")'>
                 <div class="main">
                     <h4>${opt.move} <span class="badge">${opt.targetName}</span></h4>
                     ${descriptionHtml}
@@ -728,7 +1040,10 @@ function renderTrainer() {
     }).join('');
 }
 
-// V5.8 Feature: Expandable Text Helpers
+function handleTranspositionMove(targetKey, targetPath, targetChildId) {
+    jumpToOpening(targetKey, targetPath, targetChildId);
+}
+
 function renderExpandableText(text) {
     if (!text) return '';
     const isLong = text.length > 85; 
@@ -756,7 +1071,11 @@ function toggleDesc(e, id) {
     }
 }
 
-function handleLocalMove(id) { currentPath.push(id); renderTrainer(); }
+function handleLocalMove(id) { 
+    currentPath.push(id); 
+    renderTrainer(); 
+}
+
 function updateTheme() {
     document.body.className = (currentOpeningKey !== originalOpeningKey) ? 'theme-purple' : '';
     document.getElementById('returnContainer').innerHTML = historyStack.length ? 
@@ -835,17 +1154,72 @@ function importFromMenuText() {
 // =====================================================
 // BUILDER LOGIC
 // =====================================================
-function showNewOpeningModal() { builderTree = null; builderPath = []; editingKey = null; document.getElementById('modalName').value = ''; document.getElementById('modalGroup').value = ''; document.getElementById('modalMove').value = ''; document.getElementById('newOpeningModal').style.display = 'flex'; }
-function initializeNewOpening() { try { const name = document.getElementById('modalName').value || "Untitled"; const group = document.getElementById('modalGroup').value || "Uncategorized"; const color = document.getElementById('modalColor').value; const moveRaw = document.getElementById('modalMove').value || "e4"; const game = new Chess(); const validMove = game.move(moveRaw); if (validMove === null) { alert("Invalid starting move!"); return; } const formattedMove = "1. " + validMove.san; builderTree = { id: 'root', move: formattedMove, player: 'white', explanation: 'Starting move.', children: [] }; builderColor = color; document.getElementById('builderName').value = name; document.getElementById('builderGroup').value = group; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = color; document.getElementById('builderDesc').value = ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newOpeningModal').style.display = 'none'; showScreen('builderScreen'); renderBuilder(); } catch (e) { alert("Error: " + e.message); } }
-function editOpening(key) { editingKey = key; const op = OPENINGS[key]; builderTree = JSON.parse(JSON.stringify(op.tree)); builderColor = op.color; document.getElementById('builderName').value = op.name; document.getElementById('builderGroup').value = op.group || ''; const colorInput = document.getElementById('builderColor'); if (colorInput) colorInput.value = op.color; document.getElementById('builderDesc').value = op.description || ''; document.getElementById('newMoveInput').value = ''; document.getElementById('newExpl').value = ''; builderPath = []; showScreen('builderScreen'); 
-    // V6: Init interactive board with safety check
-    if(window.initVisualBoard) {
-        window.initVisualBoard('builderBoard', true)
-            .then(() => renderBuilder())
-            .catch(() => renderBuilder()); // Proceed even if board fails
-    } else {
+function showNewOpeningModal() { 
+    builderTree = null; 
+    builderPath = []; 
+    editingKey = null; 
+    document.getElementById('modalName').value = ''; 
+    document.getElementById('modalGroup').value = ''; 
+    document.getElementById('modalMove').value = ''; 
+    document.getElementById('newOpeningModal').style.display = 'flex'; 
+}
+
+function initializeNewOpening() { 
+    try { 
+        const name = document.getElementById('modalName').value || "Untitled"; 
+        const group = document.getElementById('modalGroup').value || "Uncategorized"; 
+        const color = document.getElementById('modalColor').value; 
+        const moveRaw = document.getElementById('modalMove').value || "e4"; 
+        const game = new Chess(); 
+        const validMove = game.move(moveRaw); 
+        if (validMove === null) { alert("Invalid starting move!"); return; } 
+        const formattedMove = "1. " + validMove.san; 
+        builderTree = { id: 'root', move: formattedMove, player: 'white', explanation: 'Starting move.', children: [] }; 
+        builderColor = color; 
+        document.getElementById('builderName').value = name; 
+        document.getElementById('builderGroup').value = group; 
+        const colorInput = document.getElementById('builderColor'); 
+        if (colorInput) colorInput.value = color; 
+        document.getElementById('builderDesc').value = ''; 
+        document.getElementById('newMoveInput').value = ''; 
+        document.getElementById('newExpl').value = ''; 
+        document.getElementById('newOpeningModal').style.display = 'none'; 
+        showScreen('builderScreen'); 
+        
+        const initialFen = game.fen();
+        setTimeout(async () => {
+            await createBuilderBoard(initialFen, builderColor);
+            renderBuilder();
+        }, 50);
+    } catch (e) { 
+        alert("Error: " + e.message); 
+    } 
+}
+
+function editOpening(key) { 
+    editingKey = key; 
+    const op = OPENINGS[key]; 
+    builderTree = JSON.parse(JSON.stringify(op.tree)); 
+    builderColor = op.color; 
+    document.getElementById('builderName').value = op.name; 
+    document.getElementById('builderGroup').value = op.group || ''; 
+    const colorInput = document.getElementById('builderColor'); 
+    if (colorInput) colorInput.value = op.color; 
+    document.getElementById('builderDesc').value = op.description || ''; 
+    document.getElementById('newMoveInput').value = ''; 
+    document.getElementById('newExpl').value = ''; 
+    builderPath = []; 
+    showScreen('builderScreen'); 
+    
+    const game = new Chess();
+    const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
+    if (rootMove) game.move(rootMove);
+    const initialFen = game.fen();
+    
+    setTimeout(async () => {
+        await createBuilderBoard(initialFen, builderColor);
         renderBuilder();
-    }
+    }, 50);
 }
 
 function renderBuilder() { 
@@ -870,10 +1244,7 @@ function renderBuilder() {
         } 
         node = tempNode; 
         
-        // V6: Update Board with safety
-        if(window.updateBoardPosition) {
-            window.updateBoardPosition(game.fen(), builderColor);
-        }
+        updateBuilderBoard(game.fen(), builderColor);
         
         document.getElementById('builderHistory').innerHTML = historyHtml; 
         
@@ -911,126 +1282,331 @@ function renderBuilder() {
         const deleteBtn = document.getElementById('btnDeleteBranch'); 
         if (deleteBtn) { deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch"; } 
         setupEnter(); 
-    } catch(e) { alert("Render Error: " + e.message); } 
+    } catch(e) { 
+        console.error("V6.5 Render Error:", e);
+    } 
 }
 
-function jumpToBuilderStep(index) { if (index === -1) builderPath = []; else builderPath = builderPath.slice(0, index + 1); renderBuilder(); }
-function addBuilderMove() { try { const inputEl = document.getElementById('newMoveInput'); const moveRaw = inputEl.value.trim(); if (!moveRaw) return; const game = new Chess(); const cleanMoveRegex = /^[0-9]+\.+/; if (!builderTree.move) throw new Error("Root move is missing."); let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim(); const rootResult = game.move(rootClean); if (!rootResult) { alert("Error: Root move is invalid."); return; } let node = builderTree; for (let id of builderPath) { node = node.children.find(c => c.id === id); let cleanMove = node.move.replace(cleanMoveRegex, '').trim(); game.move(cleanMove); } const moveObj = game.move(moveRaw); if (moveObj === null) { alert(`Illegal move: ${moveRaw}`); return; } const fen = game.fen(); const fenParts = fen.split(' '); const currentMoveNum = parseInt(fenParts[5]); const turn = game.turn(); let notation = ""; let player = ""; if (turn === 'b') { notation = `${currentMoveNum}. ${moveObj.san}`; player = 'white'; } else { notation = `${currentMoveNum - 1}... ${moveObj.san}`; player = 'black'; } if(!node.children) node.children = []; const newId = 'n' + Date.now(); node.children.push({ id: newId, move: notation, player: player, status: document.getElementById('newStatus').value, type: document.getElementById('newType').value, explanation: document.getElementById('newExpl').value, children: [] }); inputEl.value = ''; document.getElementById('newExpl').value = ''; document.getElementById('newStatus').selectedIndex = 0; builderPath.push(newId); renderBuilder(); } catch (err) { alert("Error: " + err.message); } }
-function deleteBuilderNode() { if (builderPath.length === 0) { if (confirm("Reset entire opening?")) showNewOpeningModal(); return; } if (!confirm('Delete current branch?')) return; const currentId = builderPath.pop(); let node = builderTree; for (let id of builderPath) node = node.children.find(c => c.id === id); node.children = node.children.filter(c => c.id !== currentId); renderBuilder(); }
-function deleteChild(id) { if(!confirm('Delete move?'))return; let n=builderTree; for(let pid of builderPath) n=n.children.find(c=>c.id===pid); n.children=n.children.filter(c=>c.id!==id); renderBuilder(); }
-function saveExplanation() { const val=document.getElementById('editExpl').value; let n=builderTree; for(let id of builderPath) n=n.children.find(c=>c.id===id); n.explanation=val; renderBuilder(); }
-function renderEditExplanation(node) { return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; }
-function getColorClass(type) { if (!type) return 'blue'; const t = type.toLowerCase(); if (t.includes('tact')||t.includes('forc')) return 'red'; if (t.includes('dynam')) return 'purple'; if (t.includes('defen')) return 'green'; return 'blue'; }
-function toggleDetails() { const d=document.getElementById('builderDetails'); d.style.display=d.style.display==='none'?'block':'none'; }
-function toggleRefModal() { document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; }
-function setupEnter() { setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); }
-function navigateToChild(id) { builderPath.push(id); renderBuilder(); }
-function builderBack() { builderPath.pop(); renderBuilder(); }
-function goBack() { showScreen('menuScreen'); }
-function exitBuilder() { showScreen('menuScreen'); renderMenu(); }
+function jumpToBuilderStep(index) { 
+    if (index === -1) builderPath = []; 
+    else builderPath = builderPath.slice(0, index + 1); 
+    renderBuilder(); 
+}
 
-function saveOpening() { const name = document.getElementById('builderName').value || "Untitled"; const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now()); const color = document.getElementById('builderColor').value || 'white'; OPENINGS[key] = { version: "4.0", name: name, group: document.getElementById('builderGroup').value || "Uncategorized", color: color, description: document.getElementById('builderDesc').value, tree: builderTree, startingMoves: "Custom" }; saveStorage(); exitBuilder(); }
-function buildOpeningObj() { return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; }
-function backupLibrary() { const json = JSON.stringify(OPENINGS, null, 2); const blob = new Blob([json], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chess_library_backup.json'; a.click(); }
-function restoreLibrary(input) { const file = input.files[0]; if (!file) return; if (!confirm("Overwrite library?")) return; const reader = new FileReader(); reader.onload = (e) => { try { OPENINGS = JSON.parse(e.target.result); saveStorage(); alert("Restored!"); renderMenu(); } catch (err) { alert("Invalid Backup"); } }; reader.readAsText(file); }
-function handleFileUpload(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const json = JSON.parse(e.target.result); if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); const migrated = migrateOpening(json); const key = 'import_' + Date.now(); OPENINGS[key] = migrated; saveStorage(); alert('Imported!'); renderMenu(); } catch (err) { alert('Invalid JSON: '+err.message); } }; reader.readAsText(file); }
-async function importFromUrl() { try { const res = await fetch(document.getElementById('importUrl').value); const json = await res.json(); const migrated = migrateOpening(json); OPENINGS['import_' + Date.now()] = migrated; saveStorage(); alert('Imported!'); document.getElementById('urlImportBox').style.display='none'; renderMenu(); } catch (e) { alert('Error loading URL'); } }
-function toggleUrlImport() { document.getElementById('jsonImportBox').style.display = 'none'; const el = document.getElementById('urlImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
-function toggleJsonImport() { document.getElementById('urlImportBox').style.display = 'none'; const el = document.getElementById('jsonImportBox'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
-function switchTab(t) { document.getElementById('tabBuild').classList.toggle('active', t === 'build'); document.getElementById('tabJson').classList.toggle('active', t === 'json'); document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none'; document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none'; if (t === 'json') { if (builderTree && builderTree.children) { document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2); } else { document.getElementById('jsonIn').value = ""; } } }
-function importBuilderJson() { try { let raw = document.getElementById('jsonIn').value; raw = raw.replace(/```json/g, '').replace(/```/g, '').trim(); const json = JSON.parse(raw); if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure"); builderTree = json.tree; builderColor = json.color; document.getElementById('builderName').value = json.name; document.getElementById('builderGroup').value = json.group || ""; document.getElementById('builderColor').value = json.color; document.getElementById('builderDesc').value = json.description || ""; alert("JSON loaded successfully. Click 'Save' to finish."); switchTab('build'); renderBuilder(); } catch(e) { alert("Error: " + e.message); } }
-function copyBuilderJson() { const txt = document.getElementById('jsonIn'); txt.select(); navigator.clipboard.writeText(txt.value); alert("Copied!"); }
+function addBuilderMove() { 
+    try { 
+        const inputEl = document.getElementById('newMoveInput'); 
+        const moveRaw = inputEl.value.trim(); 
+        if (!moveRaw) return; 
+        const game = new Chess(); 
+        const cleanMoveRegex = /^[0-9]+\.+/; 
+        if (!builderTree.move) throw new Error("Root move is missing."); 
+        let rootClean = builderTree.move.replace(cleanMoveRegex, '').trim(); 
+        const rootResult = game.move(rootClean); 
+        if (!rootResult) { alert("Error: Root move is invalid."); return; } 
+        let node = builderTree; 
+        for (let id of builderPath) { 
+            node = node.children.find(c => c.id === id); 
+            let cleanMove = node.move.replace(cleanMoveRegex, '').trim(); 
+            game.move(cleanMove); 
+        } 
+        const moveObj = game.move(moveRaw); 
+        if (moveObj === null) { alert(`Illegal move: ${moveRaw}`); return; } 
+        const fen = game.fen(); 
+        const fenParts = fen.split(' '); 
+        const currentMoveNum = parseInt(fenParts[5]); 
+        const turn = game.turn(); 
+        let notation = ""; 
+        let player = ""; 
+        if (turn === 'b') { 
+            notation = `${currentMoveNum}. ${moveObj.san}`; 
+            player = 'white'; 
+        } else { 
+            notation = `${currentMoveNum - 1}... ${moveObj.san}`; 
+            player = 'black'; 
+        } 
+        if(!node.children) node.children = []; 
+        const newId = 'n' + Date.now(); 
+        node.children.push({ 
+            id: newId, 
+            move: notation, 
+            player: player, 
+            status: document.getElementById('newStatus').value, 
+            type: document.getElementById('newType').value, 
+            explanation: document.getElementById('newExpl').value, 
+            children: [] 
+        }); 
+        inputEl.value = ''; 
+        document.getElementById('newExpl').value = ''; 
+        document.getElementById('newStatus').selectedIndex = 0; 
+        builderPath.push(newId); 
+        renderBuilder(); 
+    } catch (err) { 
+        alert("Error: " + err.message); 
+    } 
+}
 
-init();
-</script>
+function deleteBuilderNode() { 
+    if (builderPath.length === 0) { 
+        if (confirm("Reset entire opening?")) showNewOpeningModal(); 
+        return; 
+    } 
+    if (!confirm('Delete current branch?')) return; 
+    const currentId = builderPath.pop(); 
+    let node = builderTree; 
+    for (let id of builderPath) node = node.children.find(c => c.id === id); 
+    node.children = node.children.filter(c => c.id !== currentId); 
+    renderBuilder(); 
+}
 
-<script type="module">
-    import { Chessboard, COLOR, MARKER_TYPE, INPUT_EVENT_TYPE } 
-    from "https://unpkg.com/cm-chessboard@4/src/cm-chessboard/Chessboard.js"
+function deleteChild(id) { 
+    if(!confirm('Delete move?')) return; 
+    let n = builderTree; 
+    for(let pid of builderPath) n = n.children.find(c => c.id === pid); 
+    n.children = n.children.filter(c => c.id !== id); 
+    renderBuilder(); 
+}
 
-    window.visualBoard = null;
+function saveExplanation() { 
+    const val = document.getElementById('editExpl').value; 
+    let n = builderTree; 
+    for(let id of builderPath) n = n.children.find(c => c.id === id); 
+    n.explanation = val; 
+    renderBuilder(); 
+}
 
-    window.initVisualBoard = async function(elementId, interactive = false) {
-        if (window.visualBoard) {
-            window.visualBoard.destroy();
-        }
-        
-        // V6 FIX: Explicit Sprite URL for safer CDN loading
-        window.visualBoard = await new Chessboard(document.getElementById(elementId), {
-            position: "start",
-            assetsUrl: "https://unpkg.com/cm-chessboard@4/assets/",
-            style: {
-                cssClass: "default",
-                showCoordinates: true, 
-            },
-            responsive: true,
-            sprite: { url: "https://unpkg.com/cm-chessboard@4/assets/images/chessboard-sprite.svg" }
-        });
+function renderEditExplanation(node) { 
+    return `<div style="margin-top:10px; border-top:1px solid #475569; padding-top:10px;"><textarea id="editExpl" rows="2" style="width:100%; background:#1e293b; color:#fff; border-radius:8px; padding:8px;">${node.explanation || ''}</textarea><button class="nav-btn" style="margin-top:4px; font-size:0.8rem;" onclick="saveExplanation()">Update Notes</button></div>`; 
+}
 
-        if (interactive) {
-            window.visualBoard.enableMoveInput((event) => {
-                switch (event.type) {
-                    case INPUT_EVENT_TYPE.moveInputFinished:
-                        if (event.legalMove) {
-                            if(window.handleBoardInput) window.handleBoardInput(event.moveFrom, event.moveTo);
-                            return true; 
-                        }
-                        return false; 
-                }
-            });
-        }
+function getColorClass(type) { 
+    if (!type) return 'blue'; 
+    const t = type.toLowerCase(); 
+    if (t.includes('tact')||t.includes('forc')) return 'red'; 
+    if (t.includes('dynam')) return 'purple'; 
+    if (t.includes('defen')) return 'green'; 
+    return 'blue'; 
+}
+
+function toggleDetails() { 
+    const d = document.getElementById('builderDetails'); 
+    d.style.display = d.style.display === 'none' ? 'block' : 'none'; 
+}
+
+function toggleRefModal() { 
+    document.getElementById('refModal').style.display = document.getElementById('refModal').style.display === 'flex' ? 'none' : 'flex'; 
+}
+
+function setupEnter() { 
+    setTimeout(() => { document.getElementById('newMoveInput')?.focus(); }, 50); 
+}
+
+function navigateToChild(id) { 
+    builderPath.push(id); 
+    renderBuilder(); 
+}
+
+function builderBack() { 
+    builderPath.pop(); 
+    renderBuilder(); 
+}
+
+function goBack() { 
+    // V6.5: Cleanup boards when leaving trainer
+    if (trainerBoard) {
+        try { trainerBoard.destroy(); } catch(e) {}
+        trainerBoard = null;
     }
+    showScreen('menuScreen'); 
+}
 
-    window.updateBoardPosition = function(fen, orientation = 'white') {
-        if(window.visualBoard) {
-            if(window.visualBoard.getPosition() !== fen) {
-                window.visualBoard.setPosition(fen, true);
-            }
-            window.visualBoard.setOrientation(orientation === 'white' ? COLOR.white : COLOR.black);
-        }
+function exitBuilder() { 
+    // V6.5: Cleanup boards when leaving builder
+    if (builderBoardInstance) {
+        try { builderBoardInstance.destroy(); } catch(e) {}
+        builderBoardInstance = null;
     }
-    
-    window.drawCoachArrows = function(moves) {
-        if(!window.visualBoard) return;
-        window.visualBoard.removeMarkers(MARKER_TYPE.arrow);
-        
-        moves.forEach(m => {
-            window.visualBoard.addMarker(MARKER_TYPE.arrow, {from: m.from, to: m.to});
-        });
-    }
+    showScreen('menuScreen'); 
+    renderMenu(); 
+}
 
-    window.clearArrows = function() {
-        if(window.visualBoard) window.visualBoard.removeMarkers(MARKER_TYPE.arrow);
-    }
-    
-    window.handleBoardInput = function(from, to) {
-        const event = new CustomEvent('boardMove', { detail: { from, to } });
-        document.dispatchEvent(event);
-    }
-</script>
+function saveOpening() { 
+    const name = document.getElementById('builderName').value || "Untitled"; 
+    const key = editingKey || (name.toLowerCase().replace(/\s/g, '_') + '_' + Date.now()); 
+    const color = document.getElementById('builderColor').value || 'white'; 
+    OPENINGS[key] = { 
+        version: "4.0", 
+        name: name, 
+        group: document.getElementById('builderGroup').value || "Uncategorized", 
+        color: color, 
+        description: document.getElementById('builderDesc').value, 
+        tree: builderTree, 
+        startingMoves: "Custom" 
+    }; 
+    saveStorage(); 
+    exitBuilder(); 
+}
 
-<script>
-document.addEventListener('boardMove', (e) => {
-    const { from, to } = e.detail;
-    const game = new Chess();
-    if (!builderTree) return;
-    const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
-    game.move(rootMove);
-    let node = builderTree;
-    for (let id of builderPath) {
-        node = node.children.find(c => c.id === id);
-        game.move(node.move.replace(/^[0-9]+\.+/, '').trim());
-    }
-    try {
-        const move = game.move({ from, to, promotion: 'q' });
-        if (move) {
-            document.getElementById('newMoveInput').value = move.san;
-            addBuilderMove();
-        }
-    } catch(err) {
-        console.log("Invalid Board Move");
-    }
-});
+function buildOpeningObj() { 
+    return { version:"4.0", name:document.getElementById('builderName').value, color:builderColor, tree:builderTree }; 
+}
+
+function backupLibrary() { 
+    const json = JSON.stringify(OPENINGS, null, 2); 
+    const blob = new Blob([json], {type: 'application/json'}); 
+    const a = document.createElement('a'); 
+    a.href = URL.createObjectURL(blob); 
+    a.download = 'chess_library_backup.json'; 
+    a.click(); 
+}
+
+function restoreLibrary(input) { 
+    const file = input.files[0]; 
+    if (!file) return; 
+    if (!confirm("Overwrite library?")) return; 
+    const reader = new FileReader(); 
+    reader.onload = (e) => { 
+        try { 
+            OPENINGS = JSON.parse(e.target.result); 
+            saveStorage(); 
+            alert("Restored!"); 
+            renderMenu(); 
+        } catch (err) { 
+            alert("Invalid Backup"); 
+        } 
+    }; 
+    reader.readAsText(file); 
+}
+
+function handleFileUpload(input) { 
+    const file = input.files[0]; 
+    if (!file) return; 
+    const reader = new FileReader(); 
+    reader.onload = (e) => { 
+        try { 
+            const json = JSON.parse(e.target.result); 
+            if(!validateTree(json.tree)) throw new Error("Invalid V4 Structure"); 
+            const migrated = migrateOpening(json); 
+            const key = 'import_' + Date.now(); 
+            OPENINGS[key] = migrated; 
+            saveStorage(); 
+            alert('Imported!'); 
+            renderMenu(); 
+        } catch (err) { 
+            alert('Invalid JSON: '+err.message); 
+        } 
+    }; 
+    reader.readAsText(file); 
+}
+
+async function importFromUrl() { 
+    try { 
+        const res = await fetch(document.getElementById('importUrl').value); 
+        const json = await res.json(); 
+        const migrated = migrateOpening(json); 
+        OPENINGS['import_' + Date.now()] = migrated; 
+        saveStorage(); 
+        alert('Imported!'); 
+        document.getElementById('urlImportBox').style.display='none'; 
+        renderMenu(); 
+    } catch (e) { 
+        alert('Error loading URL'); 
+    } 
+}
+
+function toggleUrlImport() { 
+    document.getElementById('jsonImportBox').style.display = 'none'; 
+    const el = document.getElementById('urlImportBox'); 
+    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
+}
+
+function toggleJsonImport() { 
+    document.getElementById('urlImportBox').style.display = 'none'; 
+    const el = document.getElementById('jsonImportBox'); 
+    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
+}
+
+function switchTab(t) { 
+    document.getElementById('tabBuild').classList.toggle('active', t === 'build'); 
+    document.getElementById('tabJson').classList.toggle('active', t === 'json'); 
+    document.getElementById('buildTab').style.display = t === 'build' ? 'block' : 'none'; 
+    document.getElementById('jsonTab').style.display = t === 'json' ? 'block' : 'none'; 
+    if (t === 'json') { 
+        if (builderTree && builderTree.children) { 
+            document.getElementById('jsonIn').value = JSON.stringify(buildOpeningObj(), null, 2); 
+        } else { 
+            document.getElementById('jsonIn').value = ""; 
+        } 
+    } 
+}
+
+function importBuilderJson() { 
+    try { 
+        let raw = document.getElementById('jsonIn').value; 
+        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim(); 
+        const json = JSON.parse(raw); 
+        if(!validateTree(json.tree)) throw new Error("Invalid V4 Tree Structure"); 
+        builderTree = json.tree; 
+        builderColor = json.color; 
+        document.getElementById('builderName').value = json.name; 
+        document.getElementById('builderGroup').value = json.group || ""; 
+        document.getElementById('builderColor').value = json.color; 
+        document.getElementById('builderDesc').value = json.description || ""; 
+        alert("JSON loaded successfully. Click 'Save' to finish."); 
+        switchTab('build'); 
+        renderBuilder(); 
+    } catch(e) { 
+        alert("Error: " + e.message); 
+    } 
+}
+
+function copyBuilderJson() { 
+    const txt = document.getElementById('jsonIn'); 
+    txt.select(); 
+    navigator.clipboard.writeText(txt.value); 
+    alert("Copied!"); 
+}
+
+// =====================================================
+// V6.5: GLOBALIZE ALL FUNCTIONS FOR ONCLICK HANDLERS
+// =====================================================
+window.backupLibrary = backupLibrary;
+window.restoreLibrary = restoreLibrary;
+window.showNewOpeningModal = showNewOpeningModal;
+window.initializeNewOpening = initializeNewOpening;
+window.toggleFolder = toggleFolder;
+window.startTraining = startTraining;
+window.editOpening = editOpening;
+window.deleteOpening = deleteOpening;
+window.goBack = goBack;
+window.returnToPrevious = returnToPrevious;
+window.renderTrainer = renderTrainer;
+window.handleLocalMove = handleLocalMove;
+window.handleTranspositionMove = handleTranspositionMove;
+window.toggleDesc = toggleDesc;
+window.exitBuilder = exitBuilder;
+window.saveOpening = saveOpening;
+window.switchTab = switchTab;
+window.jumpToBuilderStep = jumpToBuilderStep;
+window.navigateToChild = navigateToChild;
+window.deleteChild = deleteChild;
+window.builderBack = builderBack;
+window.addBuilderMove = addBuilderMove;
+window.deleteBuilderNode = deleteBuilderNode;
+window.toggleDetails = toggleDetails;
+window.toggleRefModal = toggleRefModal;
+window.saveExplanation = saveExplanation;
+window.importBuilderJson = importBuilderJson;
+window.copyBuilderJson = copyBuilderJson;
+window.handleFileUpload = handleFileUpload;
+window.importFromUrl = importFromUrl;
+window.toggleUrlImport = toggleUrlImport;
+window.toggleJsonImport = toggleJsonImport;
+window.importFromMenuText = importFromMenuText;
+window.retryTrainerBoard = retryTrainerBoard;
+window.retryBuilderBoard = retryBuilderBoard;
+
+console.log('V6.5: All functions globalized');
 </script>
 </body>
 </html>
