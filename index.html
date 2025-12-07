@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V6.5</title>
-    <!-- V6.5: Fixed CSS path - use chessboard.css not styles/cm-chessboard.css -->
+    <title>Chess Trainer V6.6</title>
+    <!-- V6.6: Added back button and last move highlighting -->
     <link rel="stylesheet" href="https://unpkg.com/cm-chessboard@8/assets/chessboard.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
@@ -59,20 +59,28 @@
         .card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
         .icon-btn { background: rgba(100, 116, 139, 0.3); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
 
-        .nav-bar { display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; margin-bottom: 16px; }
+        .nav-bar { display: grid; grid-template-columns: 80px 1fr auto; align-items: center; gap: 8px; margin-bottom: 16px; }
         .nav-title { text-align: center; font-size: 0.9rem; font-weight: 700; color: var(--accent-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .nav-btn { background: rgba(255,255,255,0.1); border: none; color: #e2e8f0; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .nav-right { display: flex; gap: 8px; align-items: center; }
         .return-btn {
             background: rgba(139, 92, 246, 0.2); border: 1px solid #8b5cf6; color: #c4b5fd;
             display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
         }
+        /* V6.6: Back button styling */
+        .back-btn {
+            background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd;
+            padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
+        }
+        .back-btn:hover { background: rgba(59, 130, 246, 0.3); }
         .screen { display: none; }
 
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab { flex: 1; padding: 14px; background: rgba(51, 65, 85, 0.3); border: 1px solid #334155; border-radius: 12px; color: #94a3b8; font-weight: 600; cursor: pointer; text-align: center; }
         .tab.active { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; }
 
-        /* V6.5: Improved board container with explicit dimensions */
+        /* V6.6: Improved board container with explicit dimensions */
         .board-container {
             width: 100%;
             max-width: 400px;
@@ -82,7 +90,7 @@
             position: relative;
         }
         
-        /* V6.5: Fixed aspect ratio container */
+        /* V6.6: Fixed aspect ratio container */
         .board-wrapper {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -90,7 +98,7 @@
             min-height: 280px;
         }
         
-        /* V6.5: Ensure cm-chessboard fills container */
+        /* V6.6: Ensure cm-chessboard fills container */
         .board-wrapper .cm-chessboard {
             position: absolute !important;
             top: 0 !important;
@@ -99,7 +107,7 @@
             height: 100% !important;
         }
         
-        /* V6.5: Fallback board square colors if external CSS fails */
+        /* V6.6: Fallback board square colors if external CSS fails */
         .cm-chessboard .board .square.white {
             fill: #f0d9b5;
         }
@@ -109,6 +117,11 @@
         .cm-chessboard .coordinates {
             fill: #666;
             font-size: 10px;
+        }
+        
+        /* V6.6: Last move highlight marker styling */
+        .cm-chessboard .marker.last-move {
+            fill: rgba(255, 255, 0, 0.4);
         }
 
         .current-move-card { background: #334155; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; border: 1px solid #475569; }
@@ -198,7 +211,7 @@
         
         .move-history { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; }
         
-        /* V6.5: Loading and error states */
+        /* V6.6: Loading and error states */
         .board-loading { 
             display: flex; 
             flex-direction: column;
@@ -250,7 +263,7 @@
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V6.5</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V6.6</span></h1>
                 <p>Visual Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
@@ -313,7 +326,11 @@
             <div class="nav-bar">
                 <button class="nav-btn" onclick="goBack()">← Menu</button>
                 <div id="trainerHeaderTitle" class="nav-title">Opening Name</div>
-                <div id="returnContainer"></div>
+                <!-- V6.6: Updated nav-right with back button -->
+                <div class="nav-right">
+                    <button class="back-btn" id="trainerBackBtn" onclick="trainerBack()" style="display:none;">↩ Back</button>
+                    <div id="returnContainer"></div>
+                </div>
             </div>
             
             <div id="trainerBoardContainer" class="board-container">
@@ -459,18 +476,21 @@
 
 <script type="module">
 // =====================================================
-// V6.5: IMPORT CM-CHESSBOARD v8 AS MODULE WITH BORDER_TYPE
+// V6.6: IMPORT CM-CHESSBOARD v8 WITH MARKERS EXTENSION
 // =====================================================
 import { Chessboard, COLOR, FEN, BORDER_TYPE } from "https://unpkg.com/cm-chessboard@8/src/Chessboard.js";
+import { Markers, MARKER_TYPE } from "https://unpkg.com/cm-chessboard@8/src/extensions/markers/Markers.js";
 
 // Store references globally for use in non-module scripts
 window.Chessboard = Chessboard;
 window.COLOR = COLOR;
 window.FEN = FEN;
 window.BORDER_TYPE = BORDER_TYPE;
+window.Markers = Markers;
+window.MARKER_TYPE = MARKER_TYPE;
 window.boardModuleReady = true;
 
-console.log('V6.5: cm-chessboard module loaded successfully');
+console.log('V6.6: cm-chessboard module with Markers loaded successfully');
 
 // Notify that module is ready
 window.dispatchEvent(new Event('boardModuleReady'));
@@ -478,27 +498,27 @@ window.dispatchEvent(new Event('boardModuleReady'));
 
 <script>
 // =====================================================
-// V6.5: INITIALIZATION WITH PROPER SEQUENCING
+// V6.6: INITIALIZATION WITH PROPER SEQUENCING
 // =====================================================
 let domReady = false;
 let moduleReady = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     domReady = true;
-    console.log('V6.5: DOM ready');
+    console.log('V6.6: DOM ready');
     tryInit();
 });
 
 window.addEventListener('boardModuleReady', () => {
     moduleReady = true;
-    console.log('V6.5: Board module ready');
+    console.log('V6.6: Board module ready');
     tryInit();
 });
 
 // Fallback timeout for module loading
 setTimeout(() => {
     if (!moduleReady) {
-        console.warn('V6.5: Board module timeout - continuing without board');
+        console.warn('V6.6: Board module timeout - continuing without board');
         moduleReady = true; // Allow app to continue
         tryInit();
     }
@@ -506,7 +526,7 @@ setTimeout(() => {
 
 function tryInit() {
     if (domReady && moduleReady) {
-        console.log('V6.5: Both ready - initializing app');
+        console.log('V6.6: Both ready - initializing app');
         init();
     }
 }
@@ -564,11 +584,14 @@ let currentPath = [], historyStack = [];
 let builderTree = null, builderPath = [], editingKey = null, builderColor = 'white';
 let transpositionMap = {};
 
-// V6.5: Board instances
+// V6.6: Board instances
 let trainerBoard = null;
 let builderBoardInstance = null;
 
-// V6.5: Debounce timer for transposition map
+// V6.6: Track last move for highlighting
+let lastMoveSquares = null;
+
+// V6.6: Debounce timer for transposition map
 let transpoRebuildTimer = null;
 
 // =====================================================
@@ -586,18 +609,18 @@ function init() {
         `<div class="ref-item"><div class="ref-term">${x.t}</div><div class="ref-def">${x.d}</div></div>`
     ).join('');
     
-    // V6.5: Only rebuild transposition map when needed (entering trainer)
+    // V6.6: Only rebuild transposition map when needed (entering trainer)
     renderMenu();
-    console.log('V6.5: App initialized');
+    console.log('V6.6: App initialized');
 }
 
 function saveStorage() {
     localStorage.setItem('customOp5', JSON.stringify(OPENINGS));
-    // V6.5: Debounced transposition rebuild
+    // V6.6: Debounced transposition rebuild
     scheduleTranspoRebuild();
 }
 
-// V6.5: Debounced transposition map rebuild
+// V6.6: Debounced transposition map rebuild
 function scheduleTranspoRebuild() {
     if (transpoRebuildTimer) {
         clearTimeout(transpoRebuildTimer);
@@ -612,7 +635,7 @@ function scheduleTranspoRebuild() {
 // =====================================================
 function rebuildTranspositionMap() {
     if (typeof Chess === 'undefined') {
-        console.warn('V6.5: Chess.js not loaded, skipping transposition map');
+        console.warn('V6.6: Chess.js not loaded, skipping transposition map');
         return;
     }
     transpositionMap = {};
@@ -662,7 +685,7 @@ function rebuildTranspositionMap() {
         
         if(op.tree) mapNode(op.tree, []);
     });
-    console.log('V6.5: Transposition map rebuilt');
+    console.log('V6.6: Transposition map rebuilt');
 }
 
 function migrateOpening(op) {
@@ -737,7 +760,7 @@ function getUnifiedOptions(currentNode, currentFen) {
 }
 
 // =====================================================
-// V6.5: CM-CHESSBOARD MANAGEMENT WITH IMPROVED CONFIG
+// V6.6: CM-CHESSBOARD MANAGEMENT WITH MARKERS
 // =====================================================
 function isBoardModuleReady() {
     return window.boardModuleReady && window.Chessboard;
@@ -752,7 +775,7 @@ async function createTrainerBoard(fen, orientation) {
     
     // Check if module is ready
     if (!isBoardModuleReady()) {
-        console.error('V6.5: Board module not ready');
+        console.error('V6.6: Board module not ready');
         container.innerHTML = `<div class="board-error">
             <span>⚠️ Board failed to load</span>
             <p>The chess board library could not be loaded.</p>
@@ -766,7 +789,7 @@ async function createTrainerBoard(fen, orientation) {
         try {
             trainerBoard.destroy();
         } catch (e) {
-            console.warn('V6.5: Error destroying trainer board:', e);
+            console.warn('V6.6: Error destroying trainer board:', e);
         }
         trainerBoard = null;
     }
@@ -775,7 +798,7 @@ async function createTrainerBoard(fen, orientation) {
     container.innerHTML = '';
     
     try {
-        // V6.5: Create board with proper configuration
+        // V6.6: Create board with Markers extension
         trainerBoard = new window.Chessboard(container, {
             position: fen,
             orientation: orientation === 'white' ? window.COLOR.white : window.COLOR.black,
@@ -789,11 +812,14 @@ async function createTrainerBoard(fen, orientation) {
                     file: "pieces/standard.svg"
                 }
             },
-            animationDuration: 0
+            extensions: [
+                { class: window.Markers }
+            ],
+            animationDuration: 200
         });
-        console.log('V6.5: Trainer board created successfully');
+        console.log('V6.6: Trainer board created successfully with Markers');
     } catch (err) {
-        console.error('V6.5: Failed to create trainer board:', err);
+        console.error('V6.6: Failed to create trainer board:', err);
         container.innerHTML = `<div class="board-error">
             <span>⚠️ Board error</span>
             <p>${err.message}</p>
@@ -802,18 +828,39 @@ async function createTrainerBoard(fen, orientation) {
     }
 }
 
-function updateTrainerBoard(fen, orientation) {
+function updateTrainerBoard(fen, orientation, moveSquares) {
     if (trainerBoard) {
         try {
-            trainerBoard.setPosition(fen, false);
+            trainerBoard.setPosition(fen, true); // V6.6: Enable animation
             trainerBoard.setOrientation(orientation === 'white' ? window.COLOR.white : window.COLOR.black);
+            
+            // V6.6: Update last move highlighting
+            highlightLastMove(trainerBoard, moveSquares);
         } catch (e) {
-            console.warn('V6.5: Error updating trainer board:', e);
+            console.warn('V6.6: Error updating trainer board:', e);
         }
     }
 }
 
-// V6.5: Retry function for trainer board
+// V6.6: Highlight last move squares
+function highlightLastMove(board, moveSquares) {
+    if (!board) return;
+    
+    try {
+        // Clear existing markers
+        board.removeMarkers();
+        
+        // Add markers for last move if we have squares
+        if (moveSquares && moveSquares.from && moveSquares.to) {
+            board.addMarker(window.MARKER_TYPE.frame, moveSquares.from);
+            board.addMarker(window.MARKER_TYPE.frame, moveSquares.to);
+        }
+    } catch (e) {
+        console.warn('V6.6: Error highlighting last move:', e);
+    }
+}
+
+// V6.6: Retry function for trainer board
 function retryTrainerBoard() {
     if (currentOpening) {
         const game = new Chess();
@@ -841,7 +888,7 @@ async function createBuilderBoard(fen, orientation) {
         try {
             builderBoardInstance.destroy();
         } catch (e) {
-            console.warn('V6.5: Error destroying builder board:', e);
+            console.warn('V6.6: Error destroying builder board:', e);
         }
         builderBoardInstance = null;
     }
@@ -862,11 +909,14 @@ async function createBuilderBoard(fen, orientation) {
                     file: "pieces/standard.svg"
                 }
             },
-            animationDuration: 0
+            extensions: [
+                { class: window.Markers }
+            ],
+            animationDuration: 200
         });
-        console.log('V6.5: Builder board created successfully');
+        console.log('V6.6: Builder board created successfully');
     } catch (err) {
-        console.error('V6.5: Failed to create builder board:', err);
+        console.error('V6.6: Failed to create builder board:', err);
         container.innerHTML = `<div class="board-error">
             <span>⚠️ Board error</span>
             <button class="retry-btn" onclick="retryBuilderBoard()">Retry</button>
@@ -874,18 +924,21 @@ async function createBuilderBoard(fen, orientation) {
     }
 }
 
-function updateBuilderBoard(fen, orientation) {
+function updateBuilderBoard(fen, orientation, moveSquares) {
     if (builderBoardInstance) {
         try {
-            builderBoardInstance.setPosition(fen, false);
+            builderBoardInstance.setPosition(fen, true);
             builderBoardInstance.setOrientation(orientation === 'white' ? window.COLOR.white : window.COLOR.black);
+            
+            // V6.6: Highlight last move in builder too
+            highlightLastMove(builderBoardInstance, moveSquares);
         } catch (e) {
-            console.warn('V6.5: Error updating builder board:', e);
+            console.warn('V6.6: Error updating builder board:', e);
         }
     }
 }
 
-// V6.5: Retry function for builder board
+// V6.6: Retry function for builder board
 function retryBuilderBoard() {
     if (builderTree) {
         const game = new Chess();
@@ -904,8 +957,9 @@ function startTraining(key) {
     originalOpeningKey = key;
     historyStack = []; 
     currentPath = [];
+    lastMoveSquares = null; // V6.6: Reset last move
     
-    // V6.5: Rebuild transposition map when entering trainer
+    // V6.6: Rebuild transposition map when entering trainer
     rebuildTranspositionMap();
     
     showScreen('trainerScreen');
@@ -913,12 +967,21 @@ function startTraining(key) {
     // Calculate initial FEN
     const game = new Chess();
     const rootMove = currentOpening.tree.move.replace(/^[0-9]+\.+/, '').trim();
-    if (rootMove) game.move(rootMove);
+    if (rootMove) {
+        const moveResult = game.move(rootMove);
+        if (moveResult) {
+            lastMoveSquares = { from: moveResult.from, to: moveResult.to };
+        }
+    }
     const initialFen = game.fen();
     
     // Create board after DOM is ready
     setTimeout(async () => {
         await createTrainerBoard(initialFen, currentOpening.color);
+        // V6.6: Highlight initial move
+        if (lastMoveSquares && trainerBoard) {
+            highlightLastMove(trainerBoard, lastMoveSquares);
+        }
         updateTheme();
         renderTrainer();
     }, 50);
@@ -953,11 +1016,25 @@ function returnToPrevious() {
     renderTrainer();
 }
 
+// V6.6: New back button function for trainer
+function trainerBack() {
+    if (currentPath.length === 0) return; // Already at root
+    currentPath.pop();
+    renderTrainer();
+}
+
 function renderTrainer() {
     let node = currentOpening.tree;
     const game = new Chess();
     const rootMove = node.move.replace(/^[0-9]+\.+/, '').trim();
-    if(rootMove) game.move(rootMove);
+    let currentMoveSquares = null;
+    
+    if(rootMove) {
+        const moveResult = game.move(rootMove);
+        if (moveResult) {
+            currentMoveSquares = { from: moveResult.from, to: moveResult.to };
+        }
+    }
 
     document.getElementById('trainerHeaderTitle').innerText = currentOpening.name;
     
@@ -965,14 +1042,24 @@ function renderTrainer() {
         const child = node.children?.find(c => c.id === id);
         if (child) { 
             node = child; 
-            game.move(child.move.replace(/^[0-9]+\.+/, '').trim()); 
+            const cleanMove = child.move.replace(/^[0-9]+\.+/, '').trim();
+            const moveResult = game.move(cleanMove);
+            if (moveResult) {
+                currentMoveSquares = { from: moveResult.from, to: moveResult.to };
+            }
         }
     }
     
     const fen = game.fen();
     
-    // Update board
-    updateTrainerBoard(fen, currentOpening.color);
+    // V6.6: Update board with last move highlighting
+    updateTrainerBoard(fen, currentOpening.color, currentMoveSquares);
+
+    // V6.6: Show/hide back button based on path depth
+    const backBtn = document.getElementById('trainerBackBtn');
+    if (backBtn) {
+        backBtn.style.display = currentPath.length > 0 ? 'inline-block' : 'none';
+    }
 
     // Determine who played the current move (not whose turn is next)
     // After a move: game.turn() === 'b' means White just moved, 'w' means Black just moved
@@ -1191,6 +1278,10 @@ function initializeNewOpening() {
         const initialFen = game.fen();
         setTimeout(async () => {
             await createBuilderBoard(initialFen, builderColor);
+            // V6.6: Highlight initial move in builder
+            if (builderBoardInstance) {
+                highlightLastMove(builderBoardInstance, { from: validMove.from, to: validMove.to });
+            }
             renderBuilder();
         }, 50);
     } catch (e) { 
@@ -1215,11 +1306,20 @@ function editOpening(key) {
     
     const game = new Chess();
     const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
-    if (rootMove) game.move(rootMove);
+    let moveSquares = null;
+    if (rootMove) {
+        const moveResult = game.move(rootMove);
+        if (moveResult) {
+            moveSquares = { from: moveResult.from, to: moveResult.to };
+        }
+    }
     const initialFen = game.fen();
     
     setTimeout(async () => {
         await createBuilderBoard(initialFen, builderColor);
+        if (builderBoardInstance && moveSquares) {
+            highlightLastMove(builderBoardInstance, moveSquares);
+        }
         renderBuilder();
     }, 50);
 }
@@ -1231,7 +1331,14 @@ function renderBuilder() {
         let node = builderTree; 
         const game = new Chess();
         const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
-        game.move(rootMove);
+        let currentMoveSquares = null;
+        
+        if (rootMove) {
+            const moveResult = game.move(rootMove);
+            if (moveResult) {
+                currentMoveSquares = { from: moveResult.from, to: moveResult.to };
+            }
+        }
 
         let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${builderTree.move}</div>`; 
         let tempNode = builderTree; 
@@ -1240,13 +1347,18 @@ function renderBuilder() {
             const child = tempNode.children.find(c => c.id === id); 
             if (child) { 
                 tempNode = child; 
-                game.move(child.move.replace(/^[0-9]+\.+/, '').trim());
+                const cleanMove = child.move.replace(/^[0-9]+\.+/, '').trim();
+                const moveResult = game.move(cleanMove);
+                if (moveResult) {
+                    currentMoveSquares = { from: moveResult.from, to: moveResult.to };
+                }
                 historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`; 
             } 
         } 
         node = tempNode; 
         
-        updateBuilderBoard(game.fen(), builderColor);
+        // V6.6: Update builder board with highlighting
+        updateBuilderBoard(game.fen(), builderColor, currentMoveSquares);
         
         document.getElementById('builderHistory').innerHTML = historyHtml; 
         
@@ -1285,7 +1397,7 @@ function renderBuilder() {
         if (deleteBtn) { deleteBtn.innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch"; } 
         setupEnter(); 
     } catch(e) { 
-        console.error("V6.5 Render Error:", e);
+        console.error("V6.6 Render Error:", e);
     } 
 }
 
@@ -1414,7 +1526,7 @@ function builderBack() {
 }
 
 function goBack() { 
-    // V6.5: Cleanup boards when leaving trainer
+    // V6.6: Cleanup boards when leaving trainer
     if (trainerBoard) {
         try { trainerBoard.destroy(); } catch(e) {}
         trainerBoard = null;
@@ -1423,7 +1535,7 @@ function goBack() {
 }
 
 function exitBuilder() { 
-    // V6.5: Cleanup boards when leaving builder
+    // V6.6: Cleanup boards when leaving builder
     if (builderBoardInstance) {
         try { builderBoardInstance.destroy(); } catch(e) {}
         builderBoardInstance = null;
@@ -1570,7 +1682,7 @@ function copyBuilderJson() {
 }
 
 // =====================================================
-// V6.5: GLOBALIZE ALL FUNCTIONS FOR ONCLICK HANDLERS
+// V6.6: GLOBALIZE ALL FUNCTIONS FOR ONCLICK HANDLERS
 // =====================================================
 window.backupLibrary = backupLibrary;
 window.restoreLibrary = restoreLibrary;
@@ -1607,8 +1719,9 @@ window.toggleJsonImport = toggleJsonImport;
 window.importFromMenuText = importFromMenuText;
 window.retryTrainerBoard = retryTrainerBoard;
 window.retryBuilderBoard = retryBuilderBoard;
+window.trainerBack = trainerBack; // V6.6: New back function
 
-console.log('V6.5: All functions globalized');
+console.log('V6.6: All functions globalized');
 </script>
 </body>
 </html>
