@@ -834,8 +834,10 @@ function updateTrainerBoard(fen, orientation, moveSquares) {
             trainerBoard.setPosition(fen, true); // V6.6: Enable animation
             trainerBoard.setOrientation(orientation === 'white' ? window.COLOR.white : window.COLOR.black);
             
-            // V6.6: Update last move highlighting
-            highlightLastMove(trainerBoard, moveSquares);
+            // V6.6: Delay marker application until after animation completes (200ms + buffer)
+            setTimeout(() => {
+                highlightLastMove(trainerBoard, moveSquares);
+            }, 250);
         } catch (e) {
             console.warn('V6.6: Error updating trainer board:', e);
         }
