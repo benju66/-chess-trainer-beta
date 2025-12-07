@@ -1,0 +1,3215 @@
+{
+  "version": "4.0",
+  "name": "Black vs 1. d4 (Complete Slav Repertoire)",
+  "group": "Black Repertoire",
+  "color": "black",
+  "description": "A complete 1.d4 repertoire based on the Slav Defense. The key concept: develop the light-squared bishop to f5 BEFORE playing e6, but only AFTER securing the center with dxc4. Covers Queen's Gambit, London System, Catalan, Trompowsky, Colle, and all major White tries.",
+  "startingMoves": "1. d4 d5",
+  "tree": {
+    "id": "root",
+    "move": "1. d4",
+    "player": "white",
+    "explanation": "The Queen's Pawn Opening. White takes central control and prepares c4.",
+    "status": "Mainline",
+    "type": "Positional/Strategic",
+    "children": [
+      {
+        "id": "d5",
+        "move": "1... d5",
+        "player": "black",
+        "explanation": "We contest the center immediately! This is the classical response, leading to solid, strategically rich positions.",
+        "status": "Mainline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "c4_qg",
+            "move": "2. c4",
+            "player": "white",
+            "explanation": "The Queen's Gambit! White attacks our d5 pawn. Despite the name, it's not a true gambit - taking on c4 doesn't win a pawn permanently.",
+            "status": "Mainline",
+            "type": "Dynamic",
+            "children": [
+              {
+                "id": "c6_slav",
+                "move": "2... c6",
+                "player": "black",
+                "explanation": "The Slav Defense! We defend d5 with a pawn while keeping the c8-bishop's diagonal OPEN. This is better than 2...e6 which traps the bishop. Our plan: play ...dxc4 first, THEN ...Bf5.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "nf3_slav",
+                    "move": "3. Nf3",
+                    "player": "white",
+                    "explanation": "The most common move. White develops naturally.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nf6_slav",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "We develop and attack e4. Now White must decide their setup.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nc3_main",
+                            "move": "4. Nc3",
+                            "player": "white",
+                            "explanation": "The main line. White pressures d5. Now comes the critical decision...",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "dxc4_classical",
+                                "move": "4... dxc4",
+                                "player": "black",
+                                "explanation": "THE CLASSICAL SLAV! We capture first, gaining control of b3 (preventing Qb3). NOW we can safely play ...Bf5. This move order is critical!",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": [
+                                  {
+                                    "id": "a4_main",
+                                    "move": "5. a4",
+                                    "player": "white",
+                                    "explanation": "White prevents ...b5, stopping us from holding the c4 pawn. This is the main line.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "bf5_now",
+                                        "move": "5... Bf5",
+                                        "player": "black",
+                                        "explanation": "NOW the bishop comes out! With c4 captured, Qb3 no longer attacks both b7 and d5. This is the whole point of our move order.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "e3_classical",
+                                            "move": "6. e3",
+                                            "player": "white",
+                                            "explanation": "White prepares to recapture on c4 with the bishop.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "e6_classical",
+                                                "move": "6... e6",
+                                                "player": "black",
+                                                "explanation": "NOW we play e6 - AFTER the bishop is already developed! We complete our solid setup.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "bxc4_classical",
+                                                    "move": "7. Bxc4",
+                                                    "player": "white",
+                                                    "explanation": "White recaptures the pawn.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "bb4_classical",
+                                                        "move": "7... Bb4",
+                                                        "player": "black",
+                                                        "explanation": "We develop actively, pinning the knight. The a4 pawn weakened b4!",
+                                                        "status": "Mainline",
+                                                        "type": "Dynamic",
+                                                        "children": [
+                                                          {
+                                                            "id": "oo_classical",
+                                                            "move": "8. O-O",
+                                                            "player": "white",
+                                                            "explanation": "White castles.",
+                                                            "status": "Mainline",
+                                                            "type": "Positional/Strategic",
+                                                            "children": [
+                                                              {
+                                                                "id": "nbd7_classical",
+                                                                "move": "8... Nbd7",
+                                                                "player": "black",
+                                                                "explanation": "We develop the knight to a flexible square. It can go to b6 or support ...e5 or ...c5 breaks.",
+                                                                "status": "Mainline",
+                                                                "type": "Positional/Strategic",
+                                                                "children": [
+                                                                  {
+                                                                    "id": "qe2_classical",
+                                                                    "move": "9. Qe2",
+                                                                    "player": "white",
+                                                                    "explanation": "White prepares e4.",
+                                                                    "status": "Mainline",
+                                                                    "type": "Positional/Strategic",
+                                                                    "children": [
+                                                                      {
+                                                                        "id": "bg6_classical",
+                                                                        "move": "9... Bg6",
+                                                                        "player": "black",
+                                                                        "explanation": "We retreat the bishop to a safe square where it remains active.",
+                                                                        "status": "Mainline",
+                                                                        "type": "Positional/Strategic",
+                                                                        "children": [
+                                                                          {
+                                                                            "id": "e4_push",
+                                                                            "move": "10. e4",
+                                                                            "player": "white",
+                                                                            "explanation": "White seizes the center.",
+                                                                            "status": "Mainline",
+                                                                            "type": "Dynamic",
+                                                                            "children": [
+                                                                              {
+                                                                                "id": "oo_black_classical",
+                                                                                "move": "10... O-O",
+                                                                                "player": "black",
+                                                                                "explanation": "We castle to safety. A typical Classical Slav middlegame. Black will play for ...c5 or ...e5 breaks.",
+                                                                                "status": "Mainline",
+                                                                                "type": "Positional/Strategic",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "id": "bd3_classical",
+                                                                                    "move": "11. Bd3",
+                                                                                    "player": "white",
+                                                                                    "explanation": "White offers to trade bishops.",
+                                                                                    "status": "Mainline",
+                                                                                    "type": "Positional/Strategic",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "id": "bxd3_trade",
+                                                                                        "move": "11... Bxd3",
+                                                                                        "player": "black",
+                                                                                        "explanation": "We trade. The position is balanced with mutual chances.",
+                                                                                        "status": "Mainline",
+                                                                                        "type": "Positional/Strategic",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "id": "qxd3_recapture",
+                                                                                            "move": "12. Qxd3",
+                                                                                            "player": "white",
+                                                                                            "explanation": "White recaptures.",
+                                                                                            "status": "Mainline",
+                                                                                            "type": "Positional/Strategic",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "id": "re8_classical",
+                                                                                                "move": "12... Re8",
+                                                                                                "player": "black",
+                                                                                                "explanation": "We prepare ...e5! Black has a solid position and good counterplay.",
+                                                                                                "status": "Mainline",
+                                                                                                "type": "Positional/Strategic",
+                                                                                                "children": []
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "id": "nh4_attack",
+                                                                    "move": "9. Nh4",
+                                                                    "player": "white",
+                                                                    "explanation": "White attacks our bishop! This is a key idea in the Slav.",
+                                                                    "status": "Mainline",
+                                                                    "type": "Tactical",
+                                                                    "children": [
+                                                                      {
+                                                                        "id": "oo_vs_nh4",
+                                                                        "move": "9... O-O",
+                                                                        "player": "black",
+                                                                        "explanation": "We castle calmly. If Nxf5 exf5, we get the e-file and a strong pawn on f5.",
+                                                                        "status": "Mainline",
+                                                                        "type": "Positional/Strategic",
+                                                                        "children": [
+                                                                          {
+                                                                            "id": "nxf5_trade",
+                                                                            "move": "10. Nxf5",
+                                                                            "player": "white",
+                                                                            "explanation": "White takes the bishop pair.",
+                                                                            "status": "Mainline",
+                                                                            "type": "Positional/Strategic",
+                                                                            "children": [
+                                                                              {
+                                                                                "id": "exf5_recapture",
+                                                                                "move": "10... exf5",
+                                                                                "player": "black",
+                                                                                "explanation": "We recapture. The f5 pawn is strong, we have the e-file, and our position is very solid.",
+                                                                                "status": "Mainline",
+                                                                                "type": "Positional/Strategic",
+                                                                                "children": []
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "id": "ne5_sharp",
+                                            "move": "6. Ne5",
+                                            "player": "white",
+                                            "explanation": "An ambitious try. White wants Nxc4 with a powerful knight.",
+                                            "status": "Mainline",
+                                            "type": "Dynamic",
+                                            "children": [
+                                              {
+                                                "id": "nbd7_vs_ne5",
+                                                "move": "6... Nbd7",
+                                                "player": "black",
+                                                "explanation": "We challenge the knight!",
+                                                "status": "Mainline",
+                                                "type": "Dynamic",
+                                                "children": [
+                                                  {
+                                                    "id": "nxc4_knight",
+                                                    "move": "7. Nxc4",
+                                                    "player": "white",
+                                                    "explanation": "White recaptures with the knight - very active placement.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "qc7_vs_nxc4",
+                                                        "move": "7... Qc7",
+                                                        "player": "black",
+                                                        "explanation": "We prepare ...e5! The knight on c4 can be challenged.",
+                                                        "status": "Mainline",
+                                                        "type": "Dynamic",
+                                                        "children": [
+                                                          {
+                                                            "id": "g3_fianchetto",
+                                                            "move": "8. g3",
+                                                            "player": "white",
+                                                            "explanation": "White fianchettoes.",
+                                                            "status": "Mainline",
+                                                            "type": "Positional/Strategic",
+                                                            "children": [
+                                                              {
+                                                                "id": "e5_break",
+                                                                "move": "8... e5!",
+                                                                "player": "black",
+                                                                "explanation": "The key break! We gain space and activity.",
+                                                                "status": "Mainline",
+                                                                "type": "Dynamic",
+                                                                "children": []
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "e4_geller",
+                                    "move": "5. e4",
+                                    "player": "white",
+                                    "explanation": "The Geller Gambit! White sacrifices a pawn for rapid development.",
+                                    "status": "Sideline",
+                                    "type": "Tactical",
+                                    "children": [
+                                      {
+                                        "id": "b5_hold",
+                                        "move": "5... b5",
+                                        "player": "black",
+                                        "explanation": "We hold the pawn! Critical position.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "e5_geller",
+                                            "move": "6. e5",
+                                            "player": "white",
+                                            "explanation": "White kicks our knight.",
+                                            "status": "Mainline",
+                                            "type": "Forcing",
+                                            "children": [
+                                              {
+                                                "id": "nd5_geller",
+                                                "move": "6... Nd5",
+                                                "player": "black",
+                                                "explanation": "The knight finds a great outpost. Black keeps the pawn with a good game.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "e3_quiet",
+                                    "move": "5. e3",
+                                    "player": "white",
+                                    "explanation": "A quiet approach, planning to recapture on c4.",
+                                    "status": "Sideline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "b5_hold_quiet",
+                                        "move": "5... b5",
+                                        "player": "black",
+                                        "explanation": "We can try to hold the pawn! White must work to recover it.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "a4_vs_b5",
+                                            "move": "6. a4",
+                                            "player": "white",
+                                            "explanation": "White undermines our chain.",
+                                            "status": "Mainline",
+                                            "type": "Tactical",
+                                            "children": [
+                                              {
+                                                "id": "b4_push",
+                                                "move": "6... b4",
+                                                "player": "black",
+                                                "explanation": "We push! If Nb1 (or Na2), we've disrupted White's development.",
+                                                "status": "Mainline",
+                                                "type": "Dynamic",
+                                                "children": [
+                                                  {
+                                                    "id": "na2_retreat",
+                                                    "move": "7. Na2",
+                                                    "player": "white",
+                                                    "explanation": "The knight is awkwardly placed.",
+                                                    "status": "Mainline",
+                                                    "type": "Quiet",
+                                                    "children": [
+                                                      {
+                                                        "id": "e6_noteboom",
+                                                        "move": "7... e6",
+                                                        "player": "black",
+                                                        "explanation": "We complete development. Black has an extra pawn and good play - this is the Noteboom-style position.",
+                                                        "status": "Mainline",
+                                                        "type": "Positional/Strategic",
+                                                        "children": []
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "bf5_premature",
+                                "move": "4... Bf5?!",
+                                "player": "black",
+                                "explanation": "PREMATURE! This looks natural but has a serious flaw. White can exploit the weak b7 pawn.",
+                                "status": "Sideline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "cxd5_punish",
+                                    "move": "5. cxd5",
+                                    "player": "white",
+                                    "explanation": "White exchanges.",
+                                    "status": "Mainline",
+                                    "type": "Forcing",
+                                    "children": [
+                                      {
+                                        "id": "cxd5_recapture",
+                                        "move": "5... cxd5",
+                                        "player": "black",
+                                        "explanation": "We must recapture.",
+                                        "status": "Mainline",
+                                        "type": "Forcing",
+                                        "children": [
+                                          {
+                                            "id": "qb3_attack",
+                                            "move": "6. Qb3!",
+                                            "player": "white",
+                                            "explanation": "THE PROBLEM! White attacks BOTH b7 and d5. This is why we should have played 4...dxc4 first!",
+                                            "status": "Mainline",
+                                            "type": "Tactical",
+                                            "children": [
+                                              {
+                                                "id": "bc8_sad",
+                                                "move": "6... Bc8",
+                                                "player": "black",
+                                                "explanation": "The sad retreat. We must guard b7. Our bishop wasted two tempi.",
+                                                "status": "Mainline",
+                                                "type": "Defensive/Prophylactic",
+                                                "children": []
+                                              },
+                                              {
+                                                "id": "nc6_gambit",
+                                                "move": "6... Nc6!?",
+                                                "player": "black",
+                                                "explanation": "A modern gambit! We sacrifice b7 for rapid development and activity.",
+                                                "status": "Sideline",
+                                                "type": "Tactical",
+                                                "children": [
+                                                  {
+                                                    "id": "qxb7_accept",
+                                                    "move": "7. Qxb7",
+                                                    "player": "white",
+                                                    "explanation": "White takes.",
+                                                    "status": "Mainline",
+                                                    "type": "Tactical",
+                                                    "children": [
+                                                      {
+                                                        "id": "bd7_gambit",
+                                                        "move": "7... Bd7",
+                                                        "player": "black",
+                                                        "explanation": "We develop and trap the queen! After Qb3 Rb8 Qd1 e5, Black has excellent compensation.",
+                                                        "status": "Mainline",
+                                                        "type": "Tactical",
+                                                        "children": [
+                                                          {
+                                                            "id": "qb3_escape",
+                                                            "move": "8. Qb3",
+                                                            "player": "white",
+                                                            "explanation": "The queen escapes.",
+                                                            "status": "Mainline",
+                                                            "type": "Forcing",
+                                                            "children": [
+                                                              {
+                                                                "id": "rb8_activity",
+                                                                "move": "8... Rb8",
+                                                                "player": "black",
+                                                                "explanation": "We activate the rook with tempo!",
+                                                                "status": "Mainline",
+                                                                "type": "Tactical",
+                                                                "children": [
+                                                                  {
+                                                                    "id": "qd1_retreat",
+                                                                    "move": "9. Qd1",
+                                                                    "player": "white",
+                                                                    "explanation": "Queen retreats.",
+                                                                    "status": "Mainline",
+                                                                    "type": "Quiet",
+                                                                    "children": [
+                                                                      {
+                                                                        "id": "e5_compensation",
+                                                                        "move": "9... e5!",
+                                                                        "player": "black",
+                                                                        "explanation": "We seize the center! Black has full compensation for the pawn - active pieces and central control.",
+                                                                        "status": "Mainline",
+                                                                        "type": "Dynamic",
+                                                                        "children": []
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "e6_semislav",
+                                "move": "4... e6",
+                                "player": "black",
+                                "explanation": "The Semi-Slav. Very solid but the bishop is now locked behind the pawns. Still a reputable choice with rich theory.",
+                                "status": "Sideline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "e3_semislav",
+                                    "move": "5. e3",
+                                    "player": "white",
+                                    "explanation": "White develops solidly.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "nbd7_meran",
+                                        "move": "5... Nbd7",
+                                        "player": "black",
+                                        "explanation": "Heading for the Meran Variation with ...dxc4 and ...b5.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "bd3_meran",
+                                            "move": "6. Bd3",
+                                            "player": "white",
+                                            "explanation": "White develops.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "dxc4_meran",
+                                                "move": "6... dxc4",
+                                                "player": "black",
+                                                "explanation": "We take, preparing ...b5.",
+                                                "status": "Mainline",
+                                                "type": "Dynamic",
+                                                "children": [
+                                                  {
+                                                    "id": "bxc4_meran",
+                                                    "move": "7. Bxc4",
+                                                    "player": "white",
+                                                    "explanation": "White recaptures.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "b5_meran",
+                                                        "move": "7... b5",
+                                                        "player": "black",
+                                                        "explanation": "The Meran! We gain space and prepare ...Bb7.",
+                                                        "status": "Mainline",
+                                                        "type": "Dynamic",
+                                                        "children": [
+                                                          {
+                                                            "id": "bd3_retreat_meran",
+                                                            "move": "8. Bd3",
+                                                            "player": "white",
+                                                            "explanation": "White retreats the bishop.",
+                                                            "status": "Mainline",
+                                                            "type": "Positional/Strategic",
+                                                            "children": [
+                                                              {
+                                                                "id": "bb7_meran",
+                                                                "move": "8... Bb7",
+                                                                "player": "black",
+                                                                "explanation": "We fianchetto! The bishop is active on the long diagonal. Complex play ahead.",
+                                                                "status": "Mainline",
+                                                                "type": "Positional/Strategic",
+                                                                "children": []
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "bg5_antimeran",
+                                    "move": "5. Bg5",
+                                    "player": "white",
+                                    "explanation": "The Anti-Meran! Sharp and double-edged.",
+                                    "status": "Mainline",
+                                    "type": "Dynamic",
+                                    "children": [
+                                      {
+                                        "id": "h6_antimeran",
+                                        "move": "5... h6",
+                                        "player": "black",
+                                        "explanation": "We ask the bishop to decide.",
+                                        "status": "Mainline",
+                                        "type": "Forcing",
+                                        "children": [
+                                          {
+                                            "id": "bxf6_antimeran",
+                                            "move": "6. Bxf6",
+                                            "player": "white",
+                                            "explanation": "White takes, doubling our pawns but giving us the bishop pair.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "qxf6_antimeran",
+                                                "move": "6... Qxf6",
+                                                "player": "black",
+                                                "explanation": "We recapture with the queen. The bishop pair is valuable in this open position.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "a6_chebanenko",
+                                "move": "4... a6",
+                                "player": "black",
+                                "explanation": "The Chebanenko Slav! We secure b5 and avoid Qb3 problems. Very flexible.",
+                                "status": "Sideline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "e3_chebanenko",
+                                    "move": "5. e3",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "b5_chebanenko",
+                                        "move": "5... b5",
+                                        "player": "black",
+                                        "explanation": "We expand! Now ...Bb7 is coming.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "b3_chebanenko",
+                                            "move": "6. b3",
+                                            "player": "white",
+                                            "explanation": "White prepares Bb2.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "bg4_chebanenko",
+                                                "move": "6... Bg4",
+                                                "player": "black",
+                                                "explanation": "We develop actively! The bishop is outside the pawn chain. Flexible position.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "c5_chebanenko",
+                                    "move": "5. c5",
+                                    "player": "white",
+                                    "explanation": "White fixes the queenside. Space advantage but less flexibility.",
+                                    "status": "Sideline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "nbd7_vs_c5",
+                                        "move": "5... Nbd7",
+                                        "player": "black",
+                                        "explanation": "We prepare ...e5! breaking the center.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "e3_slow",
+                            "move": "4. e3",
+                            "player": "white",
+                            "explanation": "A slower approach. White may transpose to Colle-like setups.",
+                            "status": "Sideline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bf5_vs_e3",
+                                "move": "4... Bf5",
+                                "player": "black",
+                                "explanation": "Without Nc3, we CAN play Bf5 immediately! Qb3 doesn't work because d5 is defended by the c6 pawn.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "nc3_transpose",
+                                    "move": "5. Nc3",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "e6_vs_nc3",
+                                        "move": "5... e6",
+                                        "player": "black",
+                                        "explanation": "We complete our solid setup. Bishop is out, position is rock-solid.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "nh4_vs_bf5",
+                                            "move": "6. Nh4",
+                                            "player": "white",
+                                            "explanation": "White attacks our bishop. This is the main try.",
+                                            "status": "Mainline",
+                                            "type": "Tactical",
+                                            "children": [
+                                              {
+                                                "id": "bg6_retreat",
+                                                "move": "6... Bg6",
+                                                "player": "black",
+                                                "explanation": "We retreat. The bishop is still active on g6.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "nxg6_trade",
+                                                    "move": "7. Nxg6",
+                                                    "player": "white",
+                                                    "explanation": "White trades.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "hxg6_open",
+                                                        "move": "7... hxg6",
+                                                        "player": "black",
+                                                        "explanation": "We recapture, opening the h-file for our rook! Black has counterplay on the kingside.",
+                                                        "status": "Mainline",
+                                                        "type": "Dynamic",
+                                                        "children": []
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "bd3_develop",
+                                    "move": "5. Bd3",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Sideline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "bxd3_trade_early",
+                                        "move": "5... Bxd3",
+                                        "player": "black",
+                                        "explanation": "We can trade, simplifying. Or keep the bishop with Bg6.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "qxd3_simple",
+                                            "move": "6. Qxd3",
+                                            "player": "white",
+                                            "explanation": "White recaptures.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "e6_solid",
+                                                "move": "6... e6",
+                                                "player": "black",
+                                                "explanation": "Solid position. We've achieved our goal - the bishop developed before e6.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "qc2_system",
+                            "move": "4. Qc2",
+                            "player": "white",
+                            "explanation": "White prevents ...Bf5 by controlling the square. A solid system.",
+                            "status": "Sideline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "g6_vs_qc2",
+                                "move": "4... g6",
+                                "player": "black",
+                                "explanation": "We fianchetto instead! The bishop will go to f5 via g7-e6 or simply to g7.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "bf4_vs_g6",
+                                    "move": "5. Bf4",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "bf5_vs_bf4",
+                                        "move": "5... Bf5",
+                                        "player": "black",
+                                        "explanation": "We develop anyway!",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "qb3_vs_bf5",
+                                            "move": "6. Qb3",
+                                            "player": "white",
+                                            "explanation": "White tries the Qb3 idea.",
+                                            "status": "Mainline",
+                                            "type": "Tactical",
+                                            "children": [
+                                              {
+                                                "id": "qb6_trade",
+                                                "move": "6... Qb6",
+                                                "player": "black",
+                                                "explanation": "We offer a queen trade! After Qxb6 axb6, we have easy equality.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "qb3_system",
+                            "move": "4. Qb3",
+                            "player": "white",
+                            "explanation": "Immediate Qb3, pressuring b7 and d5.",
+                            "status": "Sideline",
+                            "type": "Tactical",
+                            "children": [
+                              {
+                                "id": "dxc4_vs_qb3",
+                                "move": "4... dxc4",
+                                "player": "black",
+                                "explanation": "We take! Now Qxc4 allows normal development.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": [
+                                  {
+                                    "id": "qxc4_recapture",
+                                    "move": "5. Qxc4",
+                                    "player": "white",
+                                    "explanation": "White recaptures.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "bf5_vs_qxc4",
+                                        "move": "5... Bf5",
+                                        "player": "black",
+                                        "explanation": "We develop! The position is comfortable for Black.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "g3_catalan_style",
+                            "move": "4. g3",
+                            "player": "white",
+                            "explanation": "A Catalan-style setup against the Slav.",
+                            "status": "Sideline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bf5_vs_g3",
+                                "move": "4... Bf5",
+                                "player": "black",
+                                "explanation": "We develop the bishop! The fianchetto doesn't prevent this.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "bg2_fianchetto",
+                                    "move": "5. Bg2",
+                                    "player": "white",
+                                    "explanation": "White completes the fianchetto.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "e6_vs_bg2",
+                                        "move": "5... e6",
+                                        "player": "black",
+                                        "explanation": "We solidify. Black is very comfortable.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "nc3_first",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "Knight first - often transposes to main lines.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nf6_vs_nc3",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "Natural development. 4.Nf3 transposes to main lines.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nf3_transpose_main",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "Transposes to main line.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "dxc4_transpose",
+                                "move": "4... dxc4",
+                                "player": "black",
+                                "explanation": "Classical Slav! Same as main lines.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": []
+                              }
+                            ]
+                          },
+                          {
+                            "id": "e3_independent",
+                            "move": "4. e3",
+                            "player": "white",
+                            "explanation": "Independent line - White avoids Nf3 for now.",
+                            "status": "Sideline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "e6_vs_e3_nc3",
+                                "move": "4... e6",
+                                "player": "black",
+                                "explanation": "We can go Semi-Slav here, or...",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              },
+                              {
+                                "id": "a6_vs_e3_nc3",
+                                "move": "4... a6",
+                                "player": "black",
+                                "explanation": "Chebanenko setup - securing b5.",
+                                "status": "Sideline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "dxc4_early",
+                        "move": "3... dxc4",
+                        "player": "black",
+                        "explanation": "We can take immediately too!",
+                        "status": "Sideline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "a4_vs_dxc4_early",
+                            "move": "4. a4",
+                            "player": "white",
+                            "explanation": "Preventing b5.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bf5_early",
+                                "move": "4... Bf5",
+                                "player": "black",
+                                "explanation": "Bishop comes out! Same idea.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          },
+                          {
+                            "id": "e4_vs_dxc4_early",
+                            "move": "4. e4",
+                            "player": "white",
+                            "explanation": "Geller Gambit territory.",
+                            "status": "Sideline",
+                            "type": "Tactical",
+                            "children": [
+                              {
+                                "id": "b5_vs_e4",
+                                "move": "4... b5",
+                                "player": "black",
+                                "explanation": "We hold the pawn!",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "cxd5_exchange",
+                    "move": "3. cxd5",
+                    "player": "white",
+                    "explanation": "The Exchange Slav. White simplifies early - often considered drawish but playable for both sides.",
+                    "status": "Sideline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "cxd5_recapture_exch",
+                        "move": "3... cxd5",
+                        "player": "black",
+                        "explanation": "We recapture. Symmetrical pawn structure.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nc3_exchange",
+                            "move": "4. Nc3",
+                            "player": "white",
+                            "explanation": "White develops.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nf6_exchange",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "We develop.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "bf4_exchange",
+                                    "move": "5. Bf4",
+                                    "player": "white",
+                                    "explanation": "White develops the bishop actively.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "nc6_exchange",
+                                        "move": "5... Nc6",
+                                        "player": "black",
+                                        "explanation": "We develop. Heading for a completely symmetrical position.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "e3_exchange",
+                                            "move": "6. e3",
+                                            "player": "white",
+                                            "explanation": "White prepares Bd3.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "bf5_exchange",
+                                                "move": "6... Bf5",
+                                                "player": "black",
+                                                "explanation": "We mirror! Completely symmetrical. White has first move advantage but Black is rock-solid.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "bd3_exchange",
+                                                    "move": "7. Bd3",
+                                                    "player": "white",
+                                                    "explanation": "White develops.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "bxd3_exchange",
+                                                        "move": "7... Bxd3",
+                                                        "player": "black",
+                                                        "explanation": "We trade. Equal game.",
+                                                        "status": "Mainline",
+                                                        "type": "Positional/Strategic",
+                                                        "children": [
+                                                          {
+                                                            "id": "qxd3_exchange",
+                                                            "move": "8. Qxd3",
+                                                            "player": "white",
+                                                            "explanation": "White recaptures.",
+                                                            "status": "Mainline",
+                                                            "type": "Positional/Strategic",
+                                                            "children": [
+                                                              {
+                                                                "id": "e6_exchange",
+                                                                "move": "8... e6",
+                                                                "player": "black",
+                                                                "explanation": "We solidify. Completely equal position.",
+                                                                "status": "Mainline",
+                                                                "type": "Positional/Strategic",
+                                                                "children": []
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "a6_exchange",
+                                        "move": "5... a6",
+                                        "player": "black",
+                                        "explanation": "Preparing ...Bf5 with ...b5 options.",
+                                        "status": "Sideline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "e3_vs_a6_exch",
+                                            "move": "6. e3",
+                                            "player": "white",
+                                            "explanation": "White develops.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "bf5_vs_a6_exch",
+                                                "move": "6... Bf5",
+                                                "player": "black",
+                                                "explanation": "Bishop out, solid position.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "nf3_exchange",
+                                    "move": "5. Nf3",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "bf5_vs_nf3_exch",
+                                        "move": "5... Bf5",
+                                        "player": "black",
+                                        "explanation": "We develop the bishop!",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "nf3_exchange_early",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "White develops.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nf6_vs_nf3_exch",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "Natural development.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "nc3_vs_nf6_exch",
+                                    "move": "5. Nc3",
+                                    "player": "white",
+                                    "explanation": "Transposes to main Exchange lines.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "bf5_exch_transp",
+                                        "move": "5... Bf5",
+                                        "player": "black",
+                                        "explanation": "Bishop comes out!",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "bg5_exchange_special",
+                            "move": "4. Bg5",
+                            "player": "white",
+                            "explanation": "An interesting try to avoid the symmetrical positions.",
+                            "status": "Sideline",
+                            "type": "Dynamic",
+                            "children": [
+                              {
+                                "id": "nf6_vs_bg5_exch",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "We develop. If Bxf6, we get the bishop pair.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "bxf6_double",
+                                    "move": "5. Bxf6",
+                                    "player": "white",
+                                    "explanation": "White doubles our pawns but we get the bishops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "exf6_double",
+                                        "move": "5... exf6",
+                                        "player": "black",
+                                        "explanation": "We recapture toward the center. The bishop pair compensates for the doubled pawns.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "e6_qgd",
+                "move": "2... e6",
+                "player": "black",
+                "explanation": "The Queen's Gambit Declined. Very solid but the light-squared bishop is locked behind the pawns. A respectable alternative.",
+                "status": "Sideline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "nc3_qgd",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "White develops.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nf6_qgd",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "We develop.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "bg5_qgd",
+                            "move": "4. Bg5",
+                            "player": "white",
+                            "explanation": "The main line. White pins our knight.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "be7_qgd",
+                                "move": "4... Be7",
+                                "player": "black",
+                                "explanation": "We break the pin. Classical and solid.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "e3_qgd",
+                                    "move": "5. e3",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "oo_qgd",
+                                        "move": "5... O-O",
+                                        "player": "black",
+                                        "explanation": "We castle. Heading for the Tartakower or Lasker variations.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "nf3_qgd",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "Flexible development.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "be7_vs_nf3_qgd",
+                                "move": "4... Be7",
+                                "player": "black",
+                                "explanation": "Solid development.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              },
+                              {
+                                "id": "c6_to_slav",
+                                "move": "4... c6",
+                                "player": "black",
+                                "explanation": "Transposing toward Semi-Slav structures!",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "dxc4_qga",
+                "move": "2... dxc4",
+                "player": "black",
+                "explanation": "The Queen's Gambit Accepted. We take the pawn! It's not really a gambit - White will recover it.",
+                "status": "Sideline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "e4_qga",
+                    "move": "3. e4",
+                    "player": "white",
+                    "explanation": "White seizes the center.",
+                    "status": "Mainline",
+                    "type": "Dynamic",
+                    "children": [
+                      {
+                        "id": "e5_counter",
+                        "move": "3... e5",
+                        "player": "black",
+                        "explanation": "We counter in the center!",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "nf3_qga_main",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "White develops.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "exd4_qga",
+                                "move": "4... exd4",
+                                "player": "black",
+                                "explanation": "We open the position.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "e3_qga",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "White prepares to recapture on c4.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nf6_qga",
+                        "move": "3... Nf6",
+                        "player": "black",
+                        "explanation": "We develop.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "bxc4_qga",
+                            "move": "4. Bxc4",
+                            "player": "white",
+                            "explanation": "White recaptures.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "e6_qga",
+                                "move": "4... e6",
+                                "player": "black",
+                                "explanation": "We develop. Equal game.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "bf4_london",
+            "move": "2. Bf4",
+            "player": "white",
+            "explanation": "The London System. White develops the bishop before e3. Very popular at club level but not theoretically dangerous.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "c5_anti_london",
+                "move": "2... c5",
+                "player": "black",
+                "explanation": "THE BEST RESPONSE! We immediately strike at White's center. This is the most challenging line against the London.",
+                "status": "Mainline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "e3_london",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "White plays their standard setup.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nc6_london",
+                        "move": "3... Nc6",
+                        "player": "black",
+                        "explanation": "We develop and pressure d4.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "c3_london",
+                            "move": "4. c3",
+                            "player": "white",
+                            "explanation": "White reinforces d4.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "qb6_london",
+                                "move": "4... Qb6",
+                                "player": "black",
+                                "explanation": "THE KEY MOVE! We attack b2 and pressure d4. White must defend accurately.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": [
+                                  {
+                                    "id": "qb3_london",
+                                    "move": "5. Qb3",
+                                    "player": "white",
+                                    "explanation": "White offers a queen trade.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "c4_london",
+                                        "move": "5... c4",
+                                        "player": "black",
+                                        "explanation": "We gain space and fix White's queenside! The c3 pawn is now backward.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "qc2_london",
+                                            "move": "6. Qc2",
+                                            "player": "white",
+                                            "explanation": "Queen retreats.",
+                                            "status": "Mainline",
+                                            "type": "Quiet",
+                                            "children": [
+                                              {
+                                                "id": "bf5_london",
+                                                "move": "6... Bf5",
+                                                "player": "black",
+                                                "explanation": "We develop actively! Black has a pleasant position with queenside space.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "qxb3_trade",
+                                        "move": "5... Qxb3",
+                                        "player": "black",
+                                        "explanation": "We can also trade queens for an equal endgame.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "axb3_recapture",
+                                            "move": "6. axb3",
+                                            "player": "white",
+                                            "explanation": "White recaptures.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "cxd4_endgame",
+                                                "move": "6... cxd4",
+                                                "player": "black",
+                                                "explanation": "We trade. Equal endgame.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "exd4_london_end",
+                                                    "move": "7. exd4",
+                                                    "player": "white",
+                                                    "explanation": "White recaptures.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "bf5_london_end",
+                                                        "move": "7... Bf5",
+                                                        "player": "black",
+                                                        "explanation": "We develop. Black is fine.",
+                                                        "status": "Mainline",
+                                                        "type": "Positional/Strategic",
+                                                        "children": []
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "qc1_passive",
+                                    "move": "5. Qc1",
+                                    "player": "white",
+                                    "explanation": "A passive retreat. We're already doing well.",
+                                    "status": "Sideline",
+                                    "type": "Defensive/Prophylactic",
+                                    "children": [
+                                      {
+                                        "id": "bf5_vs_qc1",
+                                        "move": "5... Bf5",
+                                        "player": "black",
+                                        "explanation": "We develop actively. Black is comfortable.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "qc2_london_alt",
+                                    "move": "5. Qc2",
+                                    "player": "white",
+                                    "explanation": "White defends b2.",
+                                    "status": "Sideline",
+                                    "type": "Defensive/Prophylactic",
+                                    "children": [
+                                      {
+                                        "id": "bf5_vs_qc2",
+                                        "move": "5... Bf5",
+                                        "player": "black",
+                                        "explanation": "We develop. If Qxf5?? then ...Qxb2 wins the rook.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "nf6_vs_c3",
+                                "move": "4... Nf6",
+                                "player": "black",
+                                "explanation": "Simple development also works well.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "nf3_london",
+                                    "move": "5. Nf3",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "nh5_idea",
+                                        "move": "5... Nh5!?",
+                                        "player": "black",
+                                        "explanation": "An interesting idea! We challenge the London bishop.",
+                                        "status": "Sideline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "be5_trade",
+                                            "move": "6. Be5",
+                                            "player": "white",
+                                            "explanation": "White offers a trade.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "nxe5_trade",
+                                                "move": "6... Nxe5",
+                                                "player": "black",
+                                                "explanation": "We trade and eliminate White's pride - the London bishop!",
+                                                "status": "Mainline",
+                                                "type": "Tactical",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": "e6_standard",
+                                        "move": "5... e6",
+                                        "player": "black",
+                                        "explanation": "Solid. We prepare ...Bd6 or ...Be7.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "nbd2_london",
+                                            "move": "6. Nbd2",
+                                            "player": "white",
+                                            "explanation": "White develops.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "bd6_london",
+                                                "move": "6... Bd6",
+                                                "player": "black",
+                                                "explanation": "We offer to trade the London bishop! After Bxd6 Qxd6, we have the bishop pair.",
+                                                "status": "Mainline",
+                                                "type": "Dynamic",
+                                                "children": [
+                                                  {
+                                                    "id": "bxd6_trade_london",
+                                                    "move": "7. Bxd6",
+                                                    "player": "white",
+                                                    "explanation": "White trades.",
+                                                    "status": "Mainline",
+                                                    "type": "Positional/Strategic",
+                                                    "children": [
+                                                      {
+                                                        "id": "qxd6_bishop_pair",
+                                                        "move": "7... Qxd6",
+                                                        "player": "black",
+                                                        "explanation": "We recapture. The London bishop is gone, and we have the bishop pair!",
+                                                        "status": "Mainline",
+                                                        "type": "Positional/Strategic",
+                                                        "children": []
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "id": "bg3_london",
+                                                    "move": "7. Bg3",
+                                                    "player": "white",
+                                                    "explanation": "White retreats.",
+                                                    "status": "Sideline",
+                                                    "type": "Quiet",
+                                                    "children": [
+                                                      {
+                                                        "id": "oo_london",
+                                                        "move": "7... O-O",
+                                                        "player": "black",
+                                                        "explanation": "We castle. Good position for Black.",
+                                                        "status": "Mainline",
+                                                        "type": "Positional/Strategic",
+                                                        "children": []
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "nf3_london_early",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "White develops the knight first.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "qb6_vs_nf3",
+                                "move": "4... Qb6",
+                                "player": "black",
+                                "explanation": "Same idea - pressure on b2 and d4!",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": []
+                              },
+                              {
+                                "id": "cxd4_vs_nf3",
+                                "move": "4... cxd4",
+                                "player": "black",
+                                "explanation": "We can also open the position immediately.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": [
+                                  {
+                                    "id": "nxd4_london",
+                                    "move": "5. Nxd4",
+                                    "player": "white",
+                                    "explanation": "White recaptures.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "e5_active",
+                                        "move": "5... e5!",
+                                        "player": "black",
+                                        "explanation": "We kick the knight and the bishop! Gaining space.",
+                                        "status": "Mainline",
+                                        "type": "Dynamic",
+                                        "children": [
+                                          {
+                                            "id": "nxc6_london",
+                                            "move": "6. Nxc6",
+                                            "player": "white",
+                                            "explanation": "White trades.",
+                                            "status": "Mainline",
+                                            "type": "Forcing",
+                                            "children": [
+                                              {
+                                                "id": "bxc6_london",
+                                                "move": "6... bxc6",
+                                                "player": "black",
+                                                "explanation": "We recapture. The bishop must move.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": [
+                                                  {
+                                                    "id": "bg3_vs_bxc6",
+                                                    "move": "7. Bg3",
+                                                    "player": "white",
+                                                    "explanation": "Bishop retreats.",
+                                                    "status": "Mainline",
+                                                    "type": "Quiet",
+                                                    "children": [
+                                                      {
+                                                        "id": "nf6_active_london",
+                                                        "move": "7... Nf6",
+                                                        "player": "black",
+                                                        "explanation": "We develop. Black has excellent central control!",
+                                                        "status": "Mainline",
+                                                        "type": "Positional/Strategic",
+                                                        "children": []
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "c3_london_quiet",
+                    "move": "3. c3",
+                    "player": "white",
+                    "explanation": "White reinforces d4 immediately.",
+                    "status": "Sideline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nc6_vs_c3_london",
+                        "move": "3... Nc6",
+                        "player": "black",
+                        "explanation": "We develop and pressure d4.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "e3_vs_nc6_london",
+                            "move": "4. e3",
+                            "player": "white",
+                            "explanation": "White plays their standard setup.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "qb6_vs_e3_london",
+                                "move": "4... Qb6",
+                                "player": "black",
+                                "explanation": "Same idea - attacking b2!",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "dxc5_london",
+                    "move": "3. dxc5",
+                    "player": "white",
+                    "explanation": "White takes. We recover the pawn easily.",
+                    "status": "Sideline",
+                    "type": "Forcing",
+                    "children": [
+                      {
+                        "id": "nc6_vs_dxc5",
+                        "move": "3... Nc6",
+                        "player": "black",
+                        "explanation": "We develop and will take back on c5.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "e3_vs_nc6_dxc5",
+                            "move": "4. e3",
+                            "player": "white",
+                            "explanation": "White protects c5.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "e5_vs_e3",
+                                "move": "4... e5!",
+                                "player": "black",
+                                "explanation": "We attack the bishop and gain space! After Bg3 Bxc5, we've regained the pawn with a great position.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "nf6_london",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "Also good - we can still play ...c5 next.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e3_vs_nf6_london",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "Standard London.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c5_vs_e3_nf6",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "We challenge the center as usual. Transposes to main anti-London lines.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": []
+                      },
+                      {
+                        "id": "bf5_mirror",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "Mirroring White! A valid approach.",
+                        "status": "Sideline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "c4_vs_bf5_mirror",
+                            "move": "4. c4",
+                            "player": "white",
+                            "explanation": "White plays c4.",
+                            "status": "Mainline",
+                            "type": "Dynamic",
+                            "children": [
+                              {
+                                "id": "c6_slav_transpose",
+                                "move": "4... c6",
+                                "player": "black",
+                                "explanation": "Transposing to a Slav with Bf5 already out - exactly what we want!",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "nf3_vs_nf6_london",
+                    "move": "3. Nf3",
+                    "player": "white",
+                    "explanation": "White develops.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c5_vs_nf3_london",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "We challenge the center.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "nf3_flexible",
+            "move": "2. Nf3",
+            "player": "white",
+            "explanation": "Flexible - White might play c4 (Queen's Gambit), Bf4 (London), or e3 (Colle).",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "nf6_vs_nf3",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "We develop and wait to see White's plan.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "c4_qg_transpose",
+                    "move": "3. c4",
+                    "player": "white",
+                    "explanation": "Now it's the Queen's Gambit.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c6_transpose_slav",
+                        "move": "3... c6",
+                        "player": "black",
+                        "explanation": "Back to our Slav! Main lines follow.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      },
+                      {
+                        "id": "e6_transpose_qgd",
+                        "move": "3... e6",
+                        "player": "black",
+                        "explanation": "Or QGD if you prefer.",
+                        "status": "Sideline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "bf4_transpose_london",
+                    "move": "3. Bf4",
+                    "player": "white",
+                    "explanation": "The London System.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c5_vs_bf4",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "We challenge the center as in our main anti-London.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "e3_colle",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "The Colle System. White will play Bd3, c3, Nbd2 - a solid setup.",
+                    "status": "Sideline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bf5_vs_colle",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "We develop the bishop actively! This is best against the Colle.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "bd3_colle",
+                            "move": "4. Bd3",
+                            "player": "white",
+                            "explanation": "White develops.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bxd3_colle",
+                                "move": "4... Bxd3",
+                                "player": "black",
+                                "explanation": "We trade. Simple chess.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "qxd3_colle",
+                                    "move": "5. Qxd3",
+                                    "player": "white",
+                                    "explanation": "White recaptures.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "e6_colle",
+                                        "move": "5... e6",
+                                        "player": "black",
+                                        "explanation": "We solidify. Equal position - we achieved our goal of developing the bishop.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "c4_colle_transpose",
+                            "move": "4. c4",
+                            "player": "white",
+                            "explanation": "White transposes to Queen's Gambit structures.",
+                            "status": "Mainline",
+                            "type": "Dynamic",
+                            "children": [
+                              {
+                                "id": "c6_colle_slav",
+                                "move": "4... c6",
+                                "player": "black",
+                                "explanation": "We go Slav! Bishop is already out - perfect.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "c5_vs_colle",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "We can also challenge the center immediately.",
+                        "status": "Sideline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "c3_vs_c5_colle",
+                            "move": "4. c3",
+                            "player": "white",
+                            "explanation": "White plays Colle-Zukertort style.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "nc6_colle",
+                                "move": "4... Nc6",
+                                "player": "black",
+                                "explanation": "We develop. Good position.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "g3_catalan",
+                    "move": "3. g3",
+                    "player": "white",
+                    "explanation": "The Catalan! White fianchettoes. A dangerous weapon at high levels.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bf5_vs_catalan",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "We develop the bishop! Against the Catalan, getting this bishop out is important.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "bg2_catalan",
+                            "move": "4. Bg2",
+                            "player": "white",
+                            "explanation": "White fianchettoes.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "e6_catalan",
+                                "move": "4... e6",
+                                "player": "black",
+                                "explanation": "We solidify. Black is very comfortable with the active bishop.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "oo_catalan",
+                                    "move": "5. O-O",
+                                    "player": "white",
+                                    "explanation": "White castles.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "be7_catalan",
+                                        "move": "5... Be7",
+                                        "player": "black",
+                                        "explanation": "We develop. Preparing to castle with a solid position.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "c4_catalan_main",
+                                            "move": "6. c4",
+                                            "player": "white",
+                                            "explanation": "White plays c4.",
+                                            "status": "Mainline",
+                                            "type": "Dynamic",
+                                            "children": [
+                                              {
+                                                "id": "c6_catalan",
+                                                "move": "6... c6",
+                                                "player": "black",
+                                                "explanation": "We go for the Slav structure! Bishop is already out, mission accomplished.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "c6_catalan_slav",
+                        "move": "3... c6",
+                        "player": "black",
+                        "explanation": "We can also play Slav-style, keeping ...Bf5 in reserve.",
+                        "status": "Sideline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "bg2_vs_c6",
+                            "move": "4. Bg2",
+                            "player": "white",
+                            "explanation": "White fianchettoes.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bf5_catalan_slav",
+                                "move": "4... Bf5",
+                                "player": "black",
+                                "explanation": "Now we bring out the bishop!",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "bg5_trompowsky",
+            "move": "2. Bg5",
+            "player": "white",
+            "explanation": "The Trompowsky Attack (with d5 already played). White develops the bishop aggressively.",
+            "status": "Sideline",
+            "type": "Dynamic",
+            "children": [
+              {
+                "id": "nf6_vs_tromp",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "We develop. If Bxf6, we get the bishop pair.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "bxf6_tromp",
+                    "move": "3. Bxf6",
+                    "player": "white",
+                    "explanation": "White takes.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "exf6_tromp",
+                        "move": "3... exf6",
+                        "player": "black",
+                        "explanation": "We recapture toward the center. We have the bishop pair!",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "e3_tromp",
+                            "move": "4. e3",
+                            "player": "white",
+                            "explanation": "White develops.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bd6_tromp",
+                                "move": "4... Bd6",
+                                "player": "black",
+                                "explanation": "We develop. Black will castle kingside despite the doubled pawns - they control the center!",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "c4_tromp",
+                                    "move": "5. c4",
+                                    "player": "white",
+                                    "explanation": "White plays c4.",
+                                    "status": "Mainline",
+                                    "type": "Dynamic",
+                                    "children": [
+                                      {
+                                        "id": "c6_tromp",
+                                        "move": "5... c6",
+                                        "player": "black",
+                                        "explanation": "We reinforce the center. Solid position with the bishop pair.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "gxf6_tromp",
+                        "move": "3... gxf6",
+                        "player": "black",
+                        "explanation": "Taking toward the center with g-pawn is also playable! We get an open g-file for attack.",
+                        "status": "Sideline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "c4_vs_gxf6",
+                            "move": "4. c4",
+                            "player": "white",
+                            "explanation": "White plays c4.",
+                            "status": "Mainline",
+                            "type": "Dynamic",
+                            "children": [
+                              {
+                                "id": "e6_gxf6",
+                                "move": "4... e6",
+                                "player": "black",
+                                "explanation": "We develop. Black will play ...Bb4+ or ...Bd6 with good compensation.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "e3_tromp_quiet",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "White develops quietly.",
+                    "status": "Sideline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bf5_tromp",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "We develop our bishop! Standard Slav approach.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "h6_tromp",
+                "move": "2... h6",
+                "player": "black",
+                "explanation": "We ask the bishop where it wants to go.",
+                "status": "Sideline",
+                "type": "Forcing",
+                "children": [
+                  {
+                    "id": "bh4_tromp",
+                    "move": "3. Bh4",
+                    "player": "white",
+                    "explanation": "White maintains the bishop.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c6_h6_tromp",
+                        "move": "3... c6",
+                        "player": "black",
+                        "explanation": "We go for a Slav structure.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "bf4_tromp",
+                    "move": "3. Bf4",
+                    "player": "white",
+                    "explanation": "White retreats to f4 - now it's a London!",
+                    "status": "Sideline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c5_tromp_london",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "We use our anti-London setup!",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "nc3_veresov",
+            "move": "2. Nc3",
+            "player": "white",
+            "explanation": "The Veresov Attack. An old-fashioned but playable system.",
+            "status": "Sideline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "nf6_veresov",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "We develop.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "bg5_veresov",
+                    "move": "3. Bg5",
+                    "player": "white",
+                    "explanation": "The main Veresov setup.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "nbd7_veresov",
+                        "move": "3... Nbd7",
+                        "player": "black",
+                        "explanation": "We prepare ...e6 and avoid the pin being too annoying.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nf3_veresov",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "White develops.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "h6_veresov",
+                                "move": "4... h6",
+                                "player": "black",
+                                "explanation": "We ask the bishop to decide.",
+                                "status": "Mainline",
+                                "type": "Forcing",
+                                "children": [
+                                  {
+                                    "id": "bxf6_veresov",
+                                    "move": "5. Bxf6",
+                                    "player": "white",
+                                    "explanation": "White takes.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "nxf6_veresov",
+                                        "move": "5... Nxf6",
+                                        "player": "black",
+                                        "explanation": "We recapture with the knight, keeping good structure. Black is fine.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "bf5_veresov",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "We can also develop the bishop immediately - same Slav philosophy!",
+                        "status": "Sideline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "bxf6_vs_bf5",
+                            "move": "4. Bxf6",
+                            "player": "white",
+                            "explanation": "White takes.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "exf6_veresov_bf5",
+                                "move": "4... exf6",
+                                "player": "black",
+                                "explanation": "We get the bishop pair! Good for Black.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "nf3_veresov_quiet",
+                    "move": "3. Nf3",
+                    "player": "white",
+                    "explanation": "White develops - transposes to other lines.",
+                    "status": "Sideline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bf5_veresov_nf3",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "We develop the bishop!",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "e3_stonewall",
+            "move": "2. e3",
+            "player": "white",
+            "explanation": "A passive move, possibly heading for Stonewall Attack (f4) or just a quiet game.",
+            "status": "Sideline",
+            "type": "Quiet",
+            "children": [
+              {
+                "id": "bf5_vs_e3",
+                "move": "2... Bf5",
+                "player": "black",
+                "explanation": "We immediately develop the bishop! Against passive play, we grab space and activity.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "bd3_stonewall",
+                    "move": "3. Bd3",
+                    "player": "white",
+                    "explanation": "White develops.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bxd3_stonewall",
+                        "move": "3... Bxd3",
+                        "player": "black",
+                        "explanation": "We trade.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "qxd3_stonewall",
+                            "move": "4. Qxd3",
+                            "player": "white",
+                            "explanation": "White recaptures.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "e6_stonewall",
+                                "move": "4... e6",
+                                "player": "black",
+                                "explanation": "We develop. Black achieved the Slav goal - bishop developed before e6.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "f4_stonewall",
+                    "move": "3. f4",
+                    "player": "white",
+                    "explanation": "The Stonewall Attack!",
+                    "status": "Sideline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "e6_vs_stonewall",
+                        "move": "3... e6",
+                        "player": "black",
+                        "explanation": "We develop. Black is comfortable - our bishop is already active.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nf3_stonewall",
+                            "move": "4. Nf3",
+                            "player": "white",
+                            "explanation": "White develops.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "c5_vs_stonewall",
+                                "move": "4... c5",
+                                "player": "black",
+                                "explanation": "We challenge the center! Black has a good game.",
+                                "status": "Mainline",
+                                "type": "Dynamic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "nf6_vs_e3",
+                "move": "2... Nf6",
+                "player": "black",
+                "explanation": "Also good - flexible.",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "bd3_slow",
+                    "move": "3. Bd3",
+                    "player": "white",
+                    "explanation": "White develops.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bf5_vs_bd3",
+                        "move": "3... Bf5",
+                        "player": "black",
+                        "explanation": "We develop the bishop actively!",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nf6_indian",
+        "move": "1... Nf6",
+        "player": "black",
+        "explanation": "The Indian Defense. Keeps options open for King's Indian, Nimzo-Indian, etc. A flexible alternative.",
+        "status": "Sideline",
+        "type": "Positional/Strategic",
+        "children": [
+          {
+            "id": "c4_after_nf6",
+            "move": "2. c4",
+            "player": "white",
+            "explanation": "White grabs space.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "e6_nimzo",
+                "move": "2... e6",
+                "player": "black",
+                "explanation": "Preparing ...Bb4 (Nimzo-Indian) or ...d5 (transposing to QGD).",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "nc3_nimzo",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "White develops.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bb4_nimzo",
+                        "move": "3... Bb4",
+                        "player": "black",
+                        "explanation": "The Nimzo-Indian Defense! We pin the knight and control e4.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": [
+                          {
+                            "id": "qc2_nimzo",
+                            "move": "4. Qc2",
+                            "player": "white",
+                            "explanation": "The Classical/Capablanca Variation. White avoids doubled pawns.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "oo_nimzo",
+                                "move": "4... O-O",
+                                "player": "black",
+                                "explanation": "We castle. Very solid.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "a3_nimzo",
+                                    "move": "5. a3",
+                                    "player": "white",
+                                    "explanation": "White asks the bishop to decide.",
+                                    "status": "Mainline",
+                                    "type": "Forcing",
+                                    "children": [
+                                      {
+                                        "id": "bxc3_nimzo",
+                                        "move": "5... Bxc3+",
+                                        "player": "black",
+                                        "explanation": "We give up the bishop pair but double White's pawns.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": [
+                                          {
+                                            "id": "qxc3_nimzo",
+                                            "move": "6. Qxc3",
+                                            "player": "white",
+                                            "explanation": "White recaptures.",
+                                            "status": "Mainline",
+                                            "type": "Positional/Strategic",
+                                            "children": [
+                                              {
+                                                "id": "b6_nimzo",
+                                                "move": "6... b6",
+                                                "player": "black",
+                                                "explanation": "We prepare ...Bb7, controlling the long diagonal. Typical Nimzo position.",
+                                                "status": "Mainline",
+                                                "type": "Positional/Strategic",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "e3_nimzo",
+                            "move": "4. e3",
+                            "player": "white",
+                            "explanation": "The Rubinstein Variation. Solid but blocks the bishop.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "oo_rubinstein",
+                                "move": "4... O-O",
+                                "player": "black",
+                                "explanation": "We castle.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "bd3_rubinstein",
+                                    "move": "5. Bd3",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "d5_rubinstein",
+                                        "move": "5... d5",
+                                        "player": "black",
+                                        "explanation": "We stake out the center. Classical play.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "d5_qgd_transpose",
+                        "move": "3... d5",
+                        "player": "black",
+                        "explanation": "We can transpose to QGD/Semi-Slav structures.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "bg5_qgd_from_nimzo",
+                            "move": "4. Bg5",
+                            "player": "white",
+                            "explanation": "QGD main lines.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "c6_semislav_from_nimzo",
+                                "move": "4... c6",
+                                "player": "black",
+                                "explanation": "Semi-Slav! We can still get our bishop out on f5 later.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "nf3_qid",
+                    "move": "3. Nf3",
+                    "player": "white",
+                    "explanation": "White avoids the Nimzo-Indian.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "b6_qid",
+                        "move": "3... b6",
+                        "player": "black",
+                        "explanation": "The Queen's Indian Defense! We fianchetto to control e4.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "g3_qid",
+                            "move": "4. g3",
+                            "player": "white",
+                            "explanation": "White fianchettoes too.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "bb7_qid",
+                                "move": "4... Bb7",
+                                "player": "black",
+                                "explanation": "We develop. Both sides have fianchettoed - typical Queen's Indian.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "d5_vs_nf3_indian",
+                        "move": "3... d5",
+                        "player": "black",
+                        "explanation": "We can transpose to our main repertoire!",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "nc3_transpose_slav",
+                            "move": "4. Nc3",
+                            "player": "white",
+                            "explanation": "Transposes to QGD/Semi-Slav.",
+                            "status": "Mainline",
+                            "type": "Positional/Strategic",
+                            "children": [
+                              {
+                                "id": "c6_slav_final",
+                                "move": "4... c6",
+                                "player": "black",
+                                "explanation": "We go Slav!",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "g6_kid",
+                "move": "2... g6",
+                "player": "black",
+                "explanation": "Heading for the King's Indian Defense. A fighting choice!",
+                "status": "Sideline",
+                "type": "Dynamic",
+                "children": [
+                  {
+                    "id": "nc3_kid",
+                    "move": "3. Nc3",
+                    "player": "white",
+                    "explanation": "White develops.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "bg7_kid",
+                        "move": "3... Bg7",
+                        "player": "black",
+                        "explanation": "We fianchetto. The King's Indian is a fighting defense with rich tactical possibilities.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": [
+                          {
+                            "id": "e4_kid",
+                            "move": "4. e4",
+                            "player": "white",
+                            "explanation": "White seizes the center.",
+                            "status": "Mainline",
+                            "type": "Dynamic",
+                            "children": [
+                              {
+                                "id": "d6_kid",
+                                "move": "4... d6",
+                                "player": "black",
+                                "explanation": "We prepare ...e5 or ...e7-e5. Classic King's Indian setup.",
+                                "status": "Mainline",
+                                "type": "Positional/Strategic",
+                                "children": [
+                                  {
+                                    "id": "nf3_kid",
+                                    "move": "5. Nf3",
+                                    "player": "white",
+                                    "explanation": "White develops.",
+                                    "status": "Mainline",
+                                    "type": "Positional/Strategic",
+                                    "children": [
+                                      {
+                                        "id": "oo_kid",
+                                        "move": "5... O-O",
+                                        "player": "black",
+                                        "explanation": "We castle. Black will play ...e5, challenging the center.",
+                                        "status": "Mainline",
+                                        "type": "Positional/Strategic",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "bf4_london_vs_nf6",
+            "move": "2. Bf4",
+            "player": "white",
+            "explanation": "The London System.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "d5_vs_london_nf6",
+                "move": "2... d5",
+                "player": "black",
+                "explanation": "We transpose back to our main repertoire!",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "e3_london_transpose",
+                    "move": "3. e3",
+                    "player": "white",
+                    "explanation": "Standard London.",
+                    "status": "Mainline",
+                    "type": "Positional/Strategic",
+                    "children": [
+                      {
+                        "id": "c5_london_transpose",
+                        "move": "3... c5",
+                        "player": "black",
+                        "explanation": "Our main anti-London! Same lines as before.",
+                        "status": "Mainline",
+                        "type": "Dynamic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "nf3_vs_nf6",
+            "move": "2. Nf3",
+            "player": "white",
+            "explanation": "Flexible.",
+            "status": "Mainline",
+            "type": "Positional/Strategic",
+            "children": [
+              {
+                "id": "d5_vs_nf3_nf6",
+                "move": "2... d5",
+                "player": "black",
+                "explanation": "We can transpose to our Slav repertoire!",
+                "status": "Mainline",
+                "type": "Positional/Strategic",
+                "children": [
+                  {
+                    "id": "c4_slav_transpose_final",
+                    "move": "3. c4",
+                    "player": "white",
+                    "explanation": "Queen's Gambit.",
+                    "status": "Mainline",
+                    "type": "Dynamic",
+                    "children": [
+                      {
+                        "id": "c6_slav_final_transp",
+                        "move": "3... c6",
+                        "player": "black",
+                        "explanation": "The Slav! Our main repertoire.",
+                        "status": "Mainline",
+                        "type": "Positional/Strategic",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "e6_vs_nf3_nf6",
+                "move": "2... e6",
+                "player": "black",
+                "explanation": "Keeping Indian options open.",
+                "status": "Sideline",
+                "type": "Positional/Strategic",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
