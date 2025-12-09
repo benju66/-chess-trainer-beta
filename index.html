@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Trainer V6.7</title>
-    <!-- V6.7: Added long-press arrow preview for candidate moves -->
+    <title>Chess Trainer V6.8</title>
+    <!-- V6.8: Added Quiz Mode for active recall training -->
     <link rel="stylesheet" href="https://unpkg.com/cm-chessboard@8/assets/chessboard.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
@@ -108,7 +108,6 @@
         .cm-chessboard .coordinates { fill: #666; font-size: 10px; }
         .cm-chessboard .marker.last-move { fill: rgba(255, 255, 0, 0.4); }
         
-        /* V6.7: Arrow styling for preview */
         .cm-chessboard .arrow { opacity: 0.85; }
 
         .current-move-card { background: #334155; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; border: 1px solid #475569; }
@@ -127,7 +126,6 @@
             padding: 14px 16px; margin-bottom: 10px; cursor: pointer;
             display: flex; justify-content: space-between; align-items: center;
             transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-            /* V6.7: Prevent text selection on long-press */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -142,14 +140,12 @@
         .option-btn.remote { border-style: dashed; background: rgba(139, 92, 246, 0.1); }
         .option-btn.remote .badge { background: #8b5cf6; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-family: sans-serif; }
         
-        /* V6.7: Visual feedback during long-press */
         .option-btn.pressing {
             transform: scale(0.97);
             border-color: #60a5fa;
             box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
         }
         
-        /* V6.7: Hint text for long-press */
         .arrow-hint {
             text-align: center;
             font-size: 0.7rem;
@@ -220,13 +216,177 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .board-error { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; color: #f87171; gap: 10px; text-align: center; padding: 20px; }
         .retry-btn { background: #334155; border: none; color: #e2e8f0; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+
+        /* =====================================================
+           V6.8: QUIZ MODE STYLES
+           ===================================================== */
+        .quiz-badge {
+            background: #3b82f6;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quiz-btn {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: #93c5fd;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .quiz-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .quiz-prompt {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px dashed #3b82f6;
+            border-radius: 12px;
+        }
+        .quiz-prompt p {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+        }
+        .quiz-prompt .hint {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .reveal-btn {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+        .reveal-btn:hover {
+            background: #2563eb;
+        }
+        .reveal-btn:active {
+            transform: scale(0.98);
+        }
+
+        .quiz-answer {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .quiz-answer .correct-move {
+            font-size: 1.4rem;
+            font-family: monospace;
+            color: #22c55e;
+            margin-bottom: 8px;
+        }
+        .quiz-answer .explanation {
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .quiz-answer .alternatives {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            padding-top: 12px;
+            border-top: 1px dashed #334155;
+        }
+        .quiz-answer .alternatives strong {
+            color: #cbd5e1;
+        }
+
+        .next-btn {
+            background: #22c55e;
+            border: none;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.15s ease;
+        }
+        .next-btn:hover {
+            background: #16a34a;
+        }
+
+        .opponent-move-display {
+            background: rgba(100, 116, 139, 0.2);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .opponent-move-display .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .opponent-move-display .move {
+            font-size: 1.3rem;
+            font-family: monospace;
+            color: #e2e8f0;
+        }
+
+        .quiz-complete {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            border-radius: 12px;
+        }
+        .quiz-complete .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        .quiz-complete h3 {
+            font-size: 1.3rem;
+            color: #22c55e;
+            margin-bottom: 8px;
+        }
+        .quiz-complete p {
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        .quiz-complete .menu-btn {
+            background: #334155;
+            border: none;
+            color: #e2e8f0;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .quiz-complete .menu-btn:hover {
+            background: #475569;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="menuScreen" class="screen" style="display:block;">
             <div class="header">
-                <h1>♟️ Opening Trainer <span class="version-tag">V6.7</span></h1>
+                <h1>♟️ Opening Trainer <span class="version-tag">V6.8</span></h1>
                 <p>Visual Repertoire Manager</p>
                 <div class="header-tools">
                     <button class="tool-btn" onclick="backupLibrary()">☁️ Backup</button>
@@ -323,7 +483,6 @@
                     </label>
                 </div>
             </div>
-            <!-- V6.7: Hint for long-press feature -->
             <div class="arrow-hint">💡 Long-press a move to preview arrow on board</div>
             <div id="trainerOptions"></div>
         </div>
@@ -352,6 +511,26 @@
                 </div>
                 
                 <div id="builderCurrentNode" class="current-move-card"></div>
+                
+                <div class="form-group">
+                    <label>Opening Name</label>
+                    <input type="text" id="builderName" placeholder="Opening name...">
+                </div>
+                <div class="form-group">
+                    <label>Group</label>
+                    <input type="text" id="builderGroup" placeholder="e.g. White Repertoire">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <select id="builderColor">
+                        <option value="white">White</option>
+                        <option value="black">Black</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="builderDesc" rows="2" placeholder="Brief description..."></textarea>
+                </div>
                 
                 <div class="add-form" style="margin-top:20px;">
                     <h4 id="addFormTitle">Add Move</h4>
@@ -396,41 +575,13 @@
                     <p class="section-title">Existing Responses:</p>
                     <div id="builderResponses"></div>
                 </div>
-                
-                <div class="add-form" style="margin-top:24px; opacity:0.8;">
-                     <div class="details-toggle-btn" onclick="document.getElementById('metaDrawer').classList.toggle('visible')">▶ Edit Opening Metadata</div>
-                     <div id="metaDrawer" class="details-drawer">
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" id="builderName">
-                        </div>
-                        <div class="form-group">
-                            <label>Folder / Group</label>
-                            <input type="text" id="builderGroup">
-                        </div>
-                        <div class="form-group">
-                            <label>You Play As</label>
-                            <select id="builderColor">
-                                <option value="white">White</option>
-                                <option value="black">Black</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="builderDesc" rows="2"></textarea>
-                        </div>
-                    </div>
-                </div>
             </div>
             
-            <div id="jsonTab" style="display:none">
-                <div class="builder-section">
-                    <h3>Raw JSON</h3>
-                    <textarea class="json-area" id="jsonIn" placeholder="Paste opening JSON here..."></textarea>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="nav-btn" style="background:#3b82f6" onclick="importBuilderJson()">Import & Overwrite</button>
-                        <button class="nav-btn" onclick="copyBuilderJson()">Copy to Clipboard</button>
-                    </div>
+            <div id="jsonTab" style="display:none;">
+                <textarea id="jsonIn" class="json-area" style="min-height:300px;"></textarea>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="nav-btn" style="background:#3b82f6" onclick="importBuilderJson()">Import & Overwrite</button>
+                    <button class="nav-btn" onclick="copyBuilderJson()">Copy to Clipboard</button>
                 </div>
             </div>
         </div>
@@ -448,7 +599,7 @@
 
 <script type="module">
 // =====================================================
-// V6.7: IMPORT CM-CHESSBOARD v8 WITH MARKERS AND ARROWS
+// V6.8: IMPORT CM-CHESSBOARD v8 WITH MARKERS AND ARROWS
 // =====================================================
 import { Chessboard, COLOR, FEN, BORDER_TYPE } from "https://unpkg.com/cm-chessboard@8/src/Chessboard.js";
 import { Markers, MARKER_TYPE } from "https://unpkg.com/cm-chessboard@8/src/extensions/markers/Markers.js";
@@ -464,13 +615,13 @@ window.Arrows = Arrows;
 window.ARROW_TYPE = ARROW_TYPE;
 window.boardModuleReady = true;
 
-console.log('V6.7: cm-chessboard with Markers and Arrows loaded');
+console.log('V6.8: cm-chessboard with Markers and Arrows loaded');
 window.dispatchEvent(new Event('boardModuleReady'));
 </script>
 
 <script>
 // =====================================================
-// V6.7: INITIALIZATION
+// V6.8: INITIALIZATION
 // =====================================================
 let domReady = false;
 let moduleReady = false;
@@ -555,13 +706,18 @@ let builderBoardInstance = null;
 let lastMoveSquares = null;
 let transpoRebuildTimer = null;
 
-// V6.7: Long-press state
+// Long-press state
 let longPressTimer = null;
 let longPressTarget = null;
 let isLongPressing = false;
 let currentArrowPreview = null;
 let startY = 0;
 const LONG_PRESS_DURATION = 400;
+
+// V6.8: Quiz Mode state
+let quizMode = false;
+let quizRevealed = false;
+let quizOpponentMove = null;
 
 // =====================================================
 // INIT & STORAGE
@@ -575,7 +731,7 @@ function init() {
     ).join('');
     
     renderMenu();
-    console.log('V6.7: App initialized');
+    console.log('V6.8: App initialized with Quiz Mode');
 }
 
 function saveStorage() {
@@ -686,7 +842,7 @@ function getUnifiedOptions(currentNode, currentFen) {
 }
 
 // =====================================================
-// V6.7: BOARD MANAGEMENT WITH ARROWS
+// BOARD MANAGEMENT WITH ARROWS
 // =====================================================
 function isBoardModuleReady() {
     return window.boardModuleReady && window.Chessboard;
@@ -729,72 +885,34 @@ function updateTrainerBoard(fen, orientation, moveSquares) {
         try {
             trainerBoard.setPosition(fen, true);
             trainerBoard.setOrientation(orientation === 'white' ? window.COLOR.white : window.COLOR.black);
-            setTimeout(() => highlightLastMove(trainerBoard, moveSquares), 250);
-        } catch (e) {}
+            clearArrowPreview();
+            if (moveSquares) highlightLastMove(trainerBoard, moveSquares);
+        } catch (e) { console.error("Board update error:", e); }
     }
 }
 
-function highlightLastMove(board, moveSquares) {
-    if (!board) return;
+function highlightLastMove(board, squares) {
+    if (!board || !squares || !window.MARKER_TYPE) return;
     try {
         board.removeMarkers();
-        if (moveSquares?.from && moveSquares?.to) {
-            board.addMarker(window.MARKER_TYPE.frame, moveSquares.from);
-            board.addMarker(window.MARKER_TYPE.frame, moveSquares.to);
-        }
+        board.addMarker(window.MARKER_TYPE.frame, squares.from);
+        board.addMarker(window.MARKER_TYPE.frame, squares.to);
     } catch (e) {}
-}
-
-// V6.7: Arrow preview functions
-function showArrowPreview(fromSquare, toSquare) {
-    if (!trainerBoard || !window.ARROW_TYPE) return;
-    try {
-        clearArrowPreview();
-        trainerBoard.addArrow(window.ARROW_TYPE.default, fromSquare, toSquare);
-        currentArrowPreview = { from: fromSquare, to: toSquare };
-    } catch (e) {}
-}
-
-function clearArrowPreview() {
-    if (!trainerBoard) return;
-    try {
-        trainerBoard.removeArrows();
-        currentArrowPreview = null;
-    } catch (e) {}
-}
-
-function calculateMoveSquares(moveNotation, currentFen) {
-    try {
-        const game = new Chess(currentFen);
-        const clean = moveNotation.replace(/^[0-9]+\.+/, '').trim();
-        const result = game.move(clean);
-        if (result) return { from: result.from, to: result.to };
-    } catch (e) {}
-    return null;
-}
-
-function getCurrentTrainerFen() {
-    if (!currentOpening) return null;
-    const game = new Chess();
-    const rootMove = currentOpening.tree.move.replace(/^[0-9]+\.+/, '').trim();
-    if (rootMove) game.move(rootMove);
-    
-    let node = currentOpening.tree;
-    for (let id of currentPath) {
-        const child = node.children?.find(c => c.id === id);
-        if (child) {
-            node = child;
-            game.move(child.move.replace(/^[0-9]+\.+/, '').trim());
-        }
-    }
-    return game.fen();
 }
 
 function retryTrainerBoard() {
     if (currentOpening) {
         const game = new Chess();
-        const rootMove = currentOpening.tree.move.replace(/^[0-9]+\.+/, '').trim();
+        let node = currentOpening.tree;
+        const rootMove = node.move.replace(/^[0-9]+\.+/, '').trim();
         if (rootMove) game.move(rootMove);
+        for (let id of currentPath) {
+            const child = node.children?.find(c => c.id === id);
+            if (child) {
+                node = child;
+                game.move(child.move.replace(/^[0-9]+\.+/, '').trim());
+            }
+        }
         createTrainerBoard(game.fen(), currentOpening.color);
     }
 }
@@ -806,7 +924,7 @@ async function createBuilderBoard(fen, orientation) {
     container.innerHTML = `<div class="board-loading"><div class="spinner"></div><span>Loading board...</span></div>`;
     
     if (!isBoardModuleReady()) {
-        container.innerHTML = `<div class="board-error"><span>⚠️ Board failed</span><button class="retry-btn" onclick="retryBuilderBoard()">Retry</button></div>`;
+        container.innerHTML = `<div class="board-error"><span>⚠️ Board failed to load</span><button class="retry-btn" onclick="retryBuilderBoard()">Retry</button></div>`;
         return;
     }
     
@@ -827,58 +945,98 @@ async function createBuilderBoard(fen, orientation) {
             animationDuration: 200
         });
     } catch (err) {
-        container.innerHTML = `<div class="board-error"><span>⚠️ Board error</span><button class="retry-btn" onclick="retryBuilderBoard()">Retry</button></div>`;
+        container.innerHTML = `<div class="board-error"><span>⚠️ Board error</span><p>${err.message}</p><button class="retry-btn" onclick="retryBuilderBoard()">Retry</button></div>`;
     }
 }
 
-function updateBuilderBoard(fen, orientation, moveSquares) {
+function updateBuilderBoard(fen, orientation) {
     if (builderBoardInstance) {
         try {
             builderBoardInstance.setPosition(fen, true);
             builderBoardInstance.setOrientation(orientation === 'white' ? window.COLOR.white : window.COLOR.black);
-            highlightLastMove(builderBoardInstance, moveSquares);
-        } catch (e) {}
+        } catch (e) { console.error("Builder board update error:", e); }
     }
 }
 
 function retryBuilderBoard() {
     if (builderTree) {
         const game = new Chess();
-        const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
-        if (rootMove) game.move(rootMove);
+        const cleanMoveRegex = /^[0-9]+\.+/;
+        game.move(builderTree.move.replace(cleanMoveRegex, '').trim());
+        for (let id of builderPath) {
+            let node = builderTree;
+            for (let pid of builderPath.slice(0, builderPath.indexOf(id) + 1)) {
+                node = node.children.find(c => c.id === pid);
+            }
+            if (node) game.move(node.move.replace(cleanMoveRegex, '').trim());
+        }
         createBuilderBoard(game.fen(), builderColor);
     }
 }
 
 // =====================================================
-// V6.7: LONG-PRESS HANDLERS
+// ARROW PREVIEW (Long-press)
+// =====================================================
+function showArrowPreview(moveNotation) {
+    if (!trainerBoard || !window.ARROW_TYPE) return;
+    
+    const game = new Chess();
+    let node = currentOpening.tree;
+    const rootMove = node.move.replace(/^[0-9]+\.+/, '').trim();
+    if (rootMove) game.move(rootMove);
+    
+    for (let id of currentPath) {
+        const child = node.children?.find(c => c.id === id);
+        if (child) {
+            node = child;
+            game.move(child.move.replace(/^[0-9]+\.+/, '').trim());
+        }
+    }
+    
+    const cleanMove = moveNotation.replace(/^[0-9]+\.+/, '').trim();
+    const moveObj = game.move(cleanMove);
+    
+    if (moveObj) {
+        try {
+            clearArrowPreview();
+            trainerBoard.addArrow(window.ARROW_TYPE.default, moveObj.from, moveObj.to);
+            currentArrowPreview = { from: moveObj.from, to: moveObj.to };
+        } catch (e) {}
+    }
+}
+
+function clearArrowPreview() {
+    if (trainerBoard && currentArrowPreview) {
+        try { trainerBoard.removeArrows(); } catch (e) {}
+        currentArrowPreview = null;
+    }
+}
+
+// =====================================================
+// LONG-PRESS HANDLERS
 // =====================================================
 function handlePointerDown(e, moveNotation) {
-    startY = e.clientY || (e.touches?.[0]?.clientY) || 0;
-    cancelLongPress();
+    if (e.button && e.button !== 0) return;
+    
     longPressTarget = e.currentTarget;
+    longPressTarget.classList.add('pressing');
+    startY = e.clientY || (e.touches && e.touches[0]?.clientY) || 0;
+    isLongPressing = false;
     
     longPressTimer = setTimeout(() => {
         isLongPressing = true;
-        if (longPressTarget) longPressTarget.classList.add('pressing');
-        
-        const currentFen = getCurrentTrainerFen();
-        if (currentFen) {
-            const squares = calculateMoveSquares(moveNotation, currentFen);
-            if (squares) showArrowPreview(squares.from, squares.to);
-        }
+        showArrowPreview(moveNotation);
     }, LONG_PRESS_DURATION);
 }
 
 function handlePointerUp(e) {
-    const wasLongPressing = isLongPressing;
     if (longPressTarget) longPressTarget.classList.remove('pressing');
-    if (wasLongPressing) clearArrowPreview();
     cancelLongPress();
+    setTimeout(() => clearArrowPreview(), 100);
 }
 
 function handlePointerMove(e) {
-    const currentY = e.clientY || (e.touches?.[0]?.clientY) || 0;
+    const currentY = e.clientY || (e.touches && e.touches[0]?.clientY) || 0;
     if (Math.abs(currentY - startY) > 10) {
         if (longPressTarget) longPressTarget.classList.remove('pressing');
         cancelLongPress();
@@ -920,9 +1078,16 @@ function startTraining(key) {
     historyStack = [];
     currentPath = [];
     lastMoveSquares = null;
+    quizMode = false;
     
     rebuildTranspositionMap();
     showScreen('trainerScreen');
+    
+    // Restore toggle visibility
+    const toggleGroup = document.querySelector('.toggle-group');
+    const arrowHint = document.querySelector('.arrow-hint');
+    if (toggleGroup) toggleGroup.style.display = 'flex';
+    if (arrowHint) arrowHint.style.display = 'block';
     
     const game = new Chess();
     const rootMove = currentOpening.tree.move.replace(/^[0-9]+\.+/, '').trim();
@@ -1046,7 +1211,6 @@ function renderTrainer() {
         }
     }).join('');
     
-    // V6.7: Attach handlers
     container.querySelectorAll('.option-btn').forEach(btn => {
         const moveNotation = btn.dataset.move;
         const type = btn.dataset.type;
@@ -1102,6 +1266,192 @@ function updateTheme() {
 }
 
 // =====================================================
+// V6.8: QUIZ MODE LOGIC
+// =====================================================
+function startQuiz(key) {
+    currentOpening = OPENINGS[key];
+    currentOpeningKey = key;
+    originalOpeningKey = key;
+    historyStack = [];
+    currentPath = [];
+    lastMoveSquares = null;
+    
+    // Initialize quiz state
+    quizMode = true;
+    quizRevealed = false;
+    quizOpponentMove = null;
+    
+    showScreen('trainerScreen');
+    
+    const game = new Chess();
+    const rootMove = currentOpening.tree.move.replace(/^[0-9]+\.+/, '').trim();
+    if (rootMove) {
+        const moveResult = game.move(rootMove);
+        if (moveResult) lastMoveSquares = { from: moveResult.from, to: moveResult.to };
+    }
+    
+    setTimeout(async () => {
+        await createTrainerBoard(game.fen(), currentOpening.color);
+        if (lastMoveSquares && trainerBoard) highlightLastMove(trainerBoard, lastMoveSquares);
+        updateTheme();
+        renderQuiz();
+    }, 50);
+}
+
+function renderQuiz() {
+    let node = currentOpening.tree;
+    const game = new Chess();
+    const rootMove = node.move.replace(/^[0-9]+\.+/, '').trim();
+    let currentMoveSquares = null;
+    
+    if (rootMove) {
+        const moveResult = game.move(rootMove);
+        if (moveResult) currentMoveSquares = { from: moveResult.from, to: moveResult.to };
+    }
+    
+    // Update header with quiz badge
+    document.getElementById('trainerHeaderTitle').innerHTML = 
+        `${currentOpening.name} <span class="quiz-badge">Quiz Mode</span>`;
+    
+    // Navigate to current position
+    for (let id of currentPath) {
+        const child = node.children?.find(c => c.id === id);
+        if (child) {
+            node = child;
+            const cleanMove = child.move.replace(/^[0-9]+\.+/, '').trim();
+            const moveResult = game.move(cleanMove);
+            if (moveResult) currentMoveSquares = { from: moveResult.from, to: moveResult.to };
+        }
+    }
+    
+    const fen = game.fen();
+    updateTrainerBoard(fen, currentOpening.color, currentMoveSquares);
+    
+    // Hide back button and toggles in quiz mode
+    const backBtn = document.getElementById('trainerBackBtn');
+    if (backBtn) backBtn.style.display = 'none';
+    
+    document.querySelector('.toggle-group').style.display = 'none';
+    document.querySelector('.arrow-hint').style.display = 'none';
+    
+    // Determine whose move it is
+    const isPlayerMove = (game.turn() === 'b' && currentOpening.color === 'white') || 
+                         (game.turn() === 'w' && currentOpening.color === 'black');
+    
+    // Update move card
+    const cardEl = document.getElementById('trainerMoveCard');
+    const labelEl = document.getElementById('trainerMoveLabel');
+    const textEl = document.getElementById('currentMoveText');
+    const explEl = document.getElementById('currentExplanation');
+    
+    cardEl.className = 'current-move-card opponent';
+    labelEl.textContent = "CURRENT POSITION";
+    textEl.textContent = node.move || "Start";
+    explEl.textContent = "";
+    
+    const container = document.getElementById('trainerOptions');
+    
+    // Get mainline child options
+    const children = node.children || [];
+    const mainlineChild = children.find(c => c.status === 'Mainline') || children[0];
+    
+    // Check if line is complete
+    if (!mainlineChild) {
+        container.innerHTML = `
+            <div class="quiz-complete">
+                <div class="icon">🎉</div>
+                <h3>Line Complete!</h3>
+                <p>You've finished this mainline.</p>
+                <button class="menu-btn" onclick="exitQuiz()">Return to Menu</button>
+            </div>
+        `;
+        return;
+    }
+    
+    if (isPlayerMove) {
+        // It's the player's turn - show quiz prompt or answer
+        if (!quizRevealed) {
+            // Show the quiz prompt
+            container.innerHTML = `
+                <div class="quiz-prompt">
+                    <p>What's your move?</p>
+                    <p class="hint">Think about your response, then reveal the answer.</p>
+                    <button class="reveal-btn" onclick="revealQuizAnswer()">Reveal Answer</button>
+                </div>
+            `;
+        } else {
+            // Show the answer
+            const alternatives = children
+                .filter(c => c.id !== mainlineChild.id)
+                .map(c => c.move)
+                .join(', ');
+            
+            container.innerHTML = `
+                <div class="quiz-answer">
+                    <div class="correct-move">${mainlineChild.move}</div>
+                    <div class="explanation">${mainlineChild.explanation || 'No explanation provided.'}</div>
+                    ${alternatives ? `<div class="alternatives"><strong>Also playable:</strong> ${alternatives}</div>` : ''}
+                </div>
+                <button class="next-btn" onclick="advanceQuiz()">Next</button>
+            `;
+        }
+    } else {
+        // It's the opponent's turn - show their move and auto-advance prompt
+        container.innerHTML = `
+            <div class="opponent-move-display">
+                <div class="label">Opponent plays</div>
+                <div class="move">${mainlineChild.move}</div>
+            </div>
+            <button class="next-btn" onclick="advanceQuiz()">Continue</button>
+        `;
+        quizOpponentMove = mainlineChild;
+    }
+}
+
+function revealQuizAnswer() {
+    quizRevealed = true;
+    renderQuiz();
+}
+
+function advanceQuiz() {
+    // Get current node
+    let node = currentOpening.tree;
+    for (let id of currentPath) {
+        const child = node.children?.find(c => c.id === id);
+        if (child) node = child;
+    }
+    
+    // Find mainline child
+    const children = node.children || [];
+    const mainlineChild = children.find(c => c.status === 'Mainline') || children[0];
+    
+    if (mainlineChild) {
+        currentPath.push(mainlineChild.id);
+        quizRevealed = false;
+        renderQuiz();
+    }
+}
+
+function exitQuiz() {
+    quizMode = false;
+    quizRevealed = false;
+    quizOpponentMove = null;
+    
+    // Restore toggle visibility
+    const toggleGroup = document.querySelector('.toggle-group');
+    const arrowHint = document.querySelector('.arrow-hint');
+    if (toggleGroup) toggleGroup.style.display = 'flex';
+    if (arrowHint) arrowHint.style.display = 'block';
+    
+    if (trainerBoard) {
+        try { trainerBoard.destroy(); } catch(e) {}
+        trainerBoard = null;
+    }
+    
+    showScreen('menuScreen');
+}
+
+// =====================================================
 // UI & IMPORT
 // =====================================================
 function showScreen(id) {
@@ -1129,7 +1479,16 @@ function renderMenu() {
     
     Object.entries(groups).forEach(([groupName, items]) => {
         const folderId = 'folder_' + groupName.replace(/\s/g, '');
-        container.innerHTML += `<div class="folder-header" onclick="toggleFolder('${folderId}')"><span>📂 ${groupName}</span><span class="folder-count">${items.length}</span></div><div id="${folderId}" class="folder-content open">${items.map(item => `<div class="card" onclick="startTraining('${item.key}')"><div class="card-actions"><button class="icon-btn" onclick="event.stopPropagation(); editOpening('${item.key}')">✏️</button><button class="icon-btn" onclick="event.stopPropagation(); deleteOpening('${item.key}')">🗑</button></div><h3>${item.name} <span class="version-tag" style="background:${item.color==='white'?'#fbbf24':'#334155'}; color:${item.color==='white'?'#000':'#fff'}">${item.color.toUpperCase()}</span></h3><p>${item.description || ''}</p><div class="moves">${item.startingMoves || ''}</div></div>`).join('')}</div>`;
+        container.innerHTML += `<div class="folder-header" onclick="toggleFolder('${folderId}')"><span>📂 ${groupName}</span><span class="folder-count">${items.length}</span></div><div id="${folderId}" class="folder-content open">${items.map(item => `<div class="card" onclick="startTraining('${item.key}')">
+            <div class="card-actions">
+                <button class="quiz-btn" onclick="event.stopPropagation(); startQuiz('${item.key}')">Quiz</button>
+                <button class="icon-btn" onclick="event.stopPropagation(); editOpening('${item.key}')">✏️</button>
+                <button class="icon-btn" onclick="event.stopPropagation(); deleteOpening('${item.key}')">🗑</button>
+            </div>
+            <h3>${item.name} <span class="version-tag" style="background:${item.color==='white'?'#fbbf24':'#334155'}; color:${item.color==='white'?'#000':'#fff'}">${item.color.toUpperCase()}</span></h3>
+            <p>${item.description || ''}</p>
+            <div class="moves">${item.startingMoves || ''}</div>
+        </div>`).join('')}</div>`;
     });
 }
 
@@ -1197,111 +1556,105 @@ function initializeNewOpening() {
         const validMove = game.move(moveRaw);
         if (!validMove) { alert("Invalid starting move!"); return; }
         
-        builderTree = { id: 'root', move: "1. " + validMove.san, player: 'white', explanation: 'Starting move.', children: [] };
+        builderTree = { id: 'root', move: "1. " + validMove.san, player: 'white', explanation: 'Starting move.', status: 'Mainline', type: 'Positional/Strategic', children: [] };
         builderColor = color;
+        builderPath = [];
+        editingKey = null;
+        
+        document.getElementById('newOpeningModal').style.display = 'none';
         document.getElementById('builderName').value = name;
         document.getElementById('builderGroup').value = group;
         document.getElementById('builderColor').value = color;
         document.getElementById('builderDesc').value = '';
-        document.getElementById('newMoveInput').value = '';
-        document.getElementById('newExpl').value = '';
-        document.getElementById('newOpeningModal').style.display = 'none';
-        showScreen('builderScreen');
         
-        setTimeout(async () => {
-            await createBuilderBoard(game.fen(), builderColor);
-            if (builderBoardInstance) highlightLastMove(builderBoardInstance, { from: validMove.from, to: validMove.to });
+        showScreen('builderScreen');
+        setTimeout(() => {
+            createBuilderBoard(game.fen(), color);
             renderBuilder();
         }, 50);
-    } catch (e) { alert("Error: " + e.message); }
+    } catch(e) { alert("Error: " + e.message); }
 }
 
 function editOpening(key) {
-    editingKey = key;
     const op = OPENINGS[key];
-    builderTree = JSON.parse(JSON.stringify(op.tree));
-    builderColor = op.color;
-    document.getElementById('builderName').value = op.name;
-    document.getElementById('builderGroup').value = op.group || '';
-    document.getElementById('builderColor').value = op.color;
-    document.getElementById('builderDesc').value = op.description || '';
-    document.getElementById('newMoveInput').value = '';
-    document.getElementById('newExpl').value = '';
+    if (!op.version) OPENINGS[key] = migrateOpening(op);
+    
+    builderTree = JSON.parse(JSON.stringify(OPENINGS[key].tree));
+    builderColor = OPENINGS[key].color || 'white';
     builderPath = [];
+    editingKey = key;
+    
+    document.getElementById('builderName').value = OPENINGS[key].name || '';
+    document.getElementById('builderGroup').value = OPENINGS[key].group || '';
+    document.getElementById('builderColor').value = builderColor;
+    document.getElementById('builderDesc').value = OPENINGS[key].description || '';
+    
     showScreen('builderScreen');
     
     const game = new Chess();
     const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
-    let moveSquares = null;
-    if (rootMove) {
-        const moveResult = game.move(rootMove);
-        if (moveResult) moveSquares = { from: moveResult.from, to: moveResult.to };
-    }
+    if (rootMove) game.move(rootMove);
     
-    setTimeout(async () => {
-        await createBuilderBoard(game.fen(), builderColor);
-        if (builderBoardInstance && moveSquares) highlightLastMove(builderBoardInstance, moveSquares);
+    setTimeout(() => {
+        createBuilderBoard(game.fen(), builderColor);
         renderBuilder();
     }, 50);
 }
 
 function renderBuilder() {
     try {
-        if (!builderTree) return;
+        const game = new Chess();
+        const cleanMoveRegex = /^[0-9]+\.+/;
+        
+        let history = [{ move: builderTree.move, node: builderTree }];
+        game.move(builderTree.move.replace(cleanMoveRegex, '').trim());
         
         let node = builderTree;
-        const game = new Chess();
-        const rootMove = builderTree.move.replace(/^[0-9]+\.+/, '').trim();
-        let currentMoveSquares = null;
-        
-        if (rootMove) {
-            const moveResult = game.move(rootMove);
-            if (moveResult) currentMoveSquares = { from: moveResult.from, to: moveResult.to };
-        }
-
-        let historyHtml = `<div class="breadcrumb-item ${builderPath.length===0?'active':''}" onclick="jumpToBuilderStep(-1)">${builderTree.move}</div>`;
-        let tempNode = builderTree;
-        
-        for (let i = 0; i < builderPath.length; i++) {
-            const id = builderPath[i];
-            const child = tempNode.children.find(c => c.id === id);
+        for (let id of builderPath) {
+            const child = node.children?.find(c => c.id === id);
             if (child) {
-                tempNode = child;
-                const cleanMove = child.move.replace(/^[0-9]+\.+/, '').trim();
-                const moveResult = game.move(cleanMove);
-                if (moveResult) currentMoveSquares = { from: moveResult.from, to: moveResult.to };
-                historyHtml += `<span style="color:#64748b">›</span> <div class="breadcrumb-item ${i===builderPath.length-1?'active':''}" onclick="jumpToBuilderStep(${i})">${child.move}</div>`;
+                node = child;
+                game.move(child.move.replace(cleanMoveRegex, '').trim());
+                history.push({ move: child.move, node: child });
             }
         }
-        node = tempNode;
         
-        updateBuilderBoard(game.fen(), builderColor, currentMoveSquares);
-        document.getElementById('builderHistory').innerHTML = historyHtml;
+        updateBuilderBoard(game.fen(), builderColor);
         
-        const ply = builderPath.length + 1;
-        const nextMoveColor = (ply % 2 !== 0) ? 'black' : 'white';
-        const isOpponent = (builderColor === 'white' && nextMoveColor === 'white') || (builderColor === 'black' && nextMoveColor === 'black');
-        const turnLabel = nextMoveColor === 'white' ? "White to Move" : "Black to Move";
+        // Breadcrumbs
+        document.getElementById('builderHistory').innerHTML = history.map((h, i) => 
+            `<span class="breadcrumb-item ${i === history.length - 1 ? 'active' : ''}" onclick="jumpToBuilderStep(${i - 1})">${h.move}</span>`
+        ).join('');
         
-        document.getElementById('builderCurrentNode').className = isOpponent ? 'current-move-card opponent' : 'current-move-card';
+        // Current node card
         document.getElementById('builderCurrentNode').innerHTML = `
-            <div class="move-label">${node.player === builderColor ? "Your Move" : "Opponent's Move"}</div>
+            <div class="move-label">CURRENT NODE</div>
             <h2>${node.move}</h2>
-            <p>${node.explanation || 'No explanation'}</p>
-            <div style="margin-top:5px;"><span class="version-tag">${node.status || '-'}</span><span class="version-tag">${node.type || '-'}</span></div>
+            <p class="explanation">${node.explanation || 'No explanation.'}</p>
             ${renderEditExplanation(node)}
         `;
         
-        const list = document.getElementById('builderResponses');
-        list.innerHTML = '';
-        if (node.children) {
-            node.children.forEach(c => {
-                list.innerHTML += `<div class="option-btn ${getColorClass(c.type)}" onclick="navigateToChild('${c.id}')"><div class="main"><h4>${c.move}</h4><p>${c.status}</p></div><button class="delete-item-btn" onclick="event.stopPropagation(); deleteChild('${c.id}')">×</button></div>`;
-            });
+        // Child responses
+        const respContainer = document.getElementById('builderResponses');
+        if (!node.children || node.children.length === 0) {
+            respContainer.innerHTML = '<p style="color:#64748b; text-align:center;">No responses yet.</p>';
+        } else {
+            respContainer.innerHTML = node.children.map(c => `
+                <div class="option-btn ${getColorClass(c.type)}" style="cursor:default;">
+                    <div class="main" onclick="navigateToChild('${c.id}')" style="cursor:pointer; flex:1;">
+                        <h4>${c.move}</h4>
+                        <div class="tags">
+                            ${c.status ? `<span class="tag-pill status">${c.status}</span>` : ''}
+                            ${c.type ? `<span class="tag-pill type">${c.type}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="delete-item-btn" onclick="deleteChild('${c.id}')">×</button>
+                </div>
+            `).join('');
         }
         
-        document.getElementById('addFormTitle').innerText = `Add Move (${turnLabel})`;
-        document.getElementById('btnDeleteBranch').innerText = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch";
+        document.getElementById('btnBuilderBack').disabled = builderPath.length === 0;
+        document.getElementById('btnDeleteBranch').textContent = builderPath.length === 0 ? "Delete Root (Reset)" : "Delete Current Branch";
         setTimeout(() => document.getElementById('newMoveInput')?.focus(), 50);
     } catch(e) { console.error("Render Error:", e); }
 }
@@ -1475,6 +1828,20 @@ function goBack() {
     if (trainerBoard) { try { trainerBoard.destroy(); } catch(e) {} trainerBoard = null; }
     cancelLongPress();
     clearArrowPreview();
+    
+    // V6.8: Reset quiz state
+    if (quizMode) {
+        quizMode = false;
+        quizRevealed = false;
+        quizOpponentMove = null;
+        
+        // Restore toggle visibility
+        const toggleGroup = document.querySelector('.toggle-group');
+        const arrowHint = document.querySelector('.arrow-hint');
+        if (toggleGroup) toggleGroup.style.display = 'flex';
+        if (arrowHint) arrowHint.style.display = 'block';
+    }
+    
     showScreen('menuScreen');
 }
 
@@ -1526,7 +1893,7 @@ function restoreLibrary(input) {
 }
 
 // =====================================================
-// V6.7: GLOBALIZE FUNCTIONS
+// V6.8: GLOBALIZE FUNCTIONS
 // =====================================================
 window.backupLibrary = backupLibrary;
 window.restoreLibrary = restoreLibrary;
@@ -1567,7 +1934,14 @@ window.trainerBack = trainerBack;
 window.showArrowPreview = showArrowPreview;
 window.clearArrowPreview = clearArrowPreview;
 
-console.log('V6.7: All functions globalized');
+// V6.8: Quiz Mode functions
+window.startQuiz = startQuiz;
+window.renderQuiz = renderQuiz;
+window.revealQuizAnswer = revealQuizAnswer;
+window.advanceQuiz = advanceQuiz;
+window.exitQuiz = exitQuiz;
+
+console.log('V6.8: All functions globalized including Quiz Mode');
 </script>
 </body>
 </html>
